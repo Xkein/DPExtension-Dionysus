@@ -39,7 +39,7 @@ namespace Test
             return 0x6FCFBE;
         }
 
-        [Hook(HookType.AresHook, Address = 0x550F6A, Size = 8)]
+        [Hook(HookType.AresHook,"ares.dll", Address = 0x550F6A, Size = 8)]
         static public unsafe UInt32 LaserDrawClass_Fade(REGISTERS* R)
         {
             ref LaserDrawClass pThis = ref ((Pointer<LaserDrawClass>)R->EBX).Ref;
