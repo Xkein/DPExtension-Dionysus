@@ -152,9 +152,9 @@ namespace Miscellaneous
                     Action ReloadArt = () => {
                         using var memory = new MemoryHandle(Marshal.SizeOf<CCINIClass>());
                         Logger.Log("storing art data.");
-                        Unsafe.CopyBlock((void*)memory.Memory, (void*)CCINIClass.INI_Art, (uint)memory.Size);
+                        Helpers.Copy(CCINIClass.INI_Art, (IntPtr)memory.Memory, memory.Size);
                         Logger.Log("writing new art data.");
-                        Unsafe.CopyBlock((void*)CCINIClass.INI_Art, (void*)pINI, (uint)memory.Size);
+                        Helpers.Copy(pINI, CCINIClass.INI_Art, memory.Size);
 
                         Logger.Log("reloading Types.");
                         ref var typeArray = ref AbstractTypeClass.ABSTRACTTYPE_ARRAY.Array;
@@ -188,7 +188,7 @@ namespace Miscellaneous
                             }
                         }
                         Logger.Log("writing old art data back.");
-                        Unsafe.CopyBlock((void*)CCINIClass.INI_Art, (void*)memory.Memory, (uint)memory.Size);
+                        Helpers.Copy((IntPtr)memory.Memory, CCINIClass.INI_Art, memory.Size);
                     };
 
                     if (string.Compare("Artmd.ini", ini_name, true) == 0)
