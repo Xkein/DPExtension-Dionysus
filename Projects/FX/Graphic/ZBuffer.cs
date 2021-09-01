@@ -108,7 +108,7 @@ namespace Extension.FX.Graphic
             int rowPitch = surface.GetWidth() * surface.GetBytesPerPixel();
             int depthPitch = surface.GetHeight() * surface.GetPitch();
 
-            FXGraphic.ImmediateContext.UpdateSubresource(texture.Resource, 0, null, _zBuffer, rowPitch, depthPitch);
+            //FXGraphic.ImmediateContext.UpdateSubresource(texture.Resource, 0, null, _zBuffer, rowPitch, depthPitch);
 
             //using (var surface = texture.QueryInterface<Surface>())
             //{

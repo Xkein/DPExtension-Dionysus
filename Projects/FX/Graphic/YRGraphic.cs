@@ -1,11 +1,14 @@
 ﻿using PatcherYRpp;
+using PatcherYRpp.FileFormats;
 using SharpDX.Direct3D11;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using D3D11 = SharpDX.Direct3D11;
@@ -16,12 +19,13 @@ namespace Extension.FX.Graphic
     {
         private static ShaderResourceView _yrBufferTextureView;
         public static FXDrawObject drawObject;
+        private static Pointer<Surface> additional;
 
         public static IntPtr WindowHandle => Process.GetCurrentProcess().MainWindowHandle;
         public static ref Surface PrimarySurface => ref Surface.Primary.Ref;
         public static ref ZBufferClass ZBuffer => ref ZBufferClass.ZBuffer.Ref;
         public static ref ABufferClass ABuffer => ref ABufferClass.ABuffer.Ref;
-        public static RectangleStruct SurfaceRect => new RectangleStruct(0, 0, PrimarySurface.GetWidth(), PrimarySurface.GetHeight());
+        public static RectangleStruct SurfaceRect => PrimarySurface.GetRect();
         public static ShaderResourceView BufferTextureView => _yrBufferTextureView;
         public static string PrimaryBufferTextureName => "YR_PrimaryBuffer";
 
@@ -36,8 +40,8 @@ namespace Extension.FX.Graphic
                 Height = rect.Height,
                 ArraySize = 1,
                 BindFlags = BindFlags.ShaderResource,
-                Usage = ResourceUsage.Dynamic,
-                CpuAccessFlags = CpuAccessFlags.Write,
+                Usage = ResourceUsage.Default,
+                CpuAccessFlags = CpuAccessFlags.None,
                 Format = SharpDX.DXGI.Format.B5G6R5_UNorm,
                 MipLevels = 1,
                 OptionFlags = ResourceOptionFlags.None,
@@ -48,11 +52,19 @@ namespace Extension.FX.Graphic
             _yrBufferTextureView = new ShaderResourceView(d3dDevice, texture);
 
             drawObject = new FXDrawObject(PrimaryBufferTextureName);
+
+            additional = YRMemory.Create<DSurface>(rect.Width, rect.Height, true, true).Convert<Surface>();
         }
         public static void Dispose()
         {
+            renderCTS?.Cancel();
+
             _yrBufferTextureView?.Dispose();
             drawObject?.Dispose();
+
+            while (drawCells.TryDequeue(out var _)) ;
+
+            YRMemory.Delete(additional.Convert<DSurface>());
         }
 
         public static void FillTexture()
@@ -70,24 +82,34 @@ namespace Extension.FX.Graphic
 
             int rowPitch = PrimarySurface.GetWidth() * PrimarySurface.GetBytesPerPixel();
             int depthPitch = PrimarySurface.GetHeight() * PrimarySurface.GetPitch();
-            //Pointer<byte> bufferEnd = buffer + depthPitch;
+            Pointer<byte> bufferEnd = buffer + depthPitch;
 
-            //var map = FXGraphic.ImmediateContext.MapSubresource(_yrBufferTextureView.Resource, 0, MapMode.WriteDiscard, MapFlags.None);
+            using (var tex = _yrBufferTextureView.ResourceAs<Texture2D>())
+            {
+                //DynamicPatcher.Logger.Log("before map");
+                //var map = FXGraphic.ImmediateContext.MapSubresource(tex, 0, MapMode.WriteDiscard, MapFlags.None, out var stream);
+                //if (map.IsEmpty)
+                //{
+                //    return;
+                //}
+                //DynamicPatcher.Logger.Log("after map");
 
-            //Pointer<byte> dst = map.DataPointer;
-            //Pointer<byte> src = buffer;
+                //Pointer<byte> dst = map.DataPointer;
+                //Pointer<byte> src = buffer;
 
-            //for (int y = 0; y < rect.Height; y++)
-            //{
-            //    Helpers.Copy(src, dst, rect.Width * 2);
-            //    //SharpDX.Utilities.CopyMemory(dst, src, rect.Width * 2);
-            //    dst += map.RowPitch;
-            //    src += rowPitch;
-            //}
+                //for (int y = 0; y < rect.Height; y++)
+                //{
+                //    //Helpers.Copy(src, dst, rect.Width * 2);
+                //    SharpDX.Utilities.CopyMemory(dst, src, rect.Width * 2);
+                //    dst += map.RowPitch;
+                //    src += rowPitch;
+                //}
 
-            //FXGraphic.ImmediateContext.UnmapSubresource(_yrBufferTextureView.Resource, 0);
-
-            FXGraphic.ImmediateContext.UpdateSubresource(BufferTextureView.Resource, 0, null, buffer, rowPitch, depthPitch);
+                //FXGraphic.ImmediateContext.UnmapSubresource(tex, 0);
+                DynamicPatcher.Logger.Log("before UpdateSubresource");
+                FXGraphic.ImmediateContext.UpdateSubresource(tex, 0, null, buffer, rowPitch, depthPitch);
+                DynamicPatcher.Logger.Log("after UpdateSubresource");
+            }
 
             PrimarySurface.Unlock();
         }
@@ -185,7 +207,147 @@ namespace Extension.FX.Graphic
             "    return vector(saturate(tex_draw.Sample(tex_sampler, input.uv).rgb), 1.0);                   " +
             "}                                                                                               "
             ;
+        
+        private static List<SharpDX.Rectangle> rectangles = new List<SharpDX.Rectangle>();
+        private static SharpDX.Rectangle ConvertRect(RectangleStruct rect) => new SharpDX.Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
+        public static void LockRect(RectangleStruct rect)
+        {
+            if(rect.Height == 0 || rect.Width == 0)
+            {
+                return;
+            }
 
+            var _rect = ConvertRect(rect);
+            while (true)
+            {
+                System.Threading.Monitor.Enter(rectangles);
+                {
+                    if (rectangles.Any(r => r.Intersects(_rect)))
+                    {
+                        System.Threading.Monitor.Exit(rectangles);
+                        Task.Yield();
+                        continue;
+                    }
+
+                    rectangles.Add(_rect);
+                }
+                System.Threading.Monitor.Exit(rectangles);
+                break;
+            }
+        }
+
+        public static void UnlockRect(RectangleStruct rect)
+        {
+            if (rect.Height == 0 || rect.Width == 0)
+            {
+                return;
+            }
+
+            var _rect = ConvertRect(rect);
+            lock (rectangles)
+            {
+                rectangles.Remove(_rect);
+            }
+        }
+
+        public static unsafe void DrawSHP(Pointer<ConvertClass> Palette, Pointer<SHPStruct> SHP, int frameIdx,
+            Point2D pos, RectangleStruct boundingRect, BlitterFlags flags, uint arg7,
+            int zAdjust, uint arg9, uint bright, int TintColor, Pointer<SHPStruct> BUILDINGZ_SHA, uint argD, int ZS_X, int ZS_Y)
+        {
+            //ref var surface = ref Surface.Current.Ref;
+            //YRGraphic.LockRect(boundingRect);
+            //surface.DrawSHP(Palette, SHP, frameIdx, pos, boundingRect, flags, arg7, zAdjust, arg9, bright, TintColor, BUILDINGZ_SHA, argD, ZS_X, ZS_Y);
+            //YRGraphic.UnlockRect(boundingRect);
+
+            drawCells.Enqueue(new SHPDrawCell
+            {
+                Palette = Palette,
+                SHP = SHP,
+                FrameIdx = frameIdx,
+                Position = pos,
+                ClipRect = boundingRect,
+                Flags = flags,
+                DrawSHP_Arg7 = arg7,
+                ZAdjust = zAdjust,
+                DrawSHP_Arg9 = arg9,
+                Bright = bright,
+                TintColor = TintColor,
+                BUILDINGZ_SHA = BUILDINGZ_SHA,
+                DrawSHP_ArgD = argD,
+                ZS_X = ZS_X,
+                ZS_Y = ZS_Y
+            });
+        }
+
+        private static ConcurrentQueue<DrawCell> drawCells = new ConcurrentQueue<DrawCell>();
+        private abstract class DrawCell
+        {
+            public abstract void Draw();
+        }
+        private class SHPDrawCell : DrawCell
+        {
+            public Pointer<ConvertClass> Palette;
+            public Pointer<SHPStruct> SHP;
+            public int FrameIdx;
+            public Point2D Position;
+            public RectangleStruct ClipRect;
+            public BlitterFlags Flags;
+            public uint DrawSHP_Arg7;
+            public int ZAdjust;
+            public uint DrawSHP_Arg9;
+            public uint Bright;
+            public int TintColor;
+            public Pointer<SHPStruct> BUILDINGZ_SHA;
+            public uint DrawSHP_ArgD;
+            public int ZS_X;
+            public int ZS_Y;
+
+            public override void Draw()
+            {
+                ref var surface = ref additional.Ref;
+                if(ClipRect.X < 0)
+                {
+                    ClipRect.Width -= ClipRect.X;
+                    ClipRect.X = 0;
+                }
+                if (ClipRect.Y < 0)
+                {
+                    ClipRect.Height -= ClipRect.Y;
+                    ClipRect.Y = 0;
+                }
+                surface.DrawSHP(Palette, SHP, FrameIdx, Position, ClipRect, Flags, DrawSHP_Arg7, ZAdjust, DrawSHP_Arg9, Bright, TintColor, BUILDINGZ_SHA, DrawSHP_ArgD, ZS_X, ZS_Y);
+            }
+        }
+
+        private static CancellationTokenSource renderCTS;
+        private static Task renderTask;
+        public static void RenderLoop()
+        {
+            GC.Collect(0, GCCollectionMode.Optimized, false);
+            additional.Ref.FillRect(additional.Ref.GetRect(), 0);
+
+            while (renderCTS.IsCancellationRequested == false)
+            {
+                if (drawCells.TryDequeue(out var drawCell))
+                {
+                    drawCell.Draw();
+                }
+            }
+        }
+        public static void BeginDraw()
+        {
+            renderCTS = new CancellationTokenSource();
+            renderTask = new Task(RenderLoop);
+            renderTask.Start();
+        }
+        public static void EndDraw()
+        {
+            renderCTS.Cancel();
+            renderTask.Wait();
+
+            var rect = additional.Ref.GetRect();
+            PrimarySurface.BlitPart(rect, additional, rect, false, true);
+        }
     }
 }
 

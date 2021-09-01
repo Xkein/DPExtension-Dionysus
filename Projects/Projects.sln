@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatcherYRpp", "YRpp\Patcher
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension", "Extension\Extension.csproj", "{957E3C34-E736-4145-8B05-2DC1BCFA79E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FX", "FX\FX.csproj", "{1EA5DD47-FD84-4E93-9C94-1EF2F0AEF3A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.FX", "FX\Extension.FX.csproj", "{1EA5DD47-FD84-4E93-9C94-1EF2F0AEF3A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

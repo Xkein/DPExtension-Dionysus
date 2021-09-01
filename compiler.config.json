@@ -5,6 +5,7 @@
     "System.Data.dll",
     "PatcherYRpp.dll",
     "Extension.dll",
+    "Extension.FX.dll",
     "System.Runtime.CompilerServices.Unsafe.dll"
   ],
   "preprocessor_symbols": [

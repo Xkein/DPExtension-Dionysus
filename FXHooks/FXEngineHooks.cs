@@ -17,18 +17,23 @@ namespace FXHooks
         [Hook(HookType.AresHook, Address = 0x55B294, Size = 6)]
         static public unsafe UInt32 FXEngine_Update(REGISTERS* R)
         {
-            // Console.WriteLine("FXEngine_Update");
             FXEngine.Update();
             return 0;
         }
         [Hook(HookType.AresHook, Address = 0x48CE8A, Size = 5)]
         static public unsafe UInt32 FXEngine_Render(REGISTERS* R)
         {
-            // Console.WriteLine("FXEngine_Render");
             FXEngine.Render();
             return 0;
         }
 
+        static public unsafe UInt32 FXEngine_Present(REGISTERS* R)
+        {
+            FXEngine.Present();
+            return 0;
+        }
+
+#if FX_CNCDDRAW
         [DllImport("d3d9.dll")]
         extern static public IntPtr Direct3DCreate9(uint SDKVersion);
 
@@ -101,21 +106,22 @@ namespace FXHooks
 
             //return ret;
 
-            //if(FXEngine.Rendered)
-            //{
-            //    return 0;
-            //}
-
-            if (FXEngine.WorkSystems.Any())
+            if (FXEngine.Rendered)
             {
-                FXEngine.WorkListRWLock.EnterWriteLock();
-                FXEngine.OnPresent(pDevice);
-                FXEngine.WorkListRWLock.ExitWriteLock();
                 return 0;
             }
 
+            //if (FXEngine.WorkSystems.Any())
+            //{
+            //    FXEngine.WorkListRWLock.EnterWriteLock();
+            //    FXEngine.OnPresent(pDevice);
+            //    FXEngine.WorkListRWLock.ExitWriteLock();
+            //    return 0;
+            //}
+
             return func(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
         }
+#endif
     }
 #endif
 }

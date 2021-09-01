@@ -112,6 +112,7 @@
     <Compile Include="FXSpawn.cs" />
     <Compile Include="FXSystem.cs" />
     <Compile Include="Graphic\D3D9.cs" />
+    <Compile Include="Graphic\DirectDraw.cs" />
     <Compile Include="Graphic\FXDrawObject.cs" />
     <Compile Include="Graphic\FXGraphic.cs" />
     <Compile Include="Graphic\ResourceLoader.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="Parameters\FXLinkParameter.cs" />
     <Compile Include="Parameters\FXRandomRangeFloat.cs" />
     <Compile Include="Renders\FXRibbonRenderer.cs" />
+    <Compile Include="Renders\FXSHPRenderer.cs" />
     <Compile Include="Renders\FXSpriteRenderer.cs" />
     <Compile Include="Scripts\Emitter\FXEmitterState.cs" />
     <Compile Include="Scripts\Emitter\FXSpawnBurstInstantaneous.cs" />

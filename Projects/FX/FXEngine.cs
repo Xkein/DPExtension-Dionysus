@@ -18,7 +18,6 @@ namespace Extension.FX
     {
         static FXEngine()
         {
-            EnableParallelRender = false;
             InitializeGraphic();
         }
 
@@ -245,12 +244,7 @@ namespace Extension.FX
 
                 if (WorkSystems.Any())
                 {
-                    ZBuffer.FillZTexture();
-
-                    //YRGraphic.FillTexture();
-                    FXGraphic.DrawObject(YRGraphic.drawObject);
-
-                    //FXGraphic.BeginDraw();
+                    BeginDraw();
 
                     if (FXEngine.EnableParallelRender)
                     {
@@ -264,12 +258,7 @@ namespace Extension.FX
                         }
                     }
 
-                    //FXGraphic.EndDraw();
-                    FXGraphic.Render();
-
-                    Rendered = true;
-
-                    Present();
+                    EndDraw();
                 }
                 else
                 {
@@ -292,7 +281,29 @@ namespace Extension.FX
                 WorkListRWLock.ExitReadLock();
             }
         }
+        public static void BeginDraw()
+        {
+#if TOFIX
+            ZBuffer.FillZTexture();
+            
+            YRGraphic.FillTexture();
+            FXGraphic.DrawObject(YRGraphic.drawObject);
+#endif
+            //FXGraphic.BeginDraw();
+            YRGraphic.BeginDraw();
+        }
+        public static void EndDraw()
+        {
+            //FXGraphic.EndDraw();
+            YRGraphic.EndDraw();
+#if TOFIX
+            FXGraphic.Render();
 
+            Rendered = true;
+
+            Present();
+#endif
+        }
         public static int Present()
         {
             return FXGraphic.Present().Code;
@@ -301,9 +312,9 @@ namespace Extension.FX
         {
             D3D9.OnPresent((SharpDX.Direct3D9.Device)pDevice);
         }
-        #endregion
+#endregion
 
-        #region Graphic
+#region Graphic
         //public static bool HasGPU => Device.Devices.Any();
         public static bool HasGPU => true;
         public static void InitializeGraphic()
@@ -313,7 +324,7 @@ namespace Extension.FX
                 //PrepareAlea();
             }
 
-            ResizeScreen();
+            KeepScreenSize();
         }
 
         private static int _screenSize;
@@ -423,6 +434,6 @@ namespace Extension.FX
         //    }
         //}
 
-        #endregion
+#endregion
     }
 }

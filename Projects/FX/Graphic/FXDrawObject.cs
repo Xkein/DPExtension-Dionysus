@@ -80,7 +80,7 @@ namespace Extension.FX.Graphic
         }
         private void SetTextureInfo()
         {
-            using (var tex = TextureView.Resource.QueryInterface<Texture2D>())
+            using (var tex = TextureView.ResourceAs<Texture2D>())
             {
                 _textureWidth = tex.Description.Width;
                 _textureHeight = tex.Description.Height;

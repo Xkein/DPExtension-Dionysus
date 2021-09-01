@@ -49,7 +49,7 @@ namespace Scripts
                 new FXSolveForcesAndVelocity(system, emitter)
                 );
             emitter.MRender.Add(
-                new FXSpriteRenderer(system, emitter) { Texture = "snow.png" }
+                new FXSHPRenderer(system, emitter) { SHP = "TWLT070.shp", PAL = "Anim.pal" }
                 );
 
             system.Emitters.Add(emitter);
