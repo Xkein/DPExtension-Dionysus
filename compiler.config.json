@@ -3,10 +3,13 @@
     "System.dll",
     "System.Core.dll",
     "System.Data.dll",
+    "System.Runtime.CompilerServices.Unsafe.dll",
+    "System.Windows.Forms.dll",
+    "System.Drawing.dll",
+
     "PatcherYRpp.dll",
     "Extension.dll",
-    "Extension.FX.dll",
-    "System.Runtime.CompilerServices.Unsafe.dll"
+    "Extension.FX.dll"
   ],
   "preprocessor_symbols": [
     "REALTIME_INI",
