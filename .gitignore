@@ -4,3 +4,5 @@ patcher.log
 /Packages
 /.vscode
 /Projects/.vs
+/Projects/**/bin
+/Projects/**/obj
