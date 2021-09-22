@@ -20,7 +20,7 @@ namespace FXHooks
             FXEngine.Update();
             return 0;
         }
-        [Hook(HookType.AresHook, Address = 0x48CE8A, Size = 5)]
+        [Hook(HookType.AresHook, Address = 0x4F45A3, Size = 5)]
         static public unsafe UInt32 FXEngine_Render(REGISTERS* R)
         {
             FXEngine.Render();

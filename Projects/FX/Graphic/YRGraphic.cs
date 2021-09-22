@@ -28,6 +28,7 @@ namespace Extension.FX.Graphic
         public static RectangleStruct SurfaceRect => PrimarySurface.GetRect();
         public static ShaderResourceView BufferTextureView => _yrBufferTextureView;
         public static string PrimaryBufferTextureName => "YR_PrimaryBuffer";
+        public static ref Surface AdditionalSurface => ref Surface.Composite.Ref;
 
 
         public static void Initialize(D3D11.Device d3dDevice)
@@ -304,7 +305,6 @@ namespace Extension.FX.Graphic
 
             public override void Draw()
             {
-                ref var surface = ref additional.Ref;
                 if(ClipRect.X < 0)
                 {
                     ClipRect.Width -= ClipRect.X;
@@ -315,7 +315,7 @@ namespace Extension.FX.Graphic
                     ClipRect.Height -= ClipRect.Y;
                     ClipRect.Y = 0;
                 }
-                surface.DrawSHP(Palette, SHP, FrameIdx, Position, ClipRect, Flags, DrawSHP_Arg7, ZAdjust, DrawSHP_Arg9, Bright, TintColor, BUILDINGZ_SHA, DrawSHP_ArgD, ZS_X, ZS_Y);
+                AdditionalSurface.DrawSHP(Palette, SHP, FrameIdx, Position, ClipRect, Flags, DrawSHP_Arg7, ZAdjust, DrawSHP_Arg9, Bright, TintColor, BUILDINGZ_SHA, DrawSHP_ArgD, ZS_X, ZS_Y);
             }
         }
 
@@ -323,14 +323,22 @@ namespace Extension.FX.Graphic
         private static Task renderTask;
         public static void RenderLoop()
         {
-            GC.Collect(0, GCCollectionMode.Optimized, false);
-            additional.Ref.FillRect(additional.Ref.GetRect(), 0);
+            //var rect = AdditionalSurface.GetRect();
+            //var gameRect = ZBuffer.Rect;
+            //AdditionalSurface.BlitPart(gameRect, Surface.Tile, gameRect, false, true);
+            //AdditionalSurface.BlitPart(new RectangleStruct(gameRect.Width, rect.Y, rect.Width - gameRect.Width, rect.Height),
+            //    Surface.Sidebar, Surface.Sidebar.Ref.GetRect(), false, true);
+            //additional.Ref.FillRect(additional.Ref.GetRect(), 0);
 
             while (renderCTS.IsCancellationRequested == false)
             {
                 if (drawCells.TryDequeue(out var drawCell))
                 {
                     drawCell.Draw();
+                }
+                else
+                {
+                    Console.WriteLine($"dequeue fail, count: {drawCells.Count}");
                 }
             }
         }
@@ -345,8 +353,8 @@ namespace Extension.FX.Graphic
             renderCTS.Cancel();
             renderTask.Wait();
 
-            var rect = additional.Ref.GetRect();
-            PrimarySurface.BlitPart(rect, additional, rect, false, true);
+            //var rect = additional.Ref.GetRect();
+            //Surface.Primary.Ref.BlitPart(rect, additional, rect, false, true);
         }
     }
 }
