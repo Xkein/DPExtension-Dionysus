@@ -8,6 +8,7 @@
     "System.Drawing.dll",
 
     "PatcherYRpp.dll",
+    "PatcherYRpp.Utilities.dll",
     "Extension.dll",
     "Extension.FX.dll"
   ],

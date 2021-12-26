@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension", "Extension\Exte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.FX", "Extension.FX\Extension.FX.csproj", "{C6726566-6231-435A-9BA4-73B05CA8FAEB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatcherYRpp.Utilities", "PatcherYRpp.Utilities\PatcherYRpp.Utilities.csproj", "{AE6121FF-74CF-472A-BF7D-4543A78E7D50}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{C6726566-6231-435A-9BA4-73B05CA8FAEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6726566-6231-435A-9BA4-73B05CA8FAEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6726566-6231-435A-9BA4-73B05CA8FAEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE6121FF-74CF-472A-BF7D-4543A78E7D50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE6121FF-74CF-472A-BF7D-4543A78E7D50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE6121FF-74CF-472A-BF7D-4543A78E7D50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE6121FF-74CF-472A-BF7D-4543A78E7D50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
