@@ -27,7 +27,7 @@ namespace Scripts
             CoordStruct location = pBullet.Ref.Base.Base.GetCoords();
             location += new CoordStruct(random.Next(100, 500), random.Next(100, 500), random.Next(100, 500));
 
-            Pointer<AnimClass> pLaser = YRMemory.Create<AnimClass>(pAnimType, location);
+            Pointer<AnimClass> pAnim = YRMemory.Create<AnimClass>(pAnimType, location);
 
             pBullet.Ref.Velocity.Z = 70 * factor;
             factor = factor - 0.02;

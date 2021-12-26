@@ -23,8 +23,8 @@ namespace Scripts
             if (pTarget.CastToTechno(out Pointer<TechnoClass> pTechno))
             {
                 TechnoExt pTargetExt = TechnoExt.ExtMap.Find(pTechno);
-                if (pTargetExt.Get(MissileFall.ID) == null) {
-                    pTargetExt.CreateDecorator<MissileFall>(MissileFall.ID, "Missile Fall Decorator", this, weaponIndex != 0);
+                if (pTargetExt.Get(MissileFall.UniqueID) == null) {
+                    pTargetExt.CreateDecorator<MissileFall>(MissileFall.UniqueID, "Missile Fall Decorator", this, weaponIndex != 0);
                 }
             }
         }
@@ -33,7 +33,7 @@ namespace Scripts
     [Serializable]
     public class MissileFall : EventDecorator
     {
-        public static DecoratorId ID = new DecoratorId(114514);
+        public static DecoratorId UniqueID = new DecoratorId(114514);
         public MissileFall(GGI ggi, bool cluster)
         {
             Owner.Set(ggi.Owner);
