@@ -57,6 +57,11 @@ namespace PatcherYRpp.Utilities
 
         public static double Wrap(double x, double min, double max)
         {
+            if (min == max)
+            {
+                return min;
+            }
+
             var size = max - min;
             var endVal = x;
 
@@ -77,6 +82,11 @@ namespace PatcherYRpp.Utilities
         }
         public static long Wrap(long x, long min, long max)
         {
+            if (min == max)
+            {
+                return min;
+            }
+
             var size = max - min;
             var endVal = x;
 
