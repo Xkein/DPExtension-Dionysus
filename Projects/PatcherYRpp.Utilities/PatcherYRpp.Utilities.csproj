@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BulletFactory.cs" />
     <Compile Include="CellEnumerators.cs" />
     <Compile Include="MathEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
