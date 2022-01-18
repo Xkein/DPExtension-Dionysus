@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using PatcherYRpp.Utilities;
 using Extension.Decorators;
 using Extension.Utilities;
+using System.Runtime.Serialization;
 
 namespace Scripts
 {
@@ -108,29 +109,36 @@ namespace Scripts
             {
             }
 
-
-            static Pointer<AnimTypeClass>[] Debris = new [] {
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS1LG"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS2LG"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS3LG"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS4LG"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS5LG"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS6LG"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS7LG"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS8LG"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS9LG"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRS10LG"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS1SM"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS2SM"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS3SM"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS4SM"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS5SM"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS6SM"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS7SM"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS8SM"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRIS9SM"),
-                AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("DBRS10SM"),
+            static readonly string[] DebrisNames = new[] {
+                "DBRIS1LG",
+                "DBRIS2LG",
+                "DBRIS3LG",
+                "DBRIS4LG",
+                "DBRIS5LG",
+                "DBRIS6LG",
+                "DBRIS7LG",
+                "DBRIS8LG",
+                "DBRIS9LG",
+                "DBRS10LG",
+                "DBRIS1SM",
+                "DBRIS2SM",
+                "DBRIS3SM",
+                "DBRIS4SM",
+                "DBRIS5SM",
+                "DBRIS6SM",
+                "DBRIS7SM",
+                "DBRIS8SM",
+                "DBRIS9SM",
+                "DBRS10SM",
             };
+            static Pointer<AnimTypeClass>[] Debris = AnimTypeClass.ABSTRACTTYPE_ARRAY.Finds(DebrisNames);
+            // low performence loading game.
+            // we should load again when loading game.
+            [OnDeserializing]
+            protected void OnDeserializing(StreamingContext context)
+            {
+                Debris = AnimTypeClass.ABSTRACTTYPE_ARRAY.Finds(DebrisNames);
+            }
 
             static ColorStruct innerColor = new ColorStruct(208, 10, 10);
             static ColorStruct outerColor = new ColorStruct(88, 0, 5);
