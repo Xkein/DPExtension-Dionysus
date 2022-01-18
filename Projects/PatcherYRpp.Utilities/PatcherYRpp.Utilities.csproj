@@ -44,6 +44,8 @@
     <Compile Include="BulletFactory.cs" />
     <Compile Include="CellEnumerators.cs" />
     <Compile Include="MathEx.cs" />
+    <Compile Include="ObjectBlock.cs" />
+    <Compile Include="ObjectFinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
