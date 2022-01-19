@@ -42,6 +42,7 @@ namespace PatcherYRpp.Utilities
             BlockLength = blockLength;
 
             Blocks = new ObjectBlock[mapWidth * 2 / blockLength, mapHeight * 2 / blockLength];
+            OuterBlock = new ObjectBlock(this, new ObjectBlockID(int.MaxValue, int.MaxValue));
             AllocateBlocks();
         }
 
@@ -49,6 +50,7 @@ namespace PatcherYRpp.Utilities
         public ref DynamicVectorClass<Pointer<ObjectClass>> ObjectArray { get => ref DynamicVectorClass<Pointer<ObjectClass>>.GetDynamicVector(ObjectArrayPointer); }
 
         public ObjectBlock[,] Blocks { get; }
+        public ObjectBlock OuterBlock { get; }
         public int BlockLength { get; }
         public int BlockRange => (BlockLength - 1) / 2;
 
@@ -100,11 +102,14 @@ namespace PatcherYRpp.Utilities
         }
         private ObjectBlock GetBlockForce(ObjectBlockID id)
         {
-            // notice that we may have negative id
-            int x = id.X + Blocks.GetLength(0) / 2;
-            int y = id.Y + Blocks.GetLength(1) / 2;
+            int xLength = Blocks.GetLength(0);
+            int yLength = Blocks.GetLength(1);
 
-            return Blocks[x, y];
+            // notice that we may have negative id
+            int x = id.X + xLength / 2;
+            int y = id.Y + yLength / 2;
+
+            return x < xLength && y < yLength ? Blocks[x, y] : OuterBlock;
         }
 
         public void ClearObjects()
