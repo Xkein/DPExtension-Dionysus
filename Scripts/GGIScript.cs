@@ -81,13 +81,13 @@ namespace Scripts
             CoordStruct curLocation = target.OwnerObject.Ref.Base.Base.GetCoords();
             if (Cluster)
             {
-                CellStruct cur = MapClass.Coord2Cell(curLocation);
+                CellStruct cur = CellClass.Coord2Cell(curLocation);
 
                 CellSpreadEnumerator enumerator = new CellSpreadEnumerator(2);
                 foreach (CellStruct offset in enumerator)
                 {
                     Pointer<BulletClass> pBullet = CreateBullet(damage);
-                    CoordStruct where = MapClass.Cell2Coord(cur + offset, 2000);
+                    CoordStruct where = CellClass.Cell2Coord(cur + offset, 2000);
                     if (MapClass.Instance.TryGetCellAt(where, out Pointer<CellClass> pCell)){
                         BulletVelocity velocity = new BulletVelocity(0,0,0);
                         pBullet.Ref.MoveTo(where, velocity);

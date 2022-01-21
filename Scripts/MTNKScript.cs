@@ -63,7 +63,7 @@ namespace Scripts
                 Pointer<HouseClass> pOwner = pTechno.Ref.Owner;
                 Pointer<SuperClass> pSuper = pOwner.Ref.FindSuperWeapon(pSWType);
 
-                CellStruct targetCell = MapClass.Coord2Cell(pTarget.Ref.GetCoords());
+                CellStruct targetCell = CellClass.Coord2Cell(pTarget.Ref.GetCoords());
                 //Logger.Log("FireSuperWeapon({2}):0x({3:X}) -> ({0}, {1})", targetCell.X, targetCell.Y, pSWType.Ref.Base.ID, (int)pSuper);
                 pSuper.Ref.IsCharged = true;
                 pSuper.Ref.Launch(targetCell, true);
