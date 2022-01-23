@@ -53,7 +53,7 @@ namespace Scripts
     class JJCluster
     {
         public const int NEED_ENERGY = 500;
-        public const int ATTACK_RANGE = 256 * 10;
+        public const int ATTACK_RANGE = Game.CellSize * 15;
 
         public JJCluster()
         {
@@ -115,11 +115,11 @@ namespace Scripts
 
         static Pointer<WeaponTypeClass> Weapon => WeaponTypeClass.ABSTRACTTYPE_ARRAY.Find("RedEye2");
         static Pointer<AnimTypeClass> AttackAnimType => AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("TWLT026");
-        public void Attack(Pointer<AbstractClass> pTarget)
+        public bool Attack(Pointer<AbstractClass> pTarget)
         {
             if (!IsCharged() || pTarget.IsNull)
             {
-                return;
+                return false;
             }
 
             CoordStruct mean = Mean;
@@ -149,6 +149,7 @@ namespace Scripts
             pBullet.Ref.MoveTo(mean, new BulletVelocity(0, 0, 200));
 
             energy -= NEED_ENERGY;
+            return true;
         }
 
         public void Attack()
@@ -170,7 +171,7 @@ namespace Scripts
                 }
             }
 
-            List<Pointer<ObjectClass>> list = ObjectFinder.FindObjectsNear(mean, ATTACK_RANGE, ObjectFinder.FindMethod.ObjectBlock);
+            List<Pointer<ObjectClass>> list = ObjectFinder.FindObjectsNear(mean, ATTACK_RANGE);
 
             foreach (var pTarget in list)
             {
@@ -180,19 +181,29 @@ namespace Scripts
             if (list.Count > 0)
             {
                 Pointer<HouseClass> pOwnerHouse = Leader.Owner.OwnerObject.Ref.Owner;
-                Pointer<ObjectClass> pTarget = 
-                    list.OrderByDescending(pObject => GetAttackPriority(pObject.Ref.Base.WhatAmI()))
-                        .FirstOrDefault(
-                            pObject => pObject.Ref.IsOnMap
-                            && !pOwnerHouse.Ref.IsAlliedWith(pObject)
-                            && CanAttack(pObject.Ref.Base.WhatAmI()));
 
-                if (!pTarget.IsNull)
+                list = list
+                    .Where(pObject => pObject.Ref.IsAttackable() && !pOwnerHouse.Ref.IsAlliedWith(pObject) && CanAttack(pObject.Ref.Base.WhatAmI()))
+                    .OrderByDescending(pObject => GetAttackPriority(pObject.Ref.Base.WhatAmI()) + GetHousePriority(pObject.Ref.Base.GetOwningHouse()))
+                    .ToList();
+
+                foreach (Pointer<ObjectClass> pTarget in list)
                 {
-                    //var targetLoc = target.Ref.Base.GetCoords();
-                    //DynamicPatcher.Logger.Log("attack {0} located at {1}, {2}, {3}", target.Ref.GetObjectType().Convert<AbstractTypeClass>().Ref.ID, targetLoc.X, targetLoc.Y, targetLoc.Z);
+                    var targetLoc = pTarget.Ref.Base.GetCoords();
+                    var pTargetOwner = pTarget.Ref.Base.GetOwningHouse();
 
-                    Attack(pTarget.Convert<AbstractClass>());
+                    if (MapClass.Instance.TryGetCellAt(targetLoc, out var pCell))
+                    {
+                        //DebugUtilities.HighlightCell(pCell, new ColorStruct(200, 0, 0));
+                    }
+
+                    if (!Attack(pTarget.Convert<AbstractClass>()))
+                        return;
+
+                    //DynamicPatcher.Logger.Log("attack {0}(owned by {1}) located at {2}, {3}, {4}",
+                    //    DebugUtilities.GetAbstractID(pTarget.Convert<AbstractClass>()),
+                    //    pTargetOwner.IsNull ? "nullptr" : DebugUtilities.GetAbstractID(pTargetOwner.Convert<AbstractClass>()),
+                    //    targetLoc.X, targetLoc.Y, targetLoc.Z);
                 }
             }
         }
@@ -235,6 +246,21 @@ namespace Scripts
                 AbstractType.Wave => 0,
                 _ => 0,
             };
+        }
+
+        public int GetHousePriority(Pointer<HouseClass> pHouse)
+        {
+            if (pHouse.IsNull)
+            {
+                return 100;
+            }
+
+            if (pHouse == HouseClass.FindNeutral())
+            {
+                return 150;
+            }
+
+            return 200;
         }
 
         public bool IsCharged()
@@ -282,7 +308,7 @@ namespace Scripts
 
     static class JJClusterDiscoverer
     {
-        public static int ClusterRange { get; } = 256 * 5;
+        public static int ClusterRange { get; } = Game.CellSize * 5;
         public static int ClusterCapacity { get; } = 5;
         public static int ClusterStartNum { get; } = 2;
 
@@ -456,17 +482,19 @@ namespace Scripts
         [NonSerialized]
         JJCluster cluster;
 
-        //static JUMPJETScript()
-        //{
-        //    var random = new Random();
-        //    var e1 = TechnoTypeClass.ABSTRACTTYPE_ARRAY.Find("E1");
-        //    for (int i = 0; i < 10000; i++)
-        //    {
-        //        var pTechno = e1.Ref.Base.CreateObject(HouseClass.Player).Convert<TechnoClass>();
-        //        pTechno.Ref.Base.Put(new CoordStruct(random.Next(40000), random.Next(40000), random.Next(40000)), Direction.N);
+        static JUMPJETScript()
+        {
+            //var random = new Random();
+            //var e1 = TechnoTypeClass.ABSTRACTTYPE_ARRAY.Find("E1");
+            //for (int i = 0; i < 10000; i++)
+            //{
+            //    var pTechno = e1.Ref.Base.CreateObject(HouseClass.Player).Convert<TechnoClass>();
+            //    pTechno.Ref.Base.Put(new CoordStruct(random.Next(40000), random.Next(40000), random.Next(40000)), Direction.N);
 
-        //        DynamicPatcher.Logger.Log("current e1 idx :{0}", i);
-        //    }
-        //}
+            //    DynamicPatcher.Logger.Log("current e1 idx :{0}", i);
+            //}
+
+            //HouseClass.Player.Ref.GiveMoney(114514);
+        }
     }
 }
