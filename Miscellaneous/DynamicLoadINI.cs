@@ -41,7 +41,8 @@ namespace Miscellaneous
                     if (reader.ReadNormal(section, key, ref sub_name))
                     {
                         //Logger.Log("sub_name {0}", sub_name);
-                        if (string.Compare(sub_name, name, true) == 0)
+                        if (sub_name.ToLower().Contains(name.ToLower()))
+                        //if (string.Compare(sub_name, name, true) == 0)
                         {
                             return true;
                         }
