@@ -61,5 +61,84 @@ namespace PatcherYRpp.Utilities
                 Draw(points[i], points[(i + 1) % points.Count]);
             }
         }
+
+        public static void HighlightCell(Pointer<CellClass> pCell, ColorStruct color, int thickness = 3, int duration = 10)
+        {
+            void Draw(CoordStruct from, CoordStruct to)
+            {
+                ColorStruct innerColor = new ColorStruct(color.R, color.G, color.B);
+                ColorStruct outerColor = new ColorStruct(color.R / 2, color.G / 2, color.B / 2);
+                ColorStruct outerSpread = new ColorStruct(color.R / 4, color.G / 4, color.B / 4);
+
+                Pointer<LaserDrawClass> pMarkLaser = YRMemory.Create<LaserDrawClass>(from, to, innerColor, outerColor, outerSpread, duration);
+                pMarkLaser.Ref.Thickness = thickness;
+                pMarkLaser.Ref.IsHouseColor = true;
+            }
+
+            CoordStruct center = pCell.Ref.Base.GetCoords();
+
+            const int offset = Game.CellSize / 2;
+            var points = new[]{
+                center + new CoordStruct(offset, offset, 0),
+                center + new CoordStruct(-offset, offset, 0),
+                center + new CoordStruct(-offset, -offset, 0),
+                center + new CoordStruct(offset, -offset, 0) };
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                Draw(points[i], points[(i + 1) % points.Length]);
+            }
+        }
+
+
+        public static string GetAbstractID(Pointer<AbstractClass> pAbstract)
+        {
+            if (pAbstract.CastToObject(out var pObject))
+            {
+                var pType = pObject.Ref.GetObjectType();
+                return pType.Ref.Base.ID;
+            }
+
+            switch (pAbstract.Ref.WhatAmI())
+            {
+                case AbstractType.House:
+                    var pHouse = pAbstract.Convert<HouseClass>();
+                    return pHouse.Ref.Type.Ref.Base.ID;
+
+                // TOFILL
+
+                // AbstractTypeClasses
+                case AbstractType.AircraftType:
+                case AbstractType.AnimType:
+                case AbstractType.BuildingType:
+                case AbstractType.BulletType:
+                case AbstractType.Campaign:
+                case AbstractType.HouseType:
+                case AbstractType.InfantryType:
+                case AbstractType.IsotileType:
+                case AbstractType.OverlayType:
+                case AbstractType.ParticleSystemType:
+                case AbstractType.ParticleType:
+                case AbstractType.ScriptType:
+                case AbstractType.Side:
+                case AbstractType.SmudgeType:
+                case AbstractType.SuperWeaponType:
+                case AbstractType.TaskForce:
+                case AbstractType.TeamType:
+                case AbstractType.TerrainType:
+                case AbstractType.TriggerType:
+                case AbstractType.UnitType:
+                case AbstractType.VoxelAnimType:
+                case AbstractType.TagType:
+                case AbstractType.Tiberium:
+                case AbstractType.WeaponType:
+                case AbstractType.WarheadType:
+                case AbstractType.AITriggerType:
+                    var pType = pAbstract.Convert<AbstractTypeClass>();
+                    return pType.Ref.ID;
+            }
+
+            return string.Empty;
+        }
     }
 }
