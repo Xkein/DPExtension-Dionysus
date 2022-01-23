@@ -6,3 +6,4 @@ patcher.log
 /Projects/.vs
 /Projects/**/bin
 /Projects/**/obj
+/Logs
