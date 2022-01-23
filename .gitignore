@@ -7,3 +7,4 @@ patcher.log
 /Projects/**/bin
 /Projects/**/obj
 /Logs
+/Projects/packages
