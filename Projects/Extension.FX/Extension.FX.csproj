@@ -139,6 +139,7 @@
     <Compile Include="Scripts\System\FXSystemState.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="LICENSE" />
   </ItemGroup>
   <ItemGroup>
