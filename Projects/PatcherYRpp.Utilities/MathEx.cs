@@ -10,6 +10,13 @@ namespace PatcherYRpp.Utilities
 {
     public static class MathEx
     {
+        private static Random _random = new Random(60);
+        public static void SetRandomSeed(int seed)
+        {
+            _random = new Random(seed);
+        }
+        public static Random Random => _random;
+
         // ===============================================
         // Utilities for numeric
         #region Numeric
@@ -161,6 +168,47 @@ namespace PatcherYRpp.Utilities
         public static Vector3D GetNormalizedVector3D(Vector3D vector)
         {
             return vector == ZeroVector3D ? ZeroVector3D : vector * (1 / vector.Magnitude());
+        }
+
+        public static float CalculateRandomRange(float min = 0.0f, float max = 1.0f)
+        {
+            if (min == max)
+            {
+                return min;
+            }
+
+            float length = max - min;
+            return min + (float)_random.NextDouble() * length;
+
+        }
+
+        public static Vector3D CalculateRandomUnitVector()
+        {
+            const float r = 1;
+            const float PI2 = (float)(Math.PI * 2);
+
+            float azimuth = (float)(_random.NextDouble() * PI2);
+            float elevation = (float)(_random.NextDouble() * PI2);
+
+            return new Vector3D(
+                (float)(r * Math.Cos(elevation) * Math.Cos(azimuth)),
+                (float)(r * Math.Cos(elevation) * Math.Sin(azimuth)),
+                (float)(r * Math.Sin(elevation))
+                );
+
+        }
+        public static Vector3D CalculateRandomPointInSphere(float innerRadius, float outerRadius)
+        {
+            return CalculateRandomUnitVector() * CalculateRandomRange(innerRadius, outerRadius);
+        }
+
+        public static Vector3D CalculateRandomPointInBox(Vector3D size)
+        {
+            return new Vector3D(
+                CalculateRandomRange(0, size.X) - size.X / 2f,
+                CalculateRandomRange(0, size.Y) - size.Y / 2f,
+                CalculateRandomRange(0, size.Z) - size.Z / 2f
+                );
         }
 
         #endregion
