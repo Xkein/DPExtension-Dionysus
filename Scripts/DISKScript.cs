@@ -17,7 +17,6 @@ namespace Scripts
     {
         public Disk(TechnoExt owner) : base(owner) {}
         
-        Random random = new Random();
         static ColorStruct innerColor = new ColorStruct(11,45,14);
         static ColorStruct outerColor = new ColorStruct(19, 19, 810);
         static ColorStruct outerSpread = new ColorStruct(10, 10, 10);

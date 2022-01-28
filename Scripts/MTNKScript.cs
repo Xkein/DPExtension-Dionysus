@@ -28,7 +28,6 @@ namespace Scripts
             // });
         }
         
-        Random random = new Random();
         static ColorStruct innerColor = new ColorStruct(208,10,203);
         static ColorStruct outerColor = new ColorStruct(88, 0, 88);
         static ColorStruct outerSpread = new ColorStruct(10, 10, 10);

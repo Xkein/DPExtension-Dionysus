@@ -16,7 +16,6 @@ namespace Scripts
     {
         public AAHeatSeeker2(BulletExt owner) : base(owner) {}
         
-        Random random = new Random();
         static ColorStruct innerColor = new ColorStruct(208,10,20);
         static ColorStruct outerColor = new ColorStruct(88, 0, 20);
         static ColorStruct outerSpread = new ColorStruct(10, 10, 10);

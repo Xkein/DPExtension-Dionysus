@@ -8,6 +8,7 @@ using PatcherYRpp;
 using Extension.Ext;
 using Extension.Script;
 using System.Threading.Tasks;
+using PatcherYRpp.Utilities;
 
 namespace Scripts
 {
@@ -18,7 +19,7 @@ namespace Scripts
 
         double factor = 1.0;
         static Pointer<AnimTypeClass> pAnimType => AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("TWLT070");
-        Random random = new Random(114514);
+        Random random = MathEx.Random;
         public override void OnUpdate()
         {
             Pointer<BulletClass> pBullet = Owner.OwnerObject;

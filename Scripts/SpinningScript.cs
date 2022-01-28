@@ -21,7 +21,7 @@ namespace Scripts
         public SpinningScript(TechnoExt owner) : base(owner) { }
 
         int frame = 0;
-        static Random random = new Random(114514);
+        Random random = MathEx.Random;
         const int ShotDelta = 5;
 
         public override void OnUpdate()
@@ -108,6 +108,8 @@ namespace Scripts
             public BulletDecorator()
             {
             }
+
+            Random random = MathEx.Random;
 
             static readonly string[] DebrisNames = new[] {
                 "DBRIS1LG",
