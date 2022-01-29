@@ -19,11 +19,12 @@ namespace PatcherYRpp.Utilities
             Degenerate
         }
 
-        private static ObjectBlockContainer container = new ObjectBlockContainer(ObjectClass.ArrayPointer, 10 + 1, 500, 500);
+        public static ObjectBlockContainer ObjectContainer { get; } = new ObjectBlockContainer(ObjectClass.ArrayPointer, 10 + 1, 500, 500);
+        public static ObjectBlockContainer TechnoContainer { get; } = new ObjectBlockContainer(TechnoClass.ArrayPointer, 10 + 1, 500, 500);
 
-        public static List<Pointer<ObjectClass>> BruteFindObjectsNear(CoordStruct location, int range)
+
+        private static List<Pointer<ObjectClass>> BruteFindObjectsNear(ref DynamicVectorClass<Pointer<ObjectClass>> objects, CoordStruct location, int range)
         {
-            ref var objects = ref container.ObjectArray;
             var list = new List<Pointer<ObjectClass>>();
 
             foreach (Pointer<ObjectClass> pObject in objects)
@@ -37,8 +38,7 @@ namespace PatcherYRpp.Utilities
             return list;
         }
 
-
-        public static List<Pointer<ObjectClass>> BlockFindObjectsNear(CoordStruct location, int range)
+        private static List<Pointer<ObjectClass>> BlockFindObjectsNear(ObjectBlockContainer container, CoordStruct location, int range)
         {
             var blocks = container.GetCoveredBlocks(location, range);
             var list = new List<Pointer<ObjectClass>>();
@@ -55,6 +55,16 @@ namespace PatcherYRpp.Utilities
             }
 
             return list;
+        }
+
+        public static List<Pointer<ObjectClass>> BruteFindObjectsNear(CoordStruct location, int range)
+        {
+            return BruteFindObjectsNear(ref ObjectContainer.ObjectArray, location, range);
+        }
+
+        public static List<Pointer<ObjectClass>> BlockFindObjectsNear(CoordStruct location, int range)
+        {
+            return BlockFindObjectsNear(ObjectContainer, location, range);
         }
 
 
@@ -107,21 +117,31 @@ namespace PatcherYRpp.Utilities
             }
         }
 
-        public static bool IsAttackable(ref this ObjectClass obj)
+        public static List<Pointer<ObjectClass>> BruteFindTechnosNear(CoordStruct location, int range)
         {
-            if (!obj.IsOnMap)
-                return false;
+            return BruteFindObjectsNear(ref TechnoContainer.ObjectArray, location, range);
+        }
 
-            var pObject = Pointer<ObjectClass>.AsPointer(ref obj);
-
-            if (pObject.CastToTechno(out var pTechno))
+        public static List<Pointer<ObjectClass>> BlockFindTechnosNear(CoordStruct location, int range)
+        {
+            return BlockFindObjectsNear(TechnoContainer, location, range);
+        }
+        /// <summary>
+        /// find technos by method automatively choiced.
+        /// </summary>
+        /// <param name="location">the center to find object.</param>
+        /// <param name="range">distance from location.</param>
+        /// <returns>the list of technos in range.</returns>
+        public static List<Pointer<ObjectClass>> FindTechnosNear(CoordStruct location, int range)
+        {
+            if (range <= Game.CellSize * 64 /*&& container.TechnoArray.Count >= 500*/)
             {
-                if (!pTechno.Ref.IsInPlayfield)
-                    return false;
-
+                return BlockFindTechnosNear(location, range);
             }
-
-            return true;
+            else
+            {
+                return BruteFindTechnosNear(location, range);
+            }
         }
     }
 }

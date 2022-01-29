@@ -202,6 +202,23 @@ namespace PatcherYRpp.Utilities
 
             return list;
         }
+
+        public void PointerExpired(Pointer<ObjectClass> pObject)
+        {
+            CoordStruct crd = pObject.Ref.Base.GetCoords();
+            ObjectBlock block = GetBlock(crd);
+            block.RemoveObject(pObject);
+        }
+
+        public void ObjectMoved(Pointer<ObjectClass> pObject, CoordStruct oldCoord)
+        {
+            ObjectBlock oldBlock = GetBlock(oldCoord);
+            oldBlock.RemoveObject(pObject);
+
+            CoordStruct newCoord = pObject.Ref.Base.GetCoords();
+            ObjectBlock newBlock = GetBlock(newCoord);
+            newBlock.AddObject(pObject);
+        }
     }
 
     public class ObjectBlock
@@ -214,9 +231,13 @@ namespace PatcherYRpp.Utilities
             Container = container;
             ID = id;
             Center = new CellStruct(id.X * blockLength + blockRange, id.Y * blockLength + blockRange);
-            Objects = new List<Pointer<ObjectClass>>();
+            objects = new List<Pointer<ObjectClass>>();
         }
 
+        public ObjectBlockContainer Container { get; }
+        public ObjectBlockID ID { get; }
+        public CellStruct Center { get; }
+        public List<Pointer<ObjectClass>> Objects => objects;
         public bool IsObjectInBlock(Pointer<ObjectClass> pObject)
         {
             CellStruct objectLoc = CellClass.Coord2Cell(pObject.Ref.Base.GetCoords());
@@ -228,12 +249,17 @@ namespace PatcherYRpp.Utilities
 
         public void AddObject(Pointer<ObjectClass> pObject)
         {
-            Objects.Add(pObject);
+            objects.Add(pObject);
+        }
+
+        public void RemoveObject(Pointer<ObjectClass> pObject)
+        {
+            objects.Remove(pObject);
         }
 
         public void Clear()
         {
-            Objects.Clear();
+            objects.Clear();
         }
 
         public List<ObjectBlock> GetNearBlocks()
@@ -257,9 +283,26 @@ namespace PatcherYRpp.Utilities
             return list;
         }
 
-        public ObjectBlockContainer Container { get; }
-        public ObjectBlockID ID { get; }
-        public CellStruct Center { get; }
-        public List<Pointer<ObjectClass>> Objects { get; }
+        // not good method, we don't want it before every query
+        public void FixErrors()
+        {
+            bool OutOfBlock(Pointer<ObjectClass> pObject)
+            {
+                var crd = pObject.Ref.Base.GetCoords();
+                var block = Container.GetBlock(crd);
+
+                if (block == this)
+                {
+                    return false;
+                }
+
+                block.AddObject(pObject);
+                return true;
+            }
+
+            objects.RemoveAll(o => o.Ref.Base.Vfptr == IntPtr.Zero || OutOfBlock(o));
+        }
+
+        private List<Pointer<ObjectClass>> objects;
     }
 }
