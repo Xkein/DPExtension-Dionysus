@@ -8,6 +8,22 @@ namespace PatcherYRpp.Utilities
 {
     public static class TechnoTargetFinder
     {
+        public static bool IsAttackable(ref this ObjectClass obj)
+        {
+            if (!obj.IsOnMap)
+                return false;
+
+            var pObject = Pointer<ObjectClass>.AsPointer(ref obj);
+
+            if (pObject.CastToTechno(out var pTechno))
+            {
+                if (!pTechno.Ref.IsInPlayfield)
+                    return false;
+
+            }
+
+            return true;
+        }
 
         public static bool CanAttack(ref this TechnoClass pThis, Pointer<AbstractClass> pTarget)
         {
@@ -70,6 +86,17 @@ namespace PatcherYRpp.Utilities
         public static void AttackMove(ref this FootClass pThis, Pointer<AbstractClass> pTarget, Pointer<CellClass> pCellToMove)
         {
             pThis.AttackMove(pTarget, pCellToMove.Convert<AbstractClass>());
+        }
+
+        // not really right
+        public static bool CanAttackMove(ref this TechnoClass pThis)
+        {
+            if (pThis.Base.Base.WhatAmI() == AbstractType.Aircraft)
+            {
+                return true;
+            }
+
+            return pThis.CanAttackOnTheMove();
         }
     }
 }
