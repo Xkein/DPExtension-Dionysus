@@ -95,8 +95,9 @@ namespace PatcherYRpp.Utilities
         {
             if (pAbstract.CastToObject(out var pObject))
             {
-                var pType = pObject.Ref.GetObjectType();
-                return pType.Ref.Base.ID;
+                Pointer<ObjectTypeClass> pType = pObject.Ref.GetObjectType();
+                if(pType.IsNull == false)
+                    return pType.Ref.Base.ID;
             }
 
             switch (pAbstract.Ref.WhatAmI())
@@ -138,7 +139,7 @@ namespace PatcherYRpp.Utilities
                     return pType.Ref.ID;
             }
 
-            return string.Empty;
+            return "<no id>";
         }
     }
 }
