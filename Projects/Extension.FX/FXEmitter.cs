@@ -135,9 +135,12 @@ namespace Extension.FX
                     return;
             }
 
-            foreach (var script in MEmitterUpdate.Scripts)
-            {
-                script.EmitterUpdate();
+            if (ExecutionState != FXExecutionState.Inactive)
+            { // TOCHECK
+                foreach (var script in MEmitterUpdate.Scripts)
+                {
+                    script.EmitterUpdate();
+                }
             }
 
             UpdateParticles();

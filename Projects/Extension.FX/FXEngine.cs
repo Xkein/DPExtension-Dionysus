@@ -18,7 +18,9 @@ namespace Extension.FX
     {
         static FXEngine()
         {
+#if FX_USED3D
             InitializeGraphic();
+#endif
         }
 
         #region Constant
@@ -180,11 +182,7 @@ namespace Extension.FX
         /// </summary>
         public static void RemoveSystem(FXSystem system)
         {
-            WorkListRWLock.EnterWriteLock();
-
             WorkSystems.Remove(system);
-
-            WorkListRWLock.ExitWriteLock();
         }
 
         public static void Restart()
@@ -238,13 +236,17 @@ namespace Extension.FX
         {
             try
             {
+#if FX_USED3D
                 KeepScreenSize();
+#endif
 
                 WorkListRWLock.EnterReadLock();
 
                 if (WorkSystems.Any())
                 {
+#if FX_USED3D
                     BeginDraw();
+#endif
 
                     if (FXEngine.EnableParallelRender)
                     {
@@ -258,7 +260,9 @@ namespace Extension.FX
                         }
                     }
 
+#if FX_USED3D
                     EndDraw();
+#endif
                 }
                 else
                 {
@@ -283,7 +287,7 @@ namespace Extension.FX
         }
         public static void BeginDraw()
         {
-#if TOFIX
+#if FX_TOFIX
             ZBuffer.FillZTexture();
             
             YRGraphic.FillTexture();
@@ -296,7 +300,7 @@ namespace Extension.FX
         {
             //FXGraphic.EndDraw();
             YRGraphic.EndDraw();
-#if TOFIX
+#if FX_TOFIX
             FXGraphic.Render();
 
             Rendered = true;
