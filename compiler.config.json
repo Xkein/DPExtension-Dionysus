@@ -14,7 +14,10 @@
   ],
   "preprocessor_symbols": [
     "REALTIME_INI",
-    "FX_ENABLE"
+    "FX_ENABLE",
+    "_FX_USED3D",
+    "_FX_TOFIX",
+    "_FX_CNCDDRAW"
   ],
   "show_hidden": false,
   "load_temp_file_in_memory": true,
