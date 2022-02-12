@@ -1,8 +1,10 @@
 ﻿using Extension.FX.Definitions;
 using PatcherYRpp;
+using PatcherYRpp.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,7 +36,7 @@ namespace Extension.FX.Renders
             Vector3 curPosition = particle.Position;
             Vector3 previousPosition = particle.Map.GetValueOrDefault("PreviousPosition", curPosition);
 
-            var distance = (curPosition - previousPosition).Length;
+            var distance = (curPosition - previousPosition).Length();
             if (distance > 32)
             {
                 Vector3 trans = Color * 255;
@@ -43,7 +45,7 @@ namespace Extension.FX.Renders
                 {
                     pLaser = YRMemory.Create<LaserDrawClass>(
                         curPosition.ToCoordStruct(), previousPosition.ToCoordStruct(),
-                        trans.ToColorStruct(), (trans * 0.5).ToColorStruct(), (trans * 0.25).ToColorStruct(),
+                        trans.ToColorStruct(), (trans * 0.5f).ToColorStruct(), (trans * 0.25f).ToColorStruct(),
                         Duration);
                 }
                 pLaser.Ref.Thickness = Thickness;

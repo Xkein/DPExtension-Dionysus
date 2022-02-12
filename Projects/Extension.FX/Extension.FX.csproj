@@ -84,6 +84,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -94,10 +95,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Definitions\Color.cs" />
-    <Compile Include="Definitions\ConvertHelpers.cs" />
     <Compile Include="Definitions\FXEnum.cs" />
     <Compile Include="Definitions\Transform.cs" />
-    <Compile Include="Definitions\Vector.cs" />
     <Compile Include="FXDependency.cs" />
     <Compile Include="FXEmitter.cs" />
     <Compile Include="FXEngine.cs" />
@@ -145,6 +144,10 @@
     <None Include="LICENSE" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PatcherYRpp.Utilities\PatcherYRpp.Utilities.csproj">
+      <Project>{ae6121ff-74cf-472a-bf7d-4543a78e7d50}</Project>
+      <Name>PatcherYRpp.Utilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\YRpp\PatcherYRpp.csproj">
       <Project>{4c392077-a5ed-46cc-bc94-e1449610105c}</Project>
       <Name>PatcherYRpp</Name>
