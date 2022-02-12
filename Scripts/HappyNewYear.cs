@@ -11,10 +11,11 @@ using PatcherYRpp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Misc.DynamicPatcher.Scripts
+namespace Scripts
 {
     [Serializable]
     public class HappyNewYear : BulletScriptable

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-
-using Vector3D = PatcherYRpp.SingleVector3D;
 
 namespace PatcherYRpp.Utilities
 {
@@ -150,11 +149,11 @@ namespace PatcherYRpp.Utilities
 
 
         #region Miscellaneous
-        public static Vector3D GetForwardVector(Pointer<TechnoClass> pTechno, bool getTurret = false)
+        public static Vector3 GetForwardVector(Pointer<TechnoClass> pTechno, bool getTurret = false)
         {
             FacingStruct facing = getTurret ? pTechno.Ref.TurretFacing : pTechno.Ref.Facing;
 
-            return facing.current().ToVector3D();
+            return facing.current().ToVector3();
         }
 
 
@@ -164,10 +163,45 @@ namespace PatcherYRpp.Utilities
         // ===============================================
         // Utilities for Vectors
         #region Vectors
-        public static Vector3D ZeroVector3D = new Vector3D(0, 0, 0);
-        public static Vector3D GetNormalizedVector3D(Vector3D vector)
+        public static Vector3 GetNormalizedVector3(Vector3 vector)
         {
-            return vector == ZeroVector3D ? ZeroVector3D : vector * (1 / vector.Magnitude());
+            return vector == Vector3.Zero ? Vector3.Zero : vector * (1 / vector.Length());
+        }
+        public static Vector3 Normalize(this Vector3 vector)
+        {
+            return GetNormalizedVector3(vector);
+        }
+
+        public static float RadAngle(Vector3 a, Vector3 b)
+        {
+            float num = (float)Math.Sqrt(a.Length() * b.Length());
+            if (num < Epsilon)
+                return 0f;
+            return (float)Math.Acos(Dot(a, b) / num);
+        }
+        public static float DegAngle(Vector3 a, Vector3 b)
+        {
+            return (float)Rad2Deg(RadAngle(a, b));
+        }
+        public static float Dot(Vector3 a, Vector3 b)
+        {
+            return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
+        }
+        public static Vector3 Cross(Vector3 a, Vector3 b)
+        {
+            return new Vector3(
+                a.Y * b.Z - a.Z - b.Y,
+                a.Z * b.X - a.X - b.Z,
+                a.X * b.Y - a.Y * b.X);
+        }
+        public static Vector3 Lerp(Vector3 a, Vector3 b, float t)
+        {
+            return a + (b - a) * t;
+        }
+        public static Vector3 Slerp(Vector3 a, Vector3 b, float t)
+        {
+            Vector3 q;
+            throw new NotImplementedException();
         }
 
         public static float CalculateRandomRange(float min = 0.0f, float max = 1.0f)
@@ -182,7 +216,7 @@ namespace PatcherYRpp.Utilities
 
         }
 
-        public static Vector3D CalculateRandomUnitVector()
+        public static Vector3 CalculateRandomUnitVector()
         {
             const float r = 1;
             const float PI2 = (float)(Math.PI * 2);
@@ -190,21 +224,21 @@ namespace PatcherYRpp.Utilities
             float azimuth = (float)(_random.NextDouble() * PI2);
             float elevation = (float)(_random.NextDouble() * PI2);
 
-            return new Vector3D(
+            return new Vector3(
                 (float)(r * Math.Cos(elevation) * Math.Cos(azimuth)),
                 (float)(r * Math.Cos(elevation) * Math.Sin(azimuth)),
                 (float)(r * Math.Sin(elevation))
                 );
 
         }
-        public static Vector3D CalculateRandomPointInSphere(float innerRadius, float outerRadius)
+        public static Vector3 CalculateRandomPointInSphere(float innerRadius, float outerRadius)
         {
             return CalculateRandomUnitVector() * CalculateRandomRange(innerRadius, outerRadius);
         }
 
-        public static Vector3D CalculateRandomPointInBox(Vector3D size)
+        public static Vector3 CalculateRandomPointInBox(Vector3 size)
         {
-            return new Vector3D(
+            return new Vector3(
                 CalculateRandomRange(0, size.X) - size.X / 2f,
                 CalculateRandomRange(0, size.Y) - size.Y / 2f,
                 CalculateRandomRange(0, size.Z) - size.Z / 2f
@@ -219,25 +253,30 @@ namespace PatcherYRpp.Utilities
         // ===============================================
         // Utilities for Convertions
         #region Convertions
-        public static Vector3D ToVector3D(this DirStruct dir)
+        public static Vector3 ToVector3(this DirStruct dir)
         {
             double rad = -dir.radians();
-            Vector3D vec = new Vector3D(Math.Cos(rad), Math.Sin(rad), 0);
+            Vector3 vec = new Vector3((float)Math.Cos(rad), (float)Math.Sin(rad), 0f);
             return vec;
         }
 
-        public static Vector3D ToVector3D(this CoordStruct coord)
+        public static Vector3 ToVector3(this CoordStruct coord)
         {
-            return new Vector3D(coord.X, coord.Y, coord.Z);
+            return new Vector3(coord.X, coord.Y, coord.Z);
         }
-        public static CoordStruct ToCoordStruct(this Vector3D vec)
+        public static CoordStruct ToCoordStruct(this Vector3 vec)
         {
             return new CoordStruct((int)vec.X, (int)vec.Y, (int)vec.Z);
         }
 
-        public static Vector3D ToVector3D(this BulletVelocity velocity)
+        public static ColorStruct ToColorStruct(this Vector3 vector)
         {
-            return new Vector3D(velocity.X, velocity.Y, velocity.Z);
+            return new ColorStruct((int)vector.X, (int)vector.Y, (int)vector.Z);
+        }
+
+        public static Vector3 ToVector3(this BulletVelocity velocity)
+        {
+            return new Vector3((float)velocity.X, (float)velocity.Y, (float)velocity.Z);
         }
 
         #endregion

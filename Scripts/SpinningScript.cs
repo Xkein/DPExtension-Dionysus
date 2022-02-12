@@ -59,14 +59,14 @@ namespace Scripts
         static Pointer<WeaponTypeClass> Weapon => WeaponTypeClass.ABSTRACTTYPE_ARRAY.Find("RedEye2");
         static Pointer<WarheadTypeClass> Warhead => WarheadTypeClass.ABSTRACTTYPE_ARRAY.Find("BlimpHE");
 
-        const double ShotRange = 3000;
+        const float ShotRange = 3000f;
 
         private void FireForward()
         {
             Pointer<TechnoClass> pTechno = Owner.OwnerObject;
 
             var forward = MathEx.GetForwardVector(pTechno, true);
-            var location = pTechno.Ref.Base.Base.GetCoords().ToVector3D();
+            var location = pTechno.Ref.Base.Base.GetCoords().ToVector3();
             var from = location + forward * 300;
             var to = location + forward * ShotRange;
 
@@ -170,9 +170,9 @@ namespace Scripts
                 CoordStruct target = pBullet.Ref.TargetCoords;
 
                 // custom bullet trajectory
-                var direction = (target - location).ToVector3D();
+                var direction = (target - location).ToVector3();
                 pBullet.Ref.Base.Location += 
-                    (MathEx.GetNormalizedVector3D(direction) * MathEx.Clamp(direction.Magnitude(), 5, 200)).ToCoordStruct();
+                    (direction.Normalize() * MathEx.Clamp(direction.Length(), 5, 200)).ToCoordStruct();
 
                 Pointer<LaserDrawClass> pLaser = YRMemory.Create<LaserDrawClass>(location, target, innerColor, outerColor, outerSpread, 1);
                 pLaser.Ref.Thickness = 1;
