@@ -10,7 +10,9 @@
     "PatcherYRpp.dll",
     "PatcherYRpp.Utilities.dll",
     "Extension.dll",
-    "Extension.FX.dll"
+    "Extension.FX.dll",
+
+    "Microsoft.VisualStudio.Interop.dll"
   ],
   "preprocessor_symbols": [
     "REALTIME_INI",
