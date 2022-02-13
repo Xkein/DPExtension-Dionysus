@@ -10,11 +10,13 @@ namespace PatcherYRpp.Utilities
     public static class MathEx
     {
         private static Random _random = new Random(60);
+        private static object _randomLocker = new object();
         public static void SetRandomSeed(int seed)
         {
             _random = new Random(seed);
         }
         public static Random Random => _random;
+        public static object RandomLocker => _randomLocker;
 
         // ===============================================
         // Utilities for numeric
