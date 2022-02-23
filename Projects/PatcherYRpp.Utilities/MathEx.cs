@@ -30,7 +30,7 @@ namespace PatcherYRpp.Utilities
         }
         public static bool Approximately(float a, float b)
         {
-            return Approximately(a, b);
+            return Approximately((double)a, b);
         }
         public static bool IsNearlyZero(double val)
         {
@@ -200,10 +200,12 @@ namespace PatcherYRpp.Utilities
         {
             return a + (b - a) * t;
         }
+
         public static Vector3 Slerp(Vector3 a, Vector3 b, float t)
         {
-            Vector3 q;
-            throw new NotImplementedException();
+            Quaternion r = MathEx.FromToRotation(a, b);
+            Quaternion q = Quaternion.Slerp(Quaternion.Identity, r, t);
+            return Vector3.Normalize(Vector3.Transform(a, q));
         }
 
         public static float CalculateRandomRange(float min = 0.0f, float max = 1.0f)
@@ -249,7 +251,38 @@ namespace PatcherYRpp.Utilities
 
         #endregion
 
+        #region Quaternion
 
+        // https://stackoverflow.com/questions/1171849/finding-quaternion-representing-the-rotation-from-one-vector-to-another
+        public static Quaternion FromToRotation(Vector3 fromDirection, Vector3 toDirection)
+        {
+            var from = Vector3.Normalize(fromDirection);
+            var to = Vector3.Normalize(toDirection);
+
+            var dot = Vector3.Dot(from, to);
+            // same direction
+            if (dot > 0.999999)
+            {
+                return Quaternion.Identity;
+            }
+
+            Vector3 normal;
+            // opposite directions
+            if (dot < -0.999999)
+            {
+                normal = Vector3.Cross(Vector3.UnitX, from);
+                if (normal.Length() < 0.000001)
+                    normal = Vector3.Cross(Vector3.UnitY, from);
+                normal = Vector3.Normalize(normal);
+                return Quaternion.CreateFromAxisAngle(normal, (float)Math.PI);
+            }
+
+            normal = Vector3.Cross(from, to);
+            var q = new Quaternion(normal, 1 + dot);
+            q = Quaternion.Normalize(q);
+            return q;
+        }
+        #endregion
 
 
         // ===============================================
