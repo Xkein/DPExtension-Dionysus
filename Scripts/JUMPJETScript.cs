@@ -3,6 +3,7 @@ using Extension.Script;
 using Extension.Utilities;
 using PatcherYRpp;
 using PatcherYRpp.Utilities;
+using PatcherYRpp.Utilities.Clusters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,39 +51,23 @@ namespace Scripts
         int current;
     }
 
-    class JJCluster
+    class JJCluster : Cluster<JUMPJETScript>
     {
         public const int NEED_ENERGY = 500;
         public const int ATTACK_RANGE = Game.CellSize * 15;
 
         public JJCluster()
         {
-            Jumpjets = new List<JUMPJETScript>();
         }
 
         public JJCluster(int energy)
         {
-            Jumpjets = new List<JUMPJETScript>();
             this.energy = energy;
         }
 
         public int Energy => energy;
 
-        public CoordStruct Mean => Points.Aggregate((sum, next) => sum + next) * (1.0 / Points.Count);
-        // for small cluster, it is ok
-        public List<CoordStruct> Points => Jumpjets.Select(j => j.Owner.OwnerObject.Ref.Base.Base.GetCoords()).ToList();
-        public JUMPJETScript Leader
-        {
-            get => Jumpjets.FirstOrDefault();
-            set
-            {
-                if (Jumpjets.Remove(value))
-                {
-                    Jumpjets.Insert(0, value);
-                }
-            }
-        }
-        public List<JUMPJETScript> Jumpjets { get; }
+        public List<JUMPJETScript> Jumpjets => Objects;
 
         static Pointer<AnimTypeClass> ChargeAnimType => AnimTypeClass.ABSTRACTTYPE_ARRAY.Find("INITFIRE");
         public void Charge()
@@ -268,51 +253,23 @@ namespace Scripts
             return Jumpjets.Count > 0 && energy >= NEED_ENERGY;
         }
 
-        public void Add(JUMPJETScript jj)
+        public override void Update()
         {
-            Jumpjets.Add(jj);
-            jj.Cluster = this;
-        }
-        public void Add(IEnumerable<JUMPJETScript> list)
-        {
-            Jumpjets.AddRange(list);
-            foreach (JUMPJETScript jj in list)
-            {
-                jj.Cluster = this;
-            }
-        }
-
-        public void Remove(JUMPJETScript jj)
-        {
-            Jumpjets.Remove(jj);
-            jj.Cluster = null;
-        }
-
-        public void Clear()
-        {
-            foreach (JUMPJETScript jj in Jumpjets)
-            {
-                jj.Cluster = null;
-            }
-
-            Jumpjets.Clear();
-        }
-
-        public bool IsOutOfRange(JUMPJETScript jj, double range)
-        {
-            return Jumpjets.Count > 0 && jj.Owner.OwnerObject.Ref.Base.Base.GetCoords().DistanceFrom(Mean) > range;
+            Charge();
         }
 
         private int energy;
     }
 
-    static class JJClusterDiscoverer
+    class JJClusterDiscoverer : ClusterDiscoverer<JUMPJETScript>
     {
-        public static int ClusterRange { get; } = Game.CellSize * 5;
-        public static int ClusterCapacity { get; } = 5;
-        public static int ClusterStartNum { get; } = 2;
+        public override int ClusterRange { get; } = Game.CellSize * 5;
+        public override int ClusterCapacity { get; } = 5;
+        public override int ClusterStartNum { get; } = 2;
 
-        private static List<JUMPJETScript> GetJJList()
+        public override List<JUMPJETScript> ObjectList => cacheList;
+
+        private List<JUMPJETScript> GetJJList()
         {
             var list = new List<JUMPJETScript>();
 
@@ -328,102 +285,19 @@ namespace Scripts
             return list;
         }
 
-        private static void UpdateClusters()
+        public override ICluster<JUMPJETScript> CreateCluster(IEnumerable<JUMPJETScript> jumpjets)
         {
-            List<JUMPJETScript> list = cacheList;
-
-            foreach (JUMPJETScript jj in list)
-            {
-                jj.Supply.Elapse();
-
-                JJCluster cluster = jj.Cluster;
-
-                if (cluster != null && cluster.Leader == jj)
-                {
-                    cluster.Charge();
-                }
-            }
+            // inherit from last max energy cluster
+            return new JJCluster(jumpjets.Max(jj => jj.Cluster?.Leader == jj ? jj.Cluster.Energy : 0));
         }
-
-        private static void CleanClusters()
+        public override void Update()
         {
-            List<JUMPJETScript> list = cacheList;
-            foreach (JUMPJETScript jj in list)
+            if (currentFrame != Game.CurrentFrame)
             {
-                JJCluster cluster = jj.Cluster;
-
-                if (cluster != null)
-                {
-                    if (cluster.IsOutOfRange(jj, ClusterRange))
-                    {
-                        cluster.Remove(jj);
-                    }
-
-                    if (cluster.Jumpjets.Count < ClusterStartNum)
-                    {
-                        cluster.Clear();
-                    }
-                }
+                cacheList = GetJJList();
+                base.Update();
+                currentFrame = Game.CurrentFrame;
             }
-        }
-
-        private static void DiscoverClusters()
-        {
-            List<JUMPJETScript> list = cacheList;
-            List<CoordStruct> points = list.Select(jj => jj.Owner.OwnerObject.Ref.Base.Base.GetCoords()).ToList();
-
-            List<int> restPoints = Enumerable.Range(0, list.Count).ToList();
-
-            while (restPoints.Count > 0)
-            {
-                // pick first point as leader
-                int leaderIdx = restPoints[0];
-                var leaderOwner = list[leaderIdx].Owner.OwnerObject.Ref.Owner;
-                // include leader
-                List<int> nearPoints = restPoints.Where(
-                    idx => points[idx].DistanceFrom(points[leaderIdx]) <= ClusterRange
-                    && leaderOwner.Ref.IsAlliedWith(list[idx].Owner.OwnerObject.Ref.Owner)).ToList();
-
-                if (nearPoints.Count >= ClusterStartNum)
-                {
-                    if (nearPoints.Count > ClusterCapacity)
-                    {
-                        // nearPoints = nearPoints[:ClusterCapacity]
-                        nearPoints = nearPoints.GetRange(0, ClusterCapacity);
-                    }
-
-                    var jumpjets = nearPoints.Select(p => list[p]).ToArray();
-                    // inherit from last max energy cluster
-                    var cluster = new JJCluster(jumpjets.Max(jj => jj.Cluster?.Leader == jj ? jj.Cluster.Energy : 0));
-                    cluster.Add(jumpjets);
-                }
-                else
-                {
-                    // clean cluster for small group
-                    foreach (var idx in nearPoints)
-                    {
-                        list[idx].Cluster = null;
-                    }
-                }
-
-                // restPoints = restPoints - nearPoints
-                restPoints = restPoints.Except(nearPoints).ToList();
-            }
-        }
-
-        public static void Update()
-        {
-            if (currentFrame == Game.CurrentFrame)
-            {
-                return;
-            }
-
-            cacheList = GetJJList();
-            UpdateClusters();
-            CleanClusters();
-            DiscoverClusters();
-
-            currentFrame = Game.CurrentFrame;
         }
 
         private static int currentFrame = 0;
@@ -431,8 +305,10 @@ namespace Scripts
     }
 
     [Serializable]
-    public class JUMPJETScript : TechnoScriptable
+    public class JUMPJETScript : TechnoScriptable, ICanCluster<JUMPJETScript>
     {
+        static JJClusterDiscoverer JJClusterDiscoverer = new JJClusterDiscoverer();
+
         public JUMPJETScript(TechnoExt owner) : base(owner)
         {
             Supply = new JJClusterSupply(50, 0);
@@ -440,6 +316,14 @@ namespace Scripts
 
         internal JJClusterSupply Supply { get; }
         internal JJCluster Cluster { get => cluster; set => cluster = value; }
+
+        ICluster<JUMPJETScript> ICanCluster<JUMPJETScript>.Cluster { get => Cluster; set => Cluster = value as JJCluster; }
+        CoordStruct ICanCluster<JUMPJETScript>.Point => Owner.OwnerObject.Ref.BaseAbstract.GetCoords();
+        Pointer<HouseClass> ICanCluster<JUMPJETScript>.Owner => Owner.OwnerObject.Ref.Owner;
+        void ICanCluster<JUMPJETScript>.Update()
+        {
+            Supply.Elapse();
+        }
 
         public override void OnFire(Pointer<AbstractClass> pTarget, int weaponIndex)
         {
