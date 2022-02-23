@@ -176,11 +176,13 @@ namespace PatcherYRpp.Utilities
         private CellStruct GetRandomCell()
         {
             CellStruct tmp;
+            CoordStruct offset;
             Random random = MathEx.Random;
             do
             {
-                tmp = CellClass.Coord2Cell(new CoordStruct(random.Next(-_range, _range + 1), random.Next(-_range, _range + 1), 0));
-            } while (tmp.DistanceFrom(new CellStruct(0, 0)) > _range);
+                offset = new CoordStruct(random.Next(-_range, _range + 1), random.Next(-_range, _range + 1), 0);
+                tmp = CellClass.Coord2Cell(offset);
+            } while (offset.DistanceFrom(new CoordStruct(0, 0, 0)) > _range);
 
             return tmp;
         }
