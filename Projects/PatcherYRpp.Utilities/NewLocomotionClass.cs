@@ -158,7 +158,7 @@ namespace PatcherYRpp.Utilities
         public virtual void Unlimbo() { }
         public virtual void Unlock() { }
 
-        public virtual VisualType Visual_Character(short unused)
+        public virtual VisualType Visual_Character(bool unused)
         {
             return VisualType.Normal;
         }
