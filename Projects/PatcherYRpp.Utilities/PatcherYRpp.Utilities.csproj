@@ -48,6 +48,10 @@
     <Compile Include="BulletFactory.cs" />
     <Compile Include="CellEnumerators.cs" />
     <Compile Include="CircleDifferentiator.cs" />
+    <Compile Include="Clusters\Cluster.cs" />
+    <Compile Include="Clusters\ClusterDiscoverer.cs" />
+    <Compile Include="Clusters\ICanCluster.cs" />
+    <Compile Include="Clusters\ICluster.cs" />
     <Compile Include="DebugUtilities.cs" />
     <Compile Include="MathEx.cs" />
     <Compile Include="NewLocomotionClass.cs" />
