@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -88,6 +89,43 @@ namespace PatcherYRpp.Utilities
             {
                 Draw(points[i], points[(i + 1) % points.Length]);
             }
+        }
+
+        public static void HighlightCircle(CoordStruct location, int range, ColorStruct color, Vector3 upVector = default, int thickness = 3, int duration = 10)
+        {
+            void Draw(CoordStruct from, CoordStruct to)
+            {
+                ColorStruct innerColor = new ColorStruct(color.R, color.G, color.B);
+                ColorStruct outerColor = new ColorStruct(color.R / 2, color.G / 2, color.B / 2);
+                ColorStruct outerSpread = new ColorStruct(color.R / 4, color.G / 4, color.B / 4);
+
+                Pointer<LaserDrawClass> pMarkLaser = YRMemory.Create<LaserDrawClass>(from, to, innerColor, outerColor, outerSpread, duration);
+                pMarkLaser.Ref.Thickness = thickness;
+                pMarkLaser.Ref.IsHouseColor = true;
+            }
+
+            var points = CircleDifferentiator.DivideArcByTolerance(location, range, 128, upVector);
+            for (int i = 0; i < points.Count; i++)
+            {
+                Draw(points[i], points[(i + 1) % points.Count]);
+            }
+        }
+
+        public static void HighlightDistance(CoordStruct from, CoordStruct to, ColorStruct color, int thickness = 3, int duration = 10)
+        {
+            void Draw(CoordStruct _from, CoordStruct _to)
+            {
+                ColorStruct innerColor = new ColorStruct(color.R, color.G, color.B);
+                ColorStruct outerColor = new ColorStruct(color.R / 2, color.G / 2, color.B / 2);
+                ColorStruct outerSpread = new ColorStruct(color.R / 4, color.G / 4, color.B / 4);
+
+                Pointer<LaserDrawClass> pMarkLaser = YRMemory.Create<LaserDrawClass>(_from, _to, innerColor, outerColor, outerSpread, duration);
+                pMarkLaser.Ref.Thickness = thickness;
+                pMarkLaser.Ref.IsHouseColor = true;
+            }
+
+            Draw(from, to);
+            HighlightCircle(to, 64, color, new Vector3(1, 1, 1), thickness, duration);
         }
 
 
