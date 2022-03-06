@@ -276,7 +276,8 @@ namespace Scripts
             foreach (Pointer<TechnoClass> pTechno in TechnoClass.Array)
             {
                 var ext = TechnoExt.ExtMap.Find(pTechno);
-                if (ext.Scriptable is JUMPJETScript jj)
+                var jj = ext.AttachedComponent.GetComponent<JUMPJETScript>();
+                if (jj != null)
                 {
                     list.Add(jj);
                 }
@@ -288,7 +289,9 @@ namespace Scripts
         public override ICluster<JUMPJETScript> CreateCluster(IEnumerable<JUMPJETScript> jumpjets)
         {
             // inherit from last max energy cluster
-            return new JJCluster(jumpjets.Max(jj => jj.Cluster?.Leader == jj ? jj.Cluster.Energy : 0));
+            var cluster = new JJCluster(jumpjets.Max(jj => jj.Cluster?.Leader == jj ? jj.Cluster.Energy : 0));
+            cluster.Add(jumpjets);
+            return cluster;
         }
         public override void Update()
         {
