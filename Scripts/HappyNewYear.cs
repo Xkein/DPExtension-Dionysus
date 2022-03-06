@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Scripts
 {
-    [Serializable]
+    //[Serializable]
     public class HappyNewYear : BulletScriptable
     {
         // 起飞需要的帧数

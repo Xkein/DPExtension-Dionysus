@@ -363,6 +363,7 @@ namespace Scripts
                 int energy = 0;
                 stream.Read(ref energy);
                 cluster = new JJCluster(energy);
+                cluster.Add(this);
             }
         }
 
