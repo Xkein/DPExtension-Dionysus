@@ -43,18 +43,5 @@ namespace ExtensionHooks
         {
             return BulletExt.BulletClass_Save_Suffix(R);
         }
-        
-        [Hook(HookType.AresHook, Address = 0x4666F7, Size = 6)]
-        public static unsafe UInt32 BulletClass_Update(REGISTERS* R)
-        {
-            try{
-                return ScriptManager.BulletClass_Update_Script(R);
-            }
-			catch (Exception e)
-			{
-                Logger.PrintException(e);
-				return (uint)0;
-			}
-        }
     }
 }
