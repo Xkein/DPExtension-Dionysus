@@ -98,5 +98,30 @@ namespace PatcherYRpp.Utilities
 
             return pThis.CanAttackOnTheMove();
         }
+
+        public static List<Pointer<TechnoClass>> FindAttackTechnos(ref this TechnoClass pThis, int range, bool includeFriends = false)
+        {
+            var list = new List<Pointer<TechnoClass>>();
+
+            CoordStruct location = pThis.BaseAbstract.GetCoords();
+
+            Pointer<HouseClass> pOwner = pThis.Owner;
+
+            var objects = ObjectFinder.FindTechnosNear(location, range);
+            if (!includeFriends)
+            {
+                objects = objects.Where(o => !pOwner.Ref.IsAlliedWith(o.Ref.Base.GetOwningHouse())).ToList();
+            }
+
+            foreach (var o in objects)
+            {
+                if (pThis.CanAttack(o))
+                {
+                    list.Add(o.Convert<TechnoClass>());
+                }
+            }
+
+            return list;
+        }
     }
 }

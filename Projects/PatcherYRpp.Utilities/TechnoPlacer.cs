@@ -8,16 +8,13 @@ namespace PatcherYRpp.Utilities
 {
 	public class TechnoPlacer
 	{
-
-		public static bool PlaceTechnoNear(Pointer<TechnoTypeClass> pType, Pointer<HouseClass> pOwner, CellStruct location, bool buildUp = false)
-		{
-			var pTechno = pType.Ref.Base.CreateObject(pOwner).Convert<TechnoClass>();
-			return PlaceTechnoNear(pTechno, location, buildUp);
-		}
-		public static bool PlaceTechnoNear(Pointer<TechnoClass> pTechno, CellStruct location, bool buildUp = false)
+		public static CellStruct FindPlaceableCellNear(Pointer<TechnoClass> pTechno, CoordStruct location)
+        {
+			return FindPlaceableCellNear(pTechno, CellClass.Coord2Cell(location));
+        }
+		public static CellStruct FindPlaceableCellNear(Pointer<TechnoClass> pTechno, CellStruct location)
 		{
 			Pointer<TechnoTypeClass> pType = pTechno.Ref.Base.GetTechnoType();
-			Pointer<HouseClass> pOwner = pTechno.Ref.Owner;
 			pTechno.Convert<AbstractClass>().CastIf(AbstractType.Building, out Pointer<BuildingClass> pBuilding);
 
 			// get the best options to search for a place
@@ -64,6 +61,22 @@ namespace PatcherYRpp.Utilities
 					speedType, a5, movementZone, false, extentX, extentY, !pBuilding.IsNull,
 					false, false, false, default, false, buildable);
 			}
+
+			return placeCoords;
+		}
+
+		public static bool PlaceTechnoNear(Pointer<TechnoTypeClass> pType, Pointer<HouseClass> pOwner, CellStruct location, bool buildUp = false)
+		{
+			var pTechno = pType.Ref.Base.CreateObject(pOwner).Convert<TechnoClass>();
+			return PlaceTechnoNear(pTechno, location, buildUp);
+		}
+		public static bool PlaceTechnoNear(Pointer<TechnoClass> pTechno, CellStruct location, bool buildUp = false)
+		{
+			Pointer<TechnoTypeClass> pType = pTechno.Ref.Base.GetTechnoType();
+			Pointer<HouseClass> pOwner = pTechno.Ref.Owner;
+			pTechno.Convert<AbstractClass>().CastIf(AbstractType.Building, out Pointer<BuildingClass> pBuilding);
+
+            CellStruct placeCoords = FindPlaceableCellNear(pTechno, location);
 
 			if (MapClass.Instance.TryGetCellAt(placeCoords, out var pCell))
 			{
