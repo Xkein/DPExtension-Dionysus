@@ -74,12 +74,17 @@ namespace PatcherYRpp.Utilities
 
         public override void Load(IStream stream)
         {
+            Guid clsid = default;
+            stream.Read(ref clsid);
+            _baseLocomotion.CreateInstance(clsid);
             _baseLocomotion.QueryInterface<IPersistStream>().Load(stream);
             stream.Read(ref disposedValue);
         }
 
         public override void Save(IStream stream, int fClearDirty)
         {
+            _baseLocomotion.QueryInterface<IPersistStream>().GetClassID(out Guid clsid);
+            stream.Write(clsid);
             _baseLocomotion.QueryInterface<IPersistStream>().Save(stream, fClearDirty);
             stream.Write(disposedValue);
         }
