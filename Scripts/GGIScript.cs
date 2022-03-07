@@ -24,25 +24,25 @@ namespace Scripts
             if (pTarget.CastToTechno(out Pointer<TechnoClass> pTechno))
             {
                 TechnoExt pTargetExt = TechnoExt.ExtMap.Find(pTechno);
-                if (pTargetExt.Get(MissileFall.UniqueID) == null) {
-                    pTargetExt.CreateDecorator<MissileFall>(MissileFall.UniqueID, "Missile Fall Decorator", this, weaponIndex != 0);
+                if (pTargetExt.AttachedComponent.GetComponent(MissileFall.UniqueID) == null) {
+                    pTargetExt.ExtComponent.CreateScriptComponent<MissileFall>(MissileFall.UniqueID, "Missile Fall Decorator", pTargetExt, this, weaponIndex != 0);
                 }
             }
         }
     }
 
     [Serializable]
-    public class MissileFall : EventDecorator
+    public class MissileFall : TechnoScriptable
     {
-        public static DecoratorId UniqueID = new DecoratorId(114514);
-        public MissileFall(GGI ggi, bool cluster)
+        public static int UniqueID = 114514;
+        public MissileFall(TechnoExt target, GGI ggi, bool cluster) : base(target)
         {
             Owner.Set(ggi.Owner);
             Cluster = cluster;
         }
 
         int lifetime = 15;
-        ExtensionReference<TechnoExt> Owner;
+        new ExtensionReference<TechnoExt> Owner;
         bool Cluster;
         
         static Random random = new Random(1919810);
@@ -55,7 +55,7 @@ namespace Scripts
         {
             if (Owner.Get() == null || lifetime <= 0)
             {
-                Decorative.Remove(this);
+                DetachFromParent();
                 return;
             }
 
@@ -66,7 +66,7 @@ namespace Scripts
 
             int damage = lifetime > 0 ? 10 : 100;
 
-            TechnoExt target = Decorative as TechnoExt;
+            TechnoExt target = base.Owner;
             
             Pointer<WeaponTypeClass> pWeapon = Weapon;
             Pointer<WarheadTypeClass> pWarhead = Warhead;

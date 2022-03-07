@@ -91,9 +91,9 @@ namespace Scripts
             if (TryCreateBullet(out var pBullet))
             {
                 BulletExt bulletExt = BulletExt.ExtMap.Find(pBullet);
-                if (bulletExt.Get(BulletDecorator.UniqueID) == null)
+                if (bulletExt.AttachedComponent.GetComponent(BulletBehavior.UniqueID) == null)
                 {
-                    bulletExt.CreateDecorator<BulletDecorator>(BulletDecorator.UniqueID, "Bullet Effect Decorator");
+                    bulletExt.ExtComponent.CreateScriptComponent<BulletBehavior>(BulletBehavior.UniqueID, "Bullet Effect Decorator", Owner);
                 }
 
                 pBullet.Ref.MoveTo(from.ToCoordStruct(), default);
@@ -102,10 +102,10 @@ namespace Scripts
 
 
         [Serializable]
-        public class BulletDecorator : EventDecorator
+        public class BulletBehavior : BulletScriptable
         {
-            public static DecoratorId UniqueID = new DecoratorId(1919810);
-            public BulletDecorator()
+            public static int UniqueID = 1919810;
+            public BulletBehavior(BulletExt owner) : base(owner)
             {
             }
 
@@ -137,8 +137,9 @@ namespace Scripts
             // low performence loading game.
             // we should load again when loading game.
             [OnDeserializing]
-            protected void OnDeserializing(StreamingContext context)
+            protected new void OnDeserializing(StreamingContext context)
             {
+                base.OnDeserializing(context);
                 Debris = AnimTypeClass.ABSTRACTTYPE_ARRAY.Finds(DebrisNames);
             }
 
@@ -148,7 +149,7 @@ namespace Scripts
 
             public override void OnUpdate()
             {
-                BulletExt bulletExt = Decorative as BulletExt;
+                BulletExt bulletExt = Owner;
                 Pointer<BulletClass> pBullet = bulletExt.OwnerObject;
                 CoordStruct location = pBullet.Ref.Base.Base.GetCoords();
 

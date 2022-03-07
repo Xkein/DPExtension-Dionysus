@@ -48,13 +48,13 @@ namespace Scripts
 
         public void Add(TechnoExt ext)
         {
-            ext.CreateDecorator<PairDecorator<string, int>>(ID, "current point index", "patrol_index", 0);
+            ext.DecoratorComponent.CreateDecorator<PairDecorator<string, int>>(ID, "current point index", "patrol_index", 0);
             Escorts.Add(ext);
         }
 
         public void Remove(TechnoExt ext)
         {
-            ext.Remove(ID);
+            ext.DecoratorComponent.Remove(ID);
             Escorts.Remove(ext);
         }
 
@@ -101,7 +101,7 @@ namespace Scripts
             TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
             Add(ext);
 
-            CellStruct loc = CellClass.Coord2Cell(GetPatrolDestination(ext.GetValue<int>(ID)));
+            CellStruct loc = CellClass.Coord2Cell(GetPatrolDestination(ext.DecoratorComponent.GetValue<int>(ID)));
             if (pTechno.Ref.Base.Base.WhatAmI() == AbstractType.Aircraft)
             {
                 if (TechnoPlacer.PlaceTechnoFromEdge(pTechno))
@@ -149,7 +149,7 @@ namespace Scripts
             foreach (var escort in Escorts)
             {
                 TechnoExt ext = escort;
-                int patrolIndex = ext.GetValue<int>("patrol_index");
+                int patrolIndex = ext.DecoratorComponent.GetValue<int>("patrol_index");
 
                 ext.OwnerObject.CastToFoot(out Pointer<FootClass> pFoot);
                 ILocomotion locomotor = pFoot.Ref.Locomotor;
@@ -162,7 +162,7 @@ namespace Scripts
                 if (location.DistanceFrom(new CoordStruct(dest.X, dest.Y, location.Z)) <= CloseEnough)
                 {
                     patrolIndex = (patrolIndex + 1) % PatrolPath.Length;
-                    ext.SetValue("patrol_index", patrolIndex);
+                    ext.DecoratorComponent.SetValue("patrol_index", patrolIndex);
                 }
                 else if(MapClass.Instance.TryGetCellAt(dest, out var pCell))
                 {

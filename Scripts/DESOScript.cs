@@ -22,25 +22,23 @@ namespace Scripts
         {
             if (weaponIndex == 1)
             {
-                var id = new DecoratorId(1919810);
-                if (Owner.Get(id) == null)
+                var id = 1919810;
+                if (Owner.AttachedComponent.GetComponent(id) == null)
                 {
-                    Owner.CreateDecorator<NuclearLeakage>(id, "Nuclear Leakage Decorator", this);
+                    Owner.ExtComponent.CreateScriptComponent<NuclearLeakage>(id, "Nuclear Leakage Decorator", this);
                 }
             }
         }
     }
 
     [Serializable]
-    public class NuclearLeakage : EventDecorator
+    public class NuclearLeakage : TechnoScriptable
     {
-        public NuclearLeakage(DESO deso)
+        public NuclearLeakage(DESO deso) : base(deso.Owner)
         {
-            Owner.Set(deso.Owner);
         }
 
         int times = 100;
-        ExtensionReference<TechnoExt> Owner;
 
         static Pointer<WeaponTypeClass> Weapon => WeaponTypeClass.ABSTRACTTYPE_ARRAY.Find("RadEruptionWeapon");
         static Pointer<WarheadTypeClass> Warhead => WarheadTypeClass.ABSTRACTTYPE_ARRAY.Find("RadEruptionWarhead");
@@ -51,13 +49,13 @@ namespace Scripts
         public override void OnReceiveDamage(Pointer<int> pDamage, int DistanceFromEpicenter, Pointer<WarheadTypeClass> pWH,
             Pointer<ObjectClass> pAttacker, bool IgnoreDefenses, bool PreventPassengerEscape, Pointer<HouseClass> pAttackingHouse)
         {
-            if (Owner.Get() == null || times-- <= 0)
+            if (times-- <= 0)
             {
-                Decorative.Remove(this);
+                DetachFromParent();
                 return;
             }
 
-            TechnoExt owner = Owner.Get();
+            TechnoExt owner = Owner;
 
             Pointer<WeaponTypeClass> pWeapon = Weapon;
             Pointer<WarheadTypeClass> pWarhead = Warhead;
