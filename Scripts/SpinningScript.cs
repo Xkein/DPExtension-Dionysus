@@ -93,7 +93,7 @@ namespace Scripts
                 BulletExt bulletExt = BulletExt.ExtMap.Find(pBullet);
                 if (bulletExt.AttachedComponent.GetComponent(BulletBehavior.UniqueID) == null)
                 {
-                    bulletExt.ExtComponent.CreateScriptComponent<BulletBehavior>(BulletBehavior.UniqueID, "Bullet Effect Decorator", Owner);
+                    bulletExt.ExtComponent.CreateScriptComponent<BulletBehavior>(BulletBehavior.UniqueID, "Bullet Effect Decorator", bulletExt);
                 }
 
                 pBullet.Ref.MoveTo(from.ToCoordStruct(), default);
