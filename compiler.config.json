@@ -23,7 +23,7 @@
     "_FX_CNCDDRAW"
   ],
   "show_hidden": false,
-  "load_temp_file_in_memory": true,
+  "load_temp_file_in_memory": false,
   "emit_pdb": true,
   "force_compile": false,
   "pack_assembly": true,
