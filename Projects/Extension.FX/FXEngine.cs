@@ -19,6 +19,7 @@ namespace Extension.FX
     {
         static FXEngine()
         {
+            DynamicPatcher.Logger.LogWarning("FX feature is not finished yet, it may be unstable and imperfect.");
 #if FX_USED3D
             InitializeGraphic();
 #endif
