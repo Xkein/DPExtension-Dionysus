@@ -19,10 +19,23 @@ namespace PatcherYRpp.Utilities
         }
         public ExtendedLocomotionClass(Guid clsid)
         {
-            _baseLocomotion.CreateInstance(clsid);
+            //_baseLocomotion.CreateInstance(clsid);
+            //Base = _baseLocomotion.Interface;
+            //_baseLocomotion.Release();
+            //_baseLocomotion = _base.Interface.GetCOMPtr();
+
+            _base.CreateInstance(clsid);
         }
 
-        public ILocomotion Base { get => _baseLocomotion.Interface; set => _baseLocomotion.Interface = value; }
+        public ILocomotion Base
+        {
+            get => _base.Interface;
+            set
+            {
+                //_baseLocomotion.Interface = value;
+                _base.Interface = value;
+            }
+        }
 
         public override void Link_To_Object(IntPtr pointer) => Base.Link_To_Object(pointer);
         public override CoordStruct Destination() => Base.Destination();
@@ -76,22 +89,36 @@ namespace PatcherYRpp.Utilities
         {
             Guid clsid = default;
             stream.Read(ref clsid);
-            _baseLocomotion.CreateInstance(clsid);
-            _baseLocomotion.QueryInterface<IPersistStream>().Load(stream);
+
+            //_baseLocomotion.CreateInstance(clsid);
+            //_base.Interface = _baseLocomotion.Interface;
+            //_baseLocomotion.Release();
+            //_baseLocomotion = _base.Interface.GetCOMPtr();
+            //_baseLocomotion.QueryInterface<IPersistStream>().Load(stream);
+
+            _base.CreateInstance(clsid);
+            _base.QueryInterface<IPersistStream>().Load(stream);
+
             stream.Read(ref disposedValue);
         }
 
         public override void Save(IStream stream, int fClearDirty)
         {
-            _baseLocomotion.QueryInterface<IPersistStream>().GetClassID(out Guid clsid);
+            //_baseLocomotion.QueryInterface<IPersistStream>().GetClassID(out Guid clsid);
+            //stream.Write(clsid);
+            //_baseLocomotion.QueryInterface<IPersistStream>().Save(stream, fClearDirty);
+
+            _base.QueryInterface<IPersistStream>().GetClassID(out Guid clsid);
             stream.Write(clsid);
-            _baseLocomotion.QueryInterface<IPersistStream>().Save(stream, fClearDirty);
+            _base.QueryInterface<IPersistStream>().Save(stream, fClearDirty);
+
             stream.Write(disposedValue);
         }
 
         public override int SaveSize() => _baseLocomotion.QueryInterface<IPersistStream>().SaveSize() + sizeof(bool);
 
         COMPtr<ILocomotion> _baseLocomotion = new();
+        COMObject<ILocomotion> _base = new();
 
         private bool disposedValue;
         protected virtual void Dispose(bool disposing)
@@ -105,7 +132,7 @@ namespace PatcherYRpp.Utilities
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
                 // TODO: set large fields to null
                 disposedValue = true;
-                _baseLocomotion.Release();
+                Base = null;
             }
         }
 
