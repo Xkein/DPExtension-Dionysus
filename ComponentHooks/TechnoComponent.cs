@@ -31,7 +31,7 @@ namespace ComponentHooks
             }
         }
         [Hook(HookType.AresHook, Address = 0x6F6CA0, Size = 7)]
-        static public unsafe UInt32 TechnoClass_Put_Script(REGISTERS* R)
+        static public unsafe UInt32 TechnoClass_Put_Components(REGISTERS* R)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace ComponentHooks
         // avoid hook conflict with phobos feature -- shield
         //[Hook(HookType.AresHook, Address = 0x6F6AC0, Size = 5)]
         [Hook(HookType.AresHook, Address = 0x6F6AC4, Size = 5)]
-        static public unsafe UInt32 TechnoClass_Remove_Script(REGISTERS* R)
+        static public unsafe UInt32 TechnoClass_Remove_Components(REGISTERS* R)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace ComponentHooks
             }
         }
         [Hook(HookType.AresHook, Address = 0x701900, Size = 6)]
-        static public unsafe UInt32 TechnoClass_ReceiveDamage_Script(REGISTERS* R)
+        static public unsafe UInt32 TechnoClass_ReceiveDamage_Components(REGISTERS* R)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace ComponentHooks
             }
         }
         [Hook(HookType.AresHook, Address = 0x6FDD50, Size = 6)]
-        static public unsafe UInt32 TechnoClass_Fire(REGISTERS* R)
+        static public unsafe UInt32 TechnoClass_Fire_Components(REGISTERS* R)
         {
             try
             {
@@ -115,5 +115,47 @@ namespace ComponentHooks
                 return 0;
             }
         }
+
+        #region Render
+        static public UInt32 TechnoClass_Render_Components(Pointer<TechnoClass> pTechno)
+        {
+            try
+            {
+                TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
+                ext.AttachedComponent.Foreach(c => c.OnRender());
+
+                return 0;
+            }
+            catch (Exception e)
+            {
+                Logger.PrintException(e);
+                return 0;
+            }
+        }
+        [Hook(HookType.AresHook, Address = 0x4144B0, Size = 5)]
+        static public unsafe UInt32 AircraftClass_Render_Components(REGISTERS* R)
+        {
+            Pointer<AircraftClass> pAircraft = (IntPtr)R->ECX;
+            return TechnoClass_Render_Components(pAircraft.Convert<TechnoClass>());
+        }
+        [Hook(HookType.AresHook, Address = 0x43D290, Size = 5)]
+        static public unsafe UInt32 BuildingClass_Render_Components(REGISTERS* R)
+        {
+            Pointer<BuildingClass> pBuilding = (IntPtr)R->ECX;
+            return TechnoClass_Render_Components(pBuilding.Convert<TechnoClass>());
+        }
+        [Hook(HookType.AresHook, Address = 0x518F90, Size = 7)]
+        static public unsafe UInt32 InfantryClass_Render_Components(REGISTERS* R)
+        {
+            Pointer<InfantryClass> pInfantry = (IntPtr)R->ECX;
+            return TechnoClass_Render_Components(pInfantry.Convert<TechnoClass>());
+        }
+        [Hook(HookType.AresHook, Address = 0x73CEC0, Size = 5)]
+        static public unsafe UInt32 UnitClass_Render_Components(REGISTERS* R)
+        {
+            Pointer<UnitClass> pUnit = (IntPtr)R->ECX;
+            return TechnoClass_Render_Components(pUnit.Convert<TechnoClass>());
+        }
+        #endregion
     }
 }
