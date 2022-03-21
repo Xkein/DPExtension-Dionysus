@@ -12,12 +12,25 @@ using Extension.Script;
 using Extension.Decorators;
 using Extension.Utilities;
 using System.Threading.Tasks;
+using System.Linq;
+using Extension.Components;
+using System.Reflection;
 
 namespace Miscellaneous
 {
     public class DynamicLoadINI
     {
 #if REALTIME_INI
+        static string rulesName = "Rulesmd.ini";
+        static string artName = "Artmd.ini";
+        static string aiName = "Aimd.ini";
+        // the list of ini to ignore appling changes
+        static string[] ignoreList = new[]
+        {
+            "ra2md.ini",
+            "reshade.ini"
+        }.Select(i => i.ToLower()).ToArray();
+
         static Semaphore semaphore = new Semaphore(0, 1);
         [Hook(HookType.AresHook, Address = 0x48CE9C, Size = 5)]
         static public unsafe UInt32 Synchronize(REGISTERS* R)
@@ -52,9 +65,9 @@ namespace Miscellaneous
             };
 
             Dictionary<string, Pointer<CCINIClass>> inis = new() {
-                { "Rulesmd.ini", CCINIClass.INI_Rules },
-                { "Artmd.ini", CCINIClass.INI_Art },
-                { "AImd.ini", CCINIClass.INI_AI }
+                { rulesName, CCINIClass.INI_Rules },
+                { artName, CCINIClass.INI_Art },
+                { aiName, CCINIClass.INI_AI }
             };
             
             foreach (var ini in inis)
@@ -83,9 +96,11 @@ namespace Miscellaneous
             iniWatcher.OnCodeChanged += (object sender, FileSystemEventArgs e) =>
             {
                 string path = e.FullPath;
+                string fileName = Path.GetFileName(path);
 
-                if (Path.GetFileNameWithoutExtension(path).ToLower() == "ra2md")
+                if (ignoreList.Contains(fileName.ToLower()))
                 {
+                    Logger.Log("ignore file: {0}", fileName);
                     return;
                 }
  
@@ -192,7 +207,7 @@ namespace Miscellaneous
                         Helpers.Copy((IntPtr)memory.Memory, CCINIClass.INI_Art, memory.Size);
                     };
 
-                    if (string.Compare("Artmd.ini", ini_name, true) == 0)
+                    if (string.Compare(artName, ini_name, true) == 0)
                     {
                         ReloadArt();
                     }
@@ -202,6 +217,8 @@ namespace Miscellaneous
                     }
 
                     YRMemory.Delete(pINI);
+
+                    RefreshINIComponent();
                 }
                 catch (Exception ex)
                 {
@@ -217,6 +234,59 @@ namespace Miscellaneous
             };
 
             return new byte[] { 0 };
+        }
+
+        static public void RefreshINIComponent()
+        {
+            INIComponent.ClearBuffer();
+
+            void RefreshINIComponents<TExt>(TExt ext) where TExt : IHaveComponent
+            {
+                Component root = ext.AttachedComponent;
+                INIComponent[] components = root.GetComponentsInChildren<INIComponent>();
+                if (components.Length > 0)
+                {
+                    foreach (var component in components)
+                    {
+                        Component parent = component.Parent;
+                        INIComponent newComponent = new INIComponent(component.ININame, component.INISection);
+                        newComponent.AttachToComponent(parent);
+                        component.DetachFromParent();
+
+                        // auto refresh fields
+                        var iniFields = parent.GetType()
+                            .GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance)
+                            .Where(f => typeof(INIComponent).IsAssignableFrom(f.FieldType));
+                        foreach (var field in iniFields)
+                        {
+                            var oldComponent = field.GetValue(parent) as INIComponent;
+                            //if (oldComponent == component) not work, why?
+                            if (oldComponent.ININame == component.ININame && oldComponent.INISection == component.INISection)
+                            {
+                                field.SetValue(parent, newComponent);
+                            }
+                        }
+                    }
+                }
+            }
+
+            Logger.Log("refreshing techno's INIComponents...");
+            ref var technoArray = ref TechnoClass.Array;
+            for (int i = 0; i < technoArray.Count; i++)
+            {
+                var pItem = technoArray[i];
+                var ext = TechnoExt.ExtMap.Find(pItem);
+                RefreshINIComponents(ext);
+            }
+
+            Logger.Log("refreshing bullet's INIComponents...");
+            ref var bulletArray = ref BulletClass.Array;
+            for (int i = 0; i < bulletArray.Count; i++)
+            {
+                var pItem = bulletArray[i];
+                var ext = BulletExt.ExtMap.Find(pItem);
+                RefreshINIComponents(ext);
+            }
         }
 #endif
     }
