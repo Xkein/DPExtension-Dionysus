@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatcherYRpp.Utilities", "Pa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatcherYRpp.UtilitiesTests", "PatcherYRpp.UtilitiesTests\PatcherYRpp.UtilitiesTests.csproj", "{F652EE6F-05C4-4C62-B00F-B73941AEB4AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.Lua", "Extension.Lua\Extension.Lua.csproj", "{528689C5-11D4-49D3-844A-AA721D9EAB47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{AE6121FF-74CF-472A-BF7D-4543A78E7D50}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F652EE6F-05C4-4C62-B00F-B73941AEB4AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F652EE6F-05C4-4C62-B00F-B73941AEB4AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{528689C5-11D4-49D3-844A-AA721D9EAB47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{528689C5-11D4-49D3-844A-AA721D9EAB47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{528689C5-11D4-49D3-844A-AA721D9EAB47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{528689C5-11D4-49D3-844A-AA721D9EAB47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
