@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -53,9 +53,12 @@
     <Compile Include="Components\Component.cs" />
     <Compile Include="Components\ComponentManager.cs" />
     <Compile Include="Components\ExtComponent.cs" />
-    <Compile Include="Components\INIComponent.cs" />
+    <Compile Include="Components\GameObject.cs" />
     <Compile Include="Components\RequireComponent.cs" />
     <Compile Include="Components\Transform.cs" />
+    <Compile Include="Coroutines\CoroutineSystem.cs" />
+    <Compile Include="Coroutines\CoroutineWaiter.cs" />
+    <Compile Include="Coroutines\WaitForFrames.cs" />
     <Compile Include="Decorators\DecoratorComponent.cs" />
     <Compile Include="Decorators\DecoratorId.cs" />
     <Compile Include="Decorators\DecoratorMap.cs" />

@@ -37,6 +37,7 @@ namespace Extension.Components
         
         public Component Parent { get => _parent; }
         public Component Root { get => GetRoot(); }
+        public IGameObject GameObject => Root as IGameObject; // temporally use ExtComponent as GameObject
 
         /// <summary>
         /// don't use before finish
