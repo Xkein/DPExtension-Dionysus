@@ -30,6 +30,25 @@ namespace ComponentHooks
                 return 0;
             }
         }
+        [Hook(HookType.AresHook, Address = 0x467FEE, Size = 6)]
+        [Hook(HookType.AresHook, Address = 0x466781, Size = 6)]
+        public static unsafe UInt32 BulletClass_LateUpdate_Components(REGISTERS* R)
+        {
+            try
+            {
+                Pointer<BulletClass> pBullet = (IntPtr)R->EBP;
+
+                BulletExt ext = BulletExt.ExtMap.Find(pBullet);
+                ext.AttachedComponent.Foreach(c => c.OnLateUpdate());
+
+                return 0;
+            }
+            catch (Exception e)
+            {
+                Logger.PrintException(e);
+                return 0;
+            }
+        }
 
         [Hook(HookType.AresHook, Address = 0x4690B0, Size = 6)]
         public static unsafe UInt32 BulletClass_Detonate_Components(REGISTERS* R)

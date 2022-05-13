@@ -30,6 +30,25 @@ namespace ComponentHooks
                 return 0;
             }
         }
+        [Hook(HookType.AresHook, Address = 0x6FAFFD, Size = 7)]
+        [Hook(HookType.AresHook, Address = 0x6FAF7A, Size = 7)]
+        static public unsafe UInt32 TechnoClass_LateUpdate_Components(REGISTERS* R)
+        {
+            try
+            {
+                Pointer<TechnoClass> pTechno = (IntPtr)R->ESI;
+
+                TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
+                ext.AttachedComponent.Foreach(c => c.OnLateUpdate());
+
+                return 0;
+            }
+            catch (Exception e)
+            {
+                Logger.PrintException(e);
+                return 0;
+            }
+        }
         [Hook(HookType.AresHook, Address = 0x6F6CA0, Size = 7)]
         static public unsafe UInt32 TechnoClass_Put_Components(REGISTERS* R)
         {
