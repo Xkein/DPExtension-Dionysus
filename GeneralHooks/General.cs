@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Extension.Components;
 
 namespace GeneralHooks
 {
@@ -23,7 +24,6 @@ namespace GeneralHooks
         {
             // ensure network synchronization
             MathEx.SetRandomSeed(0);
-
             //Logger.Log("set random seed!");
 
             return 0;
@@ -32,6 +32,8 @@ namespace GeneralHooks
         [Hook(HookType.AresHook, Address = 0x685659, Size = 0xA)]
         public static unsafe UInt32 Scenario_ClearClasses(REGISTERS* R)
         {
+            INIComponent.ClearBuffer();
+            //Logger.Log("clear ini buffer!");
 
             return 0;
         }

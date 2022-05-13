@@ -80,7 +80,7 @@ namespace Extension.Script
         /// </summary>
         /// <param name="scriptList"></param>
         /// <returns></returns>
-        public static List<Script> GetScripts(List<string> scriptList)
+        public static List<Script> GetScripts(IEnumerable<string> scriptList)
         {
             List<Script> scripts = new List<Script>();
 

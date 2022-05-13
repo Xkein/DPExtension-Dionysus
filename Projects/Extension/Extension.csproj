@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -54,6 +54,8 @@
     <Compile Include="Components\ComponentManager.cs" />
     <Compile Include="Components\ExtComponent.cs" />
     <Compile Include="Components\GameObject.cs" />
+    <Compile Include="INI\EnumParser.cs" />
+    <Compile Include="INI\INIComponent.cs" />
     <Compile Include="Components\RequireComponent.cs" />
     <Compile Include="Components\Transform.cs" />
     <Compile Include="Coroutines\CoroutineSystem.cs" />
@@ -68,6 +70,15 @@
     <Compile Include="Ext\BulletTypeExt.cs" />
     <Compile Include="Ext\Container.cs" />
     <Compile Include="Components\IHaveComponent.cs" />
+    <Compile Include="INI\INIConstant.cs" />
+    <Compile Include="INI\NormalParser.cs" />
+    <Compile Include="INI\Parser.cs" />
+    <Compile Include="INI\Parsers.cs" />
+    <Compile Include="INI\ScriptParser.cs" />
+    <Compile Include="INI\YRParsers\SuperWeaponTypeClassParser.cs" />
+    <Compile Include="INI\FindTypeParser.cs" />
+    <Compile Include="INI\YRParsers\TechnoTypeClassParser.cs" />
+    <Compile Include="INI\YRParsers\WeaponTypeClassParser.cs" />
     <Compile Include="MyExtension\MyTechnoExt.cs" />
     <Compile Include="Script\Script.cs" />
     <Compile Include="Script\Scriptable.cs" />
@@ -75,10 +86,9 @@
     <Compile Include="Utilities\ContainerHelper.cs" />
     <Compile Include="Decorators\Decorator.cs" />
     <Compile Include="Utilities\ExtensionReference.cs" />
-    <Compile Include="Utilities\INIReader.cs" />
+    <Compile Include="INI\INIReader.cs" />
     <Compile Include="Utilities\IReloadable.cs" />
     <Compile Include="Utilities\PartialHelper.cs" />
-    <Compile Include="Utilities\INIParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Script\ScriptManager.cs" />
     <Compile Include="Ext\TechnoExt.cs" />

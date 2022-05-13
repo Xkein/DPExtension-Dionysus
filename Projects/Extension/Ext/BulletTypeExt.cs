@@ -10,6 +10,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using Extension.INI;
 
 namespace Extension.Ext
 {
@@ -30,7 +31,7 @@ namespace Extension.Ext
             INIReader reader = new INIReader(pINI);
             string section = OwnerObject.Ref.Base.Base.ID;
 
-            reader.ReadScripts(section, "Scripts", ref Scripts);
+            reader.Read(section, "Scripts", ref Scripts);
         }
 
         public override void SaveToStream(IStream stream)

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
+using Extension.INI;
 
 namespace Extension.Ext
 {
@@ -25,7 +26,7 @@ namespace Extension.Ext
             INIReader reader = new INIReader(pINI);
             string section = OwnerObject.Ref.Base.Base.ID;
 
-            reader.ReadSuperWeapon(section, nameof(FireSuperWeapon), ref FireSuperWeapon.Pointer);
+            reader.Read(section, nameof(FireSuperWeapon), ref FireSuperWeapon.Pointer);
         }
 
         [LoadAction]

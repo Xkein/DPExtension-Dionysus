@@ -11,6 +11,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using Extension.INI;
 
 namespace Extension.Ext
 {
@@ -28,11 +29,10 @@ namespace Extension.Ext
 
         protected override void LoadFromINIFile(Pointer<CCINIClass> pINI)
         {
-            INI_EX exINI = new INI_EX(pINI);
-            INIReader reader = new INIReader(exINI);
+            INIReader reader = new INIReader(pINI);
             string section = OwnerObject.Ref.Base.Base.ID;
 
-            reader.ReadScripts(section, "Scripts", ref Scripts);
+            reader.Read(section, "Scripts", ref Scripts);
         }
 
         public override void SaveToStream(IStream stream)
