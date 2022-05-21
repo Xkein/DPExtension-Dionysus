@@ -12,6 +12,7 @@
     "PatcherYRpp.Utilities.dll",
     "Extension.dll",
     "Extension.FX.dll",
+    "ScriptUniversal.dll",
 
     "Microsoft.VisualStudio.Interop.dll"
   ],
