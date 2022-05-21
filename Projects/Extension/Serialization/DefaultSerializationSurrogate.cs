@@ -10,7 +10,7 @@ namespace Extension.Serialization
 {
     public class DefaultSerializationSurrogate : ISerializationSurrogate
     {
-        public void GetObjectData(object obj, SerializationInfo info, StreamingContext context)
+        public virtual void GetObjectData(object obj, SerializationInfo info, StreamingContext context)
         {
             foreach (FieldInfo f in obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
@@ -18,7 +18,7 @@ namespace Extension.Serialization
             }
         }
 
-        public object SetObjectData(object obj, SerializationInfo info, StreamingContext context, ISurrogateSelector selector)
+        public virtual object SetObjectData(object obj, SerializationInfo info, StreamingContext context, ISurrogateSelector selector)
         {
             foreach (FieldInfo f in obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
