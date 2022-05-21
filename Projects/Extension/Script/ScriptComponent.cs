@@ -25,7 +25,7 @@ namespace Extension.Script
 
     public static class ScriptComponentHelpers
     {
-        public static void CreateScriptComponent(this Component component, string scriptName, int id, string description, object[] parameters)
+        public static void CreateScriptComponent(this Component component, string scriptName, int id, string description, params object[] parameters)
         {
             var script = ScriptManager.GetScript(scriptName);
             var scriptComponent = ScriptManager.CreateScriptable<ScriptComponent>(script, parameters);
@@ -34,7 +34,7 @@ namespace Extension.Script
 
             scriptComponent.AttachToComponent(component);
         }
-        public static void CreateScriptComponent(this Component component, string scriptName, string description, object[] parameters)
+        public static void CreateScriptComponent(this Component component, string scriptName, string description, params object[] parameters)
         {
             component.CreateScriptComponent(scriptName, Component.NO_ID, description, parameters);
         }
