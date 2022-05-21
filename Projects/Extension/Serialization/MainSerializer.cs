@@ -2,26 +2,30 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Extension.Utilities
+namespace Extension.Serialization
 {
-    public static class Serialization
+    public class MainSerializer
     {
-        public static BinaryFormatter formatter;
+        private static IFormatter GetFormatter()
+        {
+            return new EnhancedFormatter();
+        }
 
         public static void Serialize(Stream serializationStream, object graph)
         {
-            formatter = new BinaryFormatter();
+            var formatter = GetFormatter();
 
             formatter.Serialize(serializationStream, graph);
         }
 
         public static object Deserialize(Stream serializationStream)
         {
-            formatter = new BinaryFormatter();
+            var formatter = GetFormatter();
             object graph = formatter.Deserialize(serializationStream);
 
             return graph;
