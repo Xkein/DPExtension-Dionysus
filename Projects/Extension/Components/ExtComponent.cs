@@ -1,4 +1,4 @@
-using Extension.Ext;
+﻿using Extension.Ext;
 using Extension.Script;
 using Extension.Utilities;
 using System;
@@ -68,7 +68,7 @@ namespace Extension.Components
         {
             CreateScriptComponent<T>(NO_ID, description, parameters);
         }
-
+        
         public Coroutine StartCoroutine(IEnumerator enumerator)
         {
             return _coroutineSystem.StartCoroutine(enumerator);
@@ -86,6 +86,21 @@ namespace Extension.Components
         void IGameObject.AddComponent(Component component)
         {
             AddComponentEx(component, this);
+        }
+
+        public void AddComponentEx(Component component, Component attached)
+        {
+            if (component.Parent != attached)
+            {
+                component.AttachToComponent(attached);
+            }
+            else
+            {
+                // AddComponentEx will called again by AttachToComponent and enter this branch
+                
+                component.EnsureAwaked();
+                _unstartedComponents.Add(component);
+            }
         }
 
         void IGameObject.RemoveComponent(Component component)

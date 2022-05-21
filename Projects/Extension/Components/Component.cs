@@ -1,4 +1,4 @@
-using Extension.Utilities;
+﻿using Extension.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using DynamicPatcher;
 
 namespace Extension.Components
 {
@@ -30,7 +31,7 @@ namespace Extension.Components
             ID = id;
         }
 
-        public int ID { get; internal set; }
+        public int ID { get; set; }
 
         public string Name { get; set; }
         public string Tag { get; set; }
@@ -56,10 +57,14 @@ namespace Extension.Components
 
         public void AttachToComponent(Component component)
         {
+            if (_parent == component)
+                return;
+
             DetachFromParent();
 
-            component.AddComponent(this);
             _parent = component;
+            component.AddComponent(this);
+            GameObject?.AddComponentEx(this, component);
         }
 
         public void DetachFromParent()
@@ -337,6 +342,10 @@ namespace Extension.Components
             SetParent(this);
         }
 
+        /// <summary>
+        /// execute action for each components in root (include itself)
+        /// </summary>
+        /// <param name="action"></param>
         public void Foreach(Action<Component> action)
         {
             ForeachComponents(this, action);
@@ -350,7 +359,14 @@ namespace Extension.Components
         {
             foreach (var component in components)
             {
-                action(component);
+                try
+                {
+                    action(component);
+                }
+                catch (Exception e)
+                {
+                    Logger.PrintException(e);
+                }
             }
         }
         /// <summary>
@@ -360,7 +376,14 @@ namespace Extension.Components
         /// <param name="action">the action to executed</param>
         public static void ForeachComponents(Component root, Action<Component> action)
         {
-            action(root);
+            try
+            {
+                action(root);
+            }
+            catch (Exception e)
+            {
+                Logger.PrintException(e);
+            }
             root.ForeachChild(action);
         }
 
@@ -379,6 +402,7 @@ namespace Extension.Components
             if (!_awaked)
             {
                 Awake();
+                ForeachChild(c => c.EnsureAwaked());
                 _awaked = true;
             }
         }
@@ -388,6 +412,7 @@ namespace Extension.Components
             if (!_started)
             {
                 Start();
+                ForeachChild(c => c.EnsureStarted());
                 _started = true;
             }
         }
