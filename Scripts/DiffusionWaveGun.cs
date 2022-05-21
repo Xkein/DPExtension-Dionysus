@@ -23,20 +23,15 @@ namespace Scripts
 
         public override void Awake()
         {
-            CreateINIComponent();
-        }
-
-        void CreateINIComponent()
-        {
             string section = DebugUtilities.GetAbstractID(Owner.OwnerObject.Convert<AbstractClass>());
-            INI = new INIComponent("rulesmd.ini", section);
+            INI = INIComponent.CreateRulesIniComponent(section);
             INI.AttachToComponent(this);
         }
 
         INIComponent INI;
 
-        Pointer<WeaponTypeClass> FirstWeapon => WeaponTypeClass.ABSTRACTTYPE_ARRAY.Find(INI.Get("DiffusionWaveGun.FirstWeapon", "Medusa"));
-        Pointer<WeaponTypeClass> BurstWeapon => WeaponTypeClass.ABSTRACTTYPE_ARRAY.Find(INI.Get("DiffusionWaveGun.BurstWeapon", "Medusa"));
+        Pointer<WeaponTypeClass> FirstWeapon => INI.Get("DiffusionWaveGun.FirstWeapon", WeaponTypeClass.ABSTRACTTYPE_ARRAY.Find("Medusa"));
+        Pointer<WeaponTypeClass> BurstWeapon => INI.Get("DiffusionWaveGun.BurstWeapon", WeaponTypeClass.ABSTRACTTYPE_ARRAY.Find("Medusa"));
         // search range
         int Range => INI.Get("DiffusionWaveGun.SearchRange", Game.CellSize * 5);
         // count of BurstWeapon
