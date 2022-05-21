@@ -16,24 +16,38 @@ namespace Extension.Coroutines
 
         public CoroutineSystem()
         {
-            _coroutines = new Dictionary<IEnumerator, CoroutineWaiter>();
+            _coroutines = new List<Coroutine>();
         }
 
         public int CoroutineCount => _coroutines.Count;
 
-        public void StartCoroutine(IEnumerator coroutine)
+        public Coroutine StartCoroutine(Coroutine coroutine)
         {
-            if(coroutine == null)
-                return;
-            _coroutines.Add(coroutine, NullWaiter);
+            if (coroutine == null || coroutine.Enumerator == null)
+                return null;
+            _coroutines.Add(coroutine);
             RunCoroutine(coroutine);
+            return coroutine;
+        }
+        public Coroutine StartCoroutine(IEnumerator enumerator)
+        {
+            if(enumerator == null)
+                return null;
+            var coroutine = new Coroutine(enumerator) { Waiter = NullWaiter };
+            return StartCoroutine(coroutine);
         }
 
-        public void StopCoroutine(IEnumerator coroutine)
+        public void StopCoroutine(Coroutine coroutine)
         {
             if (coroutine == null)
                 return;
             _coroutines.Remove(coroutine);
+        }
+        public void StopCoroutine(IEnumerator enumerator)
+        {
+            if (enumerator == null)
+                return;
+            StopCoroutine(_coroutines.Find(c => c.Enumerator.Equals(enumerator)));
         }
 
         public void Update()
@@ -41,64 +55,73 @@ namespace Extension.Coroutines
             if (_coroutines.Count == 0)
                 return;
 
-            foreach (var coroutine in _coroutines.Keys.ToList())
+            foreach (var coroutine in _coroutines.ToList())
             {
                 RunCoroutine(coroutine);
             }
         }
 
-        private void RunCoroutine(IEnumerator coroutine)
+        private void RunCoroutine(Coroutine coroutine)
         {
-            CoroutineWaiter waiter = _coroutines[coroutine];
-            if (waiter.CanRun)
+            try
             {
-                if (coroutine.MoveNext())
+                CoroutineWaiter waiter = coroutine.Waiter;
+                if (waiter.CanRun)
                 {
-                    object result = coroutine.Current;
-                    switch (result)
+                    var enumerator = coroutine.Enumerator;
+                    if (enumerator.MoveNext())
                     {
-                        case null:
-                        case bool:
-                        case byte:
-                        case sbyte:
-                        case short:
-                        case ushort:
-                        case int:
-                        case uint:
-                        case long:
-                        case ulong:
-                        case char:
-                        case string:
-                            SetCoroutineWaiter(coroutine, NullWaiter);
-                            break;
-                        case WaitForFrames f:
-                            SetCoroutineWaiter(coroutine, new FramesCoroutineWaiter(f));
-                            break;
-                        case IEnumerator e:
-                            SetCoroutineWaiter(coroutine, new EnumeratorCoroutineWaiter(e));
-                            break;
-                        default:
-                            NotifyNotSupported(coroutine, result);
-                            break;
+                        object result = enumerator.Current;
+                        switch (result)
+                        {
+                            case WaitForFrames f:
+                                coroutine.Waiter = new FramesCoroutineWaiter(f);
+                                break;
+                            case CustomYieldInstruction c:
+                                coroutine.Waiter = new CustomCoroutineWaiter(c);
+                                break;
+                            case IEnumerator e:
+                                coroutine.Waiter = new EnumeratorCoroutineWaiter(e);
+                                break;
+                            case IAsyncResult a:
+                                coroutine.Waiter = new AsyncResultCoroutineWaiter(a);
+                                break;
+                            case null:
+                            case bool:
+                            case byte:
+                            case sbyte:
+                            case short:
+                            case ushort:
+                            case int:
+                            case uint:
+                            case long:
+                            case ulong:
+                            case char:
+                            case string:
+                                coroutine.Waiter = NullWaiter;
+                                break;
+                            default:
+                                NotifyNotSupported(coroutine, result);
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        StopCoroutine(coroutine);
                     }
                 }
-                else
-                {
-                    StopCoroutine(coroutine);
-                }
+            }
+            catch (Exception e)
+            {
+                Logger.PrintException(e);
             }
         }
 
-        private void SetCoroutineWaiter(IEnumerator coroutine, CoroutineWaiter waiter)
-        {
-            _coroutines[coroutine] = waiter;
-        }
-
-        private void NotifyNotSupported(IEnumerator co, object result)
+        private void NotifyNotSupported(Coroutine co, object result)
         {
             Logger.LogWarning("coroutine {0} return an unsupported result - {1}!", co, result);
         }
 
-        private Dictionary<IEnumerator, CoroutineWaiter> _coroutines;
+        private List<Coroutine> _coroutines;
     }
 }

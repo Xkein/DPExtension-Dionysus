@@ -69,12 +69,16 @@ namespace Extension.Components
             CreateScriptComponent<T>(NO_ID, description, parameters);
         }
 
-        public void StartCoroutine(IEnumerator coroutine)
+        public Coroutine StartCoroutine(IEnumerator enumerator)
         {
-            _coroutineSystem.StartCoroutine(coroutine);
+            return _coroutineSystem.StartCoroutine(enumerator);
         }
 
-        public void StopCoroutine(IEnumerator coroutine)
+        public void StopCoroutine(IEnumerator enumerator)
+        {
+            _coroutineSystem.StopCoroutine(enumerator);
+        }
+        public void StopCoroutine(Coroutine coroutine)
         {
             _coroutineSystem.StopCoroutine(coroutine);
         }

@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Extension.Coroutines;
 
 namespace Extension.Components
 {
     public interface IGameObject
     {
-        void StartCoroutine(IEnumerator coroutine);
-        void StopCoroutine(IEnumerator coroutine);
+        Coroutine StartCoroutine(IEnumerator enumerator);
+        void StopCoroutine(IEnumerator enumerator);
+        void StopCoroutine(Coroutine coroutine);
 
         Component GetComponent(Predicate<Component> predicate);
         Component GetComponent(int id);

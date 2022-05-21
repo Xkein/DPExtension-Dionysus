@@ -9,19 +9,19 @@ using PatcherYRpp;
 namespace Extension.Coroutines
 {
     [Serializable]
-    abstract class CoroutineWaiter
+    public abstract class CoroutineWaiter
     {
         public abstract bool CanRun { get; }
     }
 
     [Serializable]
-    class NullCoroutineWaiter : CoroutineWaiter
+    sealed class NullCoroutineWaiter : CoroutineWaiter
     {
         public override bool CanRun => true;
     }
 
     [Serializable]
-    class FramesCoroutineWaiter : CoroutineWaiter
+    sealed class FramesCoroutineWaiter : CoroutineWaiter
     {
         public FramesCoroutineWaiter(WaitForFrames waitForFrames)
         {
@@ -61,5 +61,32 @@ namespace Extension.Coroutines
         private IEnumerator _enumerator;
         private CoroutineSystem _coroutineSystem = new();
         private int _lastUpdateFrame;
+    }
+
+    [Serializable]
+    class AsyncResultCoroutineWaiter : CoroutineWaiter
+    {
+        public AsyncResultCoroutineWaiter(IAsyncResult asyncResult)
+        {
+            _asyncResult = asyncResult;
+        }
+
+        public override bool CanRun => _asyncResult == null || _asyncResult.IsCompleted;
+
+        [NonSerialized]
+        private IAsyncResult _asyncResult;
+    }
+
+    [Serializable]
+    class CustomCoroutineWaiter : CoroutineWaiter
+    {
+        public CustomCoroutineWaiter(CustomYieldInstruction custom)
+        {
+            _custom = custom;
+        }
+
+        public override bool CanRun => !_custom.KeepWaiting;
+
+        private CustomYieldInstruction _custom;
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Extension.Coroutines
 {
     [Serializable]
-    public class WaitForFrames
+    public sealed class WaitForFrames : YieldInstruction
     {
         public WaitForFrames(int frames)
         {
