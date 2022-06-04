@@ -57,6 +57,10 @@
     <Compile Include="Coroutines\Coroutine.cs" />
     <Compile Include="Coroutines\WaitCondition.cs" />
     <Compile Include="Coroutines\YieldInstruction.cs" />
+    <Compile Include="EventSystems\EventSystem.cs" />
+    <Compile Include="EventSystems\GeneralEventSystem.cs" />
+    <Compile Include="EventSystems\PointerExpireEventSystem.cs" />
+    <Compile Include="EventSystems\SaveGameEventSystem.cs" />
     <Compile Include="INI\EnumParser.cs" />
     <Compile Include="INI\INIComponent.cs" />
     <Compile Include="Components\RequireComponent.cs" />
@@ -117,8 +121,6 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="EventSystems\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
