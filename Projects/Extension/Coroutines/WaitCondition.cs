@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Extension.Coroutines
 {
-	public sealed class WaitUntil : CustomYieldInstruction
+    [Serializable]
+    public sealed class WaitUntil : CustomYieldInstruction
     {
         private Func<bool> _predicate;
 
@@ -18,6 +19,7 @@ namespace Extension.Coroutines
         }
     }
 
+    [Serializable]
     public sealed class WaitWhile : CustomYieldInstruction
     {
         private Func<bool> _predicate;

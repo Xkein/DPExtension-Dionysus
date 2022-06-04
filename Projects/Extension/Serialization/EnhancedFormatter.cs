@@ -23,6 +23,7 @@ namespace Extension.Serialization
             var surrogates = new ISurrogateSelector[]
             {
                 new CoroutineSurrogateSelector(),
+                new DelegateSurrogateSelector(),
             };
 
             for (int i = 1; i < surrogates.Length; i++)

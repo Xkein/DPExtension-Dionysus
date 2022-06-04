@@ -12,37 +12,19 @@ namespace Extension.Serialization
 {
     // https://stackoverflow.com/questions/3294224/serialization-and-the-yield-statement
 
-    class CoroutineSurrogateSelector : ISurrogateSelector
+    class CoroutineSurrogateSelector : DefaultSurrogateSelector
     {
-        ISurrogateSelector _next;
-
-        public void ChainSelector(ISurrogateSelector selector)
+        public override ISerializationSurrogate GetSurrogate(Type type, StreamingContext context, out ISurrogateSelector selector)
         {
-            _next = selector;
-        }
-
-        public ISurrogateSelector GetNextSelector()
-        {
-            return _next;
-        }
-
-        public ISerializationSurrogate GetSurrogate(Type type, StreamingContext context, out ISurrogateSelector selector)
-        {
-            if (typeof(System.Collections.IEnumerator).IsAssignableFrom(type)
-                && type.IsSerializable == false
+            if (type.IsSerializable == false
+                && typeof(IEnumerator).IsAssignableFrom(type)
                 && type.GetCustomAttribute<CompilerGeneratedAttribute>() != null)
             {
                 selector = this;
                 return new CoroutineSerializationSurrogate();
             }
             
-            if (_next == null)
-            {
-                selector = null;
-                return null;
-            }
-
-            return _next.GetSurrogate(type, context, out selector);
+            return base.GetSurrogate(type, context, out selector);
         }
     }
 

@@ -8,6 +8,32 @@ using System.Threading.Tasks;
 
 namespace Extension.Serialization
 {
+    public class DefaultSurrogateSelector : ISurrogateSelector
+    {
+        ISurrogateSelector _next;
+
+        public virtual void ChainSelector(ISurrogateSelector selector)
+        {
+            _next = selector;
+        }
+
+        public virtual ISurrogateSelector GetNextSelector()
+        {
+            return _next;
+        }
+
+        public virtual ISerializationSurrogate GetSurrogate(Type type, StreamingContext context, out ISurrogateSelector selector)
+        {
+            if (_next == null)
+            {
+                selector = null;
+                return null;
+            }
+
+            return _next.GetSurrogate(type, context, out selector);
+        }
+    }
+
     public class DefaultSerializationSurrogate : ISerializationSurrogate
     {
         public virtual void GetObjectData(object obj, SerializationInfo info, StreamingContext context)
