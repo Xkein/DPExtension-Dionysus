@@ -3,7 +3,7 @@
 
 [![license](https://www.gnu.org/graphics/gplv3-or-later.png)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
-**Dionysus** is an official [DP](https://github.com/Xkein/YRDynamicPatcher)-based extension for Yuri's Revenge, committed to exploring DP's infinite possibilities.
+**Dionysus** is an authoritative [DP](https://github.com/Xkein/YRDynamicPatcher)-based extension for Yuri's Revenge, committed to exploring DP's infinite possibilities.
 
 
 [Directory](./DIRECTORY.md)
@@ -32,5 +32,10 @@ Projects
 - [YRpp](./Projects/YRpp/README.md)
 
 
-
+Features for Programmers
+-------------
+1. ECS (incomplete)
+2. Coroutine system like unity
+3. INI Parser and INI Component
+4. EventSystem
 
