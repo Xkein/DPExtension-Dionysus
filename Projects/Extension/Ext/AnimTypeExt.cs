@@ -14,10 +14,8 @@ using Extension.INI;
 namespace Extension.Ext
 {
     [Serializable]
-    public partial class AnimTypeExt : Extension<AnimTypeClass>
+    public partial class AnimTypeExt : CommonTypeExtension<AnimTypeExt, AnimTypeClass>
     {
-        public static Container<AnimTypeExt, AnimTypeClass> ExtMap = new Container<AnimTypeExt, AnimTypeClass>("AnimTypeClass");
-
         public AnimTypeExt(Pointer<AnimTypeClass> OwnerObject) : base(OwnerObject)
         {
 
@@ -25,6 +23,8 @@ namespace Extension.Ext
 
         protected override void LoadFromINIFile(Pointer<CCINIClass> pINI)
         {
+            base.LoadFromINIFile(pINI);
+
             INIReader reader = new INIReader(pINI);
             string section = OwnerObject.Ref.Base.Base.ID;
 

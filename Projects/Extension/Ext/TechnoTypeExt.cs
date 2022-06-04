@@ -16,12 +16,8 @@ using Extension.INI;
 namespace Extension.Ext
 {
     [Serializable]
-    public partial class TechnoTypeExt : Extension<TechnoTypeClass>
+    public partial class TechnoTypeExt : CommonTypeExtension<TechnoTypeExt, TechnoTypeClass>
     {
-        public static Container<TechnoTypeExt, TechnoTypeClass> ExtMap = new Container<TechnoTypeExt, TechnoTypeClass>("TechnoTypeClass");
-
-        public List<Script.Script> Scripts;
-
         public TechnoTypeExt(Pointer<TechnoTypeClass> OwnerObject) : base(OwnerObject)
         {
 
@@ -29,10 +25,11 @@ namespace Extension.Ext
 
         protected override void LoadFromINIFile(Pointer<CCINIClass> pINI)
         {
-            INIReader reader = new INIReader(pINI);
-            string section = OwnerObject.Ref.Base.Base.ID;
+            base.LoadFromINIFile(pINI);
 
-            reader.Read(section, "Scripts", ref Scripts);
+            INIReader reader = new INIReader(pINI);
+            string section = OwnerObject.Ref.BaseAbstractType.ID;
+
         }
 
         public override void SaveToStream(IStream stream)

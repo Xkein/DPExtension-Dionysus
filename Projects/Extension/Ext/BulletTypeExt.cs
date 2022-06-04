@@ -15,12 +15,8 @@ using Extension.INI;
 namespace Extension.Ext
 {
     [Serializable]
-    public partial class BulletTypeExt : Extension<BulletTypeClass>
+    public partial class BulletTypeExt : CommonTypeExtension<BulletTypeExt, BulletTypeClass>
     {
-        public static Container<BulletTypeExt, BulletTypeClass> ExtMap = new Container<BulletTypeExt, BulletTypeClass>("BulletTypeClass");
-
-        public List<Script.Script> Scripts;
-
         public BulletTypeExt(Pointer<BulletTypeClass> OwnerObject) : base(OwnerObject)
         {
 
@@ -28,10 +24,11 @@ namespace Extension.Ext
 
         protected override void LoadFromINIFile(Pointer<CCINIClass> pINI)
         {
-            INIReader reader = new INIReader(pINI);
-            string section = OwnerObject.Ref.Base.Base.ID;
+            base.LoadFromINIFile(pINI);
 
-            reader.Read(section, "Scripts", ref Scripts);
+            INIReader reader = new INIReader(pINI);
+            string section = OwnerObject.Ref.BaseAbstractType.ID;
+
         }
 
         public override void SaveToStream(IStream stream)

@@ -16,41 +16,24 @@ using System.Threading.Tasks;
 namespace Extension.Ext
 {
     [Serializable]
-    public partial class TechnoExt : Extension<TechnoClass>, IHaveComponent
+    public partial class TechnoExt : CommonInstanceExtension<TechnoExt, TechnoClass, TechnoTypeExt, TechnoTypeClass>
     {
-        public static Container<TechnoExt, TechnoClass> ExtMap = new Container<TechnoExt, TechnoClass>("TechnoClass");
-
-        ExtensionReference<TechnoTypeExt> type;
-        public TechnoTypeExt Type
-        {
-            get
-            {
-                if (type.TryGet(out TechnoTypeExt ext) == false)
-                {
-                    type.Set(OwnerObject.Ref.Type);
-                    ext = type.Get();
-                }
-                return ext;
-            }
-        }
-
-        private ExtComponent<TechnoExt> _extComponent;
-        private DecoratorComponent _decoratorComponent;
-        public ExtComponent<TechnoExt> ExtComponent => _extComponent.GetAwaked();
-        public DecoratorComponent DecoratorComponent => _decoratorComponent;
-        public Component AttachedComponent => ExtComponent;
-
         public TechnoExt(Pointer<TechnoClass> OwnerObject) : base(OwnerObject)
         {
-            _extComponent = new ExtComponent<TechnoExt>(this, 0, "TechnoExt root component");
-            _decoratorComponent = new DecoratorComponent();
-            _extComponent.OnAwake += () => ScriptManager.CreateScriptableTo(_extComponent, Type.Scripts, this);
-            _extComponent.OnAwake += () => _decoratorComponent.AttachToComponent(_extComponent);
         }
 
         public override void OnDeserialization(object sender)
         {
             base.OnDeserialization(sender);
+        }
+        public override void SaveToStream(IStream stream)
+        {
+            base.SaveToStream(stream);
+        }
+
+        public override void LoadFromStream(IStream stream)
+        {
+            base.LoadFromStream(stream);
         }
 
         [OnSerializing]
@@ -65,17 +48,6 @@ namespace Extension.Ext
         [OnDeserialized]
         protected void OnDeserialized(StreamingContext context) { }
 
-        public override void SaveToStream(IStream stream)
-        {
-            base.SaveToStream(stream);
-            _extComponent.Foreach(c => c.SaveToStream(stream));
-        }
-
-        public override void LoadFromStream(IStream stream)
-        {
-            base.LoadFromStream(stream);
-            _extComponent.Foreach(c => c.LoadFromStream(stream));
-        }
 
         //[Hook(HookType.AresHook, Address = 0x6F3260, Size = 5)]
         static public unsafe UInt32 TechnoClass_CTOR(REGISTERS* R)
