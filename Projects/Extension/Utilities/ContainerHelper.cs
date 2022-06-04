@@ -93,7 +93,7 @@ namespace Extension.Utilities
         public static IContainer GetContainer<TExt>()
         {
             Type type = typeof(TExt);
-            FieldInfo member = type.GetField("ExtMap");
+            FieldInfo member = type.GetField("ExtMap", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
             return (IContainer)member.GetValue(null);
         }
     }

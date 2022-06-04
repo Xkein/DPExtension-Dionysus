@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace Extension.Script
 {
+    public interface IHaveScript
+    {
+        List<Script> Scripts { get; }
+    }
+
     [Serializable]
     public class Script
     {
