@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
+using Extension.EventSystems;
 using Extension.INI;
 
 namespace Extension.Components
@@ -16,67 +17,6 @@ namespace Extension.Components
     [Serializable]
     public class INIComponent : Component
     {
-        /// <summary>
-        /// share buffer for all INIComponent to avoid redundant read
-        /// </summary>
-        static List<INIBuffer> buffers = new List<INIBuffer>();
-        /// <summary>
-        /// buffer to store parsed and unparsed pairs in ini
-        /// </summary>
-        class INIBuffer
-        {
-            public INIBuffer(string name, string section)
-            {
-                Name = name;
-                Section = section;
-                Unparsed = new Dictionary<string, string>();
-                Parsed = new Dictionary<string, object>();
-            }
-
-            public string Name;
-            public string Section;
-            public Dictionary<string, string> Unparsed;
-            public Dictionary<string, object> Parsed;
-
-            public bool GetParsed<T>(string key, out T val)
-            {
-                if (Parsed.TryGetValue(key, out object parsed))
-                {
-                    val = (T)parsed;
-                    return true;
-                }
-
-                T tmp = default;
-                if (Unparsed.TryGetValue(key, out string unparsed) && Parsers.GetParser<T>().Parse(unparsed, ref tmp))
-                {
-                    Parsed[key] = val = tmp;
-                    return true;
-                }
-
-                val = default;
-                return false;
-            }
-
-            public bool GetParsedList<T>(string key, out T[] val)
-            {
-                if (Parsed.TryGetValue(key, out object parsed))
-                {
-                    val = (T[])parsed;
-                    return true;
-                }
-
-                List<T> tmp = new List<T>();
-                if (Unparsed.TryGetValue(key, out string unparsed) && Parsers.GetParser<T>().ParseList(unparsed, ref tmp))
-                {
-                    Parsed[key] = val = tmp.ToArray();
-                    return true;
-                }
-
-                val = default;
-                return false;
-            }
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -122,8 +62,16 @@ namespace Extension.Components
         public static INIComponent CreateRulesIniComponent(string section)
         {
             var rules = new INIComponent(INIConstant.RulesName, section);
-            var mode = new INIComponent(INIConstant.GameModeName, section, rules);
-            var map = new INIComponent(INIConstant.MapName, section, mode);
+            INIComponent map;
+            if (SessionClass.Instance.GameMode != GameMode.Campaign)
+            {
+                var mode = new INIComponent(INIConstant.GameModeName, section, rules);
+                map = new INIComponent(INIConstant.MapName, section, mode);
+            }
+            else
+            {
+                map = new INIComponent(INIConstant.MapName, section, rules);
+            }
             return map;
         }
 
@@ -208,7 +156,7 @@ namespace Extension.Components
         /// </summary>
         public void ReRead()
         {
-            INIBuffer buffer = buffers.Find(b => b.Name == _name && b.Section == _section);
+            INIBuffer buffer = FindBuffer(_name, _section);
 
             if (buffer == null)
             {
@@ -233,11 +181,99 @@ namespace Extension.Components
 
                 YRMemory.Delete(pINI);
 
-                buffers.Add(buffer);
+                SetBuffer(_name, _section, buffer);
             }
 
             _buffer = buffer;
         }
+
+        static INIComponent()
+        {
+            EventSystem.General.AddPermanentHandler(EventSystem.General.ScenarioClearClassesEvent, ScenarioClearClassesEventHandler);
+        }
+
+        private static void ScenarioClearClassesEventHandler(object sender, EventArgs e)
+        {
+            INIComponent.ClearBuffer();
+        }
+
+        /// <summary>
+        /// buffer to store parsed and unparsed pairs in ini
+        /// </summary>
+        class INIBuffer
+        {
+            public INIBuffer(string name, string section)
+            {
+                Name = name;
+                Section = section;
+                Unparsed = new Dictionary<string, string>();
+                Parsed = new Dictionary<string, object>();
+            }
+
+            public string Name;
+            public string Section;
+            public Dictionary<string, string> Unparsed;
+            public Dictionary<string, object> Parsed;
+
+            public bool GetParsed<T>(string key, out T val)
+            {
+                if (Parsed.TryGetValue(key, out object parsed))
+                {
+                    val = (T)parsed;
+                    return true;
+                }
+
+                T tmp = default;
+                if (Unparsed.TryGetValue(key, out string unparsed) && Parsers.GetParser<T>().Parse(unparsed, ref tmp))
+                {
+                    Parsed[key] = val = tmp;
+                    return true;
+                }
+
+                val = default;
+                return false;
+            }
+
+            public bool GetParsedList<T>(string key, out T[] val)
+            {
+                if (Parsed.TryGetValue(key, out object parsed))
+                {
+                    val = (T[])parsed;
+                    return true;
+                }
+
+                List<T> tmp = new List<T>();
+                if (Unparsed.TryGetValue(key, out string unparsed) && Parsers.GetParser<T>().ParseList(unparsed, ref tmp))
+                {
+                    Parsed[key] = val = tmp.ToArray();
+                    return true;
+                }
+
+                val = default;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// share buffer for all INIComponent to avoid redundant read
+        /// </summary>
+        private static Dictionary<(string name, string section), INIBuffer> buffers = new();
+
+        private static INIBuffer FindBuffer(string name, string section)
+        {
+            if (buffers.TryGetValue((name, section), out INIBuffer buffer))
+            {
+                return buffer;
+            }
+
+            return null;
+        }
+
+        private static void SetBuffer(string name, string section, INIBuffer buffer)
+        {
+            buffers[(name, section)] = buffer;
+        }
+
 
         /// <summary>
         /// clear all parsed and unparsed buffer
