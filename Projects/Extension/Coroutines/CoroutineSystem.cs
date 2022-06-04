@@ -25,15 +25,25 @@ namespace Extension.Coroutines
         {
             if (coroutine == null || coroutine.Enumerator == null)
                 return null;
+
+            if (coroutine.IsRunning)
+            {
+                throw new InvalidOperationException("can not start a running coroutine");
+            }
+
             _coroutines.Add(coroutine);
+            coroutine.IsRunning = true;
             RunCoroutine(coroutine);
+
             return coroutine;
         }
         public Coroutine StartCoroutine(IEnumerator enumerator)
         {
             if(enumerator == null)
                 return null;
+
             var coroutine = new Coroutine(enumerator) { Waiter = NullWaiter };
+
             return StartCoroutine(coroutine);
         }
 
@@ -41,12 +51,15 @@ namespace Extension.Coroutines
         {
             if (coroutine == null)
                 return;
+
             _coroutines.Remove(coroutine);
+            coroutine.IsRunning = false;
         }
         public void StopCoroutine(IEnumerator enumerator)
         {
             if (enumerator == null)
                 return;
+
             StopCoroutine(_coroutines.Find(c => c.Enumerator.Equals(enumerator)));
         }
 
@@ -81,7 +94,10 @@ namespace Extension.Coroutines
                                 coroutine.Waiter = new CustomCoroutineWaiter(c);
                                 break;
                             case IEnumerator e:
-                                coroutine.Waiter = new EnumeratorCoroutineWaiter(e);
+                                coroutine.Waiter = new EnumeratorCoroutineWaiter(e, this);
+                                break;
+                            case Coroutine c:
+                                coroutine.Waiter = new CoroutineCoroutineWaiter(c, this);
                                 break;
                             case IAsyncResult a:
                                 coroutine.Waiter = new AsyncResultCoroutineWaiter(a);
@@ -107,6 +123,7 @@ namespace Extension.Coroutines
                     }
                     else
                     {
+                        coroutine.Finished = true;
                         StopCoroutine(coroutine);
                     }
                 }

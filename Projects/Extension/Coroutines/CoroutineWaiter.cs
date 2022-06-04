@@ -36,31 +36,54 @@ namespace Extension.Coroutines
     }
 
     [Serializable]
-    class EnumeratorCoroutineWaiter : CoroutineWaiter
+    class CoroutineCoroutineWaiter : CoroutineWaiter
     {
-        public EnumeratorCoroutineWaiter(IEnumerator enumerator)
+        public CoroutineCoroutineWaiter(Coroutine coroutine, CoroutineSystem coroutineSystem)
         {
-            _enumerator = enumerator;
-            _coroutineSystem.StartCoroutine(enumerator);
-            _lastUpdateFrame = Game.CurrentFrame;
+            _coroutine = coroutine;
+            _coroutineSystem = coroutineSystem;
+            if (!coroutine.IsRunning)
+            {
+                _coroutineSystem.StartCoroutine(coroutine);
+            }
         }
 
         public override bool CanRun
         {
             get
             {
-                if (_lastUpdateFrame != Game.CurrentFrame)
+                if (_coroutine.Finished)
                 {
-                    _lastUpdateFrame = Game.CurrentFrame;
-                    _coroutineSystem.Update();
+                    return true;
                 }
-                return _coroutineSystem.CoroutineCount == 0;
+
+                if (_coroutine.CanRestart)
+                {
+                    if (!_coroutine.IsRunning)
+                    {
+                        _coroutineSystem.StartCoroutine(_coroutine);
+                    }
+                }
+
+                return _coroutine.Finished;
             }
         }
 
-        private IEnumerator _enumerator;
-        private CoroutineSystem _coroutineSystem = new();
-        private int _lastUpdateFrame;
+        private Coroutine _coroutine;
+        private CoroutineSystem _coroutineSystem;
+    }
+
+    [Serializable]
+    class EnumeratorCoroutineWaiter : CoroutineWaiter
+    {
+        public EnumeratorCoroutineWaiter(IEnumerator enumerator, CoroutineSystem coroutineSystem)
+        {
+            _coroutine = coroutineSystem.StartCoroutine(enumerator);
+        }
+
+        public override bool CanRun => _coroutine.Finished;
+
+        private Coroutine _coroutine;
     }
 
     [Serializable]
@@ -89,4 +112,5 @@ namespace Extension.Coroutines
 
         private CustomYieldInstruction _custom;
     }
+
 }
