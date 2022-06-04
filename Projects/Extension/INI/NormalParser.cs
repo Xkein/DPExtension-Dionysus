@@ -76,6 +76,7 @@ namespace Extension.INI
             if (byte.TryParse(val, out var parsed))
             {
                 buffer = parsed;
+                return true;
             }
             return false;
         }
@@ -85,6 +86,7 @@ namespace Extension.INI
             if (sbyte.TryParse(val, out var parsed))
             {
                 buffer = parsed;
+                return true;
             }
             return false;
         }
@@ -94,6 +96,7 @@ namespace Extension.INI
             if (short.TryParse(val, out var parsed))
             {
                 buffer = parsed;
+                return true;
             }
             return false;
         }
@@ -103,6 +106,7 @@ namespace Extension.INI
             if (ushort.TryParse(val, out var parsed))
             {
                 buffer = parsed;
+                return true;
             }
             return false;
         }
@@ -112,6 +116,7 @@ namespace Extension.INI
             if (int.TryParse(val, out var parsed))
             {
                 buffer = parsed;
+                return true;
             }
             return false;
         }
@@ -121,6 +126,7 @@ namespace Extension.INI
             if (uint.TryParse(val, out var parsed))
             {
                 buffer = parsed;
+                return true;
             }
             return false;
         }
@@ -130,6 +136,7 @@ namespace Extension.INI
             if (long.TryParse(val, out var parsed))
             {
                 buffer = parsed;
+                return true;
             }
             return false;
         }
@@ -139,6 +146,7 @@ namespace Extension.INI
             if (ulong.TryParse(val, out var parsed))
             {
                 buffer = parsed;
+                return true;
             }
             return false;
         }
@@ -148,6 +156,7 @@ namespace Extension.INI
             if (float.TryParse(val, out var parsed))
             {
                 buffer = parsed;
+                return true;
             }
             return false;
         }
@@ -157,6 +166,7 @@ namespace Extension.INI
             if (double.TryParse(val, out var parsed))
             {
                 buffer = parsed;
+                return true;
             }
             return false;
         }

@@ -25,6 +25,7 @@ namespace Extension.INI
             if (Enum.TryParse(val, out T parsed))
             {
                 buffer = parsed;
+                return true;
             }
             return false;
         }
