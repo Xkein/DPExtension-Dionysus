@@ -9,6 +9,7 @@ using PatcherYRpp;
 using Extension.Ext;
 using Extension.Script;
 using System.Threading.Tasks;
+using Extension.Coroutines;
 using PatcherYRpp.Utilities;
 using ScriptUniversal.Components;
 using ScriptUniversal.Strategy;
@@ -43,6 +44,20 @@ namespace Scripts
                         ext.ExtComponent.CreateScriptComponent("AAHeatSeeker2", "ss", ext);
                     }
                 };
+
+                GameObject.StartCoroutine(DelaySecondFiring());
+            }
+
+            IEnumerator DelaySecondFiring()
+            {
+                while (true)
+                {
+                    yield return new WaitUntil(() => _secondFiring is not null);
+                    GameObject.StopCoroutine(_secondFiring);
+                    yield return new WaitForFrames(50);
+                    _secondFiring.CanRestart = true;
+                    yield return new WaitWhile(() => _secondFiring is not null);
+                }
             }
             
             protected override IEnumerator Firing()
@@ -51,9 +66,13 @@ namespace Scripts
                 yield return base.Firing();
                 spin = false;
                 Weapon = WeaponTypeClass.ABSTRACTTYPE_ARRAY.Find("Medusa");
-                yield return base.Firing();
+                _secondFiring = GameObject.StartCoroutine(base.Firing());
+                yield return _secondFiring;
+                _secondFiring = null;
                 Weapon = Techno.OwnerObject.Ref.GetWeapon(0).Ref.WeaponType;
             }
+
+            private Coroutine _secondFiring;
         }
 
         public override void Awake()

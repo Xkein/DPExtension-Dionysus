@@ -42,7 +42,7 @@ namespace ScriptUniversal.Strategy
         /// <summary>
         /// reload behaviour
         /// </summary>
-        /// <remarks>reset fire time to zero by default</remarks>
+        /// <remarks>reduce fire time by one by default</remarks>
         /// <returns>next delay time</returns>
         public virtual int Reload()
         {
