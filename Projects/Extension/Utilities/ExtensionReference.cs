@@ -24,17 +24,23 @@ namespace Extension.Utilities
             {
                 info.AddValue("OwnerObject", (int)ext.OwnerObject);
             }
+            else
+            {
+                info.AddValue("OwnerObject", 0);
+            }
         }
+
         private ExtensionReference(SerializationInfo info, StreamingContext context)
         {
             weakReference = null;
-            try
+
+            IntPtr ownerObject = (IntPtr)info.GetInt32("OwnerObject");
+            if (ownerObject != IntPtr.Zero)
             {
-                IntPtr ownerObject = (IntPtr)info.GetInt32("OwnerObject");
                 storedOwnerObject = new PointerHandle<IntPtr>(ownerObject);
                 SwizzleManagerClass.Instance.Swizzle(ref storedOwnerObject.Pointer);
             }
-            catch (SerializationException)
+            else
             {
                 storedOwnerObject = null;
             }
