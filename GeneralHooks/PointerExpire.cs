@@ -12,28 +12,6 @@ namespace GeneralHooks
 {
     public class PointerExpire
     {
-        static PointerExpire()
-        {
-            EventSystem.PointerExpire.AddPermanentHandler(EventSystem.PointerExpire.AnnounceExpiredPointerEvent, ObjectFinderHandler);
-        }
-
-        private static void ObjectFinderHandler(object sender, EventArgs e)
-        {
-            var args = (AnnounceExpiredPointerEventArgs)e;
-            var pAbstract = args.ExpiredPointer;
-
-            if (pAbstract.CastToObject(out Pointer<ObjectClass> pObject))
-            {
-                ObjectFinder.ObjectContainer.PointerExpired(pObject);
-                if (pAbstract.CastToTechno(out var _))
-                {
-                    ObjectFinder.TechnoContainer.PointerExpired(pObject);
-                }
-            }
-
-            //Logger.Log("invoke AnnounceExpiredPointer({0}, {1})", DebugUtilities.GetAbstractID(pAbstract), removed);
-        }
-
         [Hook(HookType.AresHook, Address = 0x7258D0, Size = 6)]
         public static unsafe UInt32 AnnounceExpiredPointer(REGISTERS* R)
         {

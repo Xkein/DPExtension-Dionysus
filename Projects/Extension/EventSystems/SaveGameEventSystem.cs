@@ -18,30 +18,46 @@ namespace Extension.EventSystems
         public override string Description => "Raised when saving game";
     }
 
-    public class SaveGameEventArgs : EventArgs
+    public class SaveLoadEventArgs : EventArgs
     {
-        public SaveGameEventArgs(IStream stream, bool isStart)
+        public SaveLoadEventArgs(string fileName, bool isStart)
         {
-            Stream = stream;
+            FileName = fileName;
             IsStart = isStart;
         }
+        public SaveLoadEventArgs(IStream stream, bool isStart)
+        {
+            Stream = stream;
+            IsStartInStream = isStart;
+        }
 
+        public string FileName { get; }
         public IStream Stream { get; }
+        public bool InStream => Stream != null;
         public bool IsStart { get; }
-        public bool IsEnd => !IsStart;
+        public bool IsEnd => !IsStart && !InStream;
+        public bool IsStartInStream { get; }
+        public bool IsEndInStream => !IsStartInStream && InStream;
     }
 
-    public class LoadGameEventArgs : EventArgs
+    public class SaveGameEventArgs : SaveLoadEventArgs
     {
-        public LoadGameEventArgs(IStream stream, bool isStart)
+        public SaveGameEventArgs(string fileName, bool isStart) : base(fileName, isStart)
         {
-            Stream = stream;
-            IsStart = isStart;
         }
+        public SaveGameEventArgs(IStream stream, bool isStart) : base(stream, isStart)
+        {
+        }
+    }
 
-        public IStream Stream { get; }
-        public bool IsStart { get; }
-        public bool IsEnd => !IsStart;
+    public class LoadGameEventArgs : SaveLoadEventArgs
+    {
+        public LoadGameEventArgs(string fileName, bool isStart) : base(fileName, isStart)
+        {
+        }
+        public LoadGameEventArgs(IStream stream, bool isStart) : base(stream, isStart)
+        {
+        }
     }
 
     public class SaveGameEventSystem : EventSystem

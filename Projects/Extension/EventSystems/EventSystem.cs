@@ -4,6 +4,7 @@ using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DynamicPatcher;
 
 namespace Extension.EventSystems
 {
@@ -99,7 +100,14 @@ namespace Extension.EventSystems
         {
             if (handlers.TryGetValue(e, out var handler))
             {
-                handler(this, args);
+                try
+                {
+                    handler(this, args);
+                }
+                catch (Exception exception)
+                {
+                    Logger.PrintException(exception);
+                }
             }
         }
 
