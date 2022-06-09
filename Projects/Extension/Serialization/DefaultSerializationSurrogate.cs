@@ -38,18 +38,31 @@ namespace Extension.Serialization
     {
         public virtual void GetObjectData(object obj, SerializationInfo info, StreamingContext context)
         {
-            foreach (FieldInfo f in obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            Type type = obj.GetType();
+            info.SetType(type);
+            MemberInfo[] members = SerializationHelper.GetSerializableMembers(type, context);
+            object[] memberData = FormatterServices.GetObjectData(obj, members);
+            for (int i = 0; i < members.Length; i++)
             {
-                info.AddValue(f.Name, f.GetValue(obj));
+                MemberInfo member = members[i];
+                Type memberType = ((FieldInfo)member).FieldType;
+                object val = memberData[i];
+                info.AddValue(SerializationHelper.GetUniqueMemberName((FieldInfo)member), val, memberType);
             }
         }
 
         public virtual object SetObjectData(object obj, SerializationInfo info, StreamingContext context, ISurrogateSelector selector)
         {
-            foreach (FieldInfo f in obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            Type type = obj.GetType();
+            MemberInfo[] members = SerializationHelper.GetSerializableMembers(type, context);
+            object[] memberData = new object[members.Length];
+            for (int i = 0; i < members.Length; i++)
             {
-                f.SetValue(obj, info.GetValue(f.Name, f.FieldType));
+                MemberInfo member = members[i];
+                Type memberType = ((FieldInfo)member).FieldType;
+                memberData[i] = info.GetValue(SerializationHelper.GetUniqueMemberName((FieldInfo)member), memberType);
             }
+            obj = FormatterServices.PopulateObjectMembers(obj, members, memberData);
             return obj;
         }
     }

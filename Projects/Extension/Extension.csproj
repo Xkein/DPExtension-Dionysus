@@ -65,6 +65,7 @@
     <Compile Include="Ext\Extension.cs" />
     <Compile Include="Ext\InstanceExtension.cs" />
     <Compile Include="Ext\TypeExtension.cs" />
+    <Compile Include="GlobalVars.cs" />
     <Compile Include="INI\EnumParser.cs" />
     <Compile Include="INI\INIComponent.cs" />
     <Compile Include="Components\RequireComponent.cs" />
@@ -99,8 +100,11 @@
     <Compile Include="Serialization\DefaultSerializationSurrogate.cs" />
     <Compile Include="Serialization\DelegateSurrogate.cs" />
     <Compile Include="Serialization\EnhancedFormatter.cs" />
-    <Compile Include="Serialization\GlobalFormatter.cs" />
+    <Compile Include="Serialization\GlobalSerializer.cs" />
+    <Compile Include="Serialization\IGameSerializer.cs" />
     <Compile Include="Serialization\MainSerializer.cs" />
+    <Compile Include="Serialization\SerializationChecker.cs" />
+    <Compile Include="Serialization\SerializationHelper.cs" />
     <Compile Include="Utilities\ContainerHelper.cs" />
     <Compile Include="Decorators\Decorator.cs" />
     <Compile Include="Utilities\ExtensionReference.cs" />

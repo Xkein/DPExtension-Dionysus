@@ -18,7 +18,7 @@ namespace Extension.Serialization
         {
             if (type.IsSerializable == false
                 && typeof(IEnumerator).IsAssignableFrom(type)
-                && type.GetCustomAttribute<CompilerGeneratedAttribute>() != null)
+                && type.IsDefined(typeof(CompilerGeneratedAttribute)))
             {
                 selector = this;
                 return new CoroutineSerializationSurrogate();

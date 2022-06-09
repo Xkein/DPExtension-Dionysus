@@ -1,4 +1,4 @@
-using DynamicPatcher;
+﻿using DynamicPatcher;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Extension.Components;
 using Extension.EventSystems;
 using Extension.INI;
+using Extension.Serialization;
 using Extension.Utilities;
 using PatcherYRpp;
 using PatcherYRpp.Utilities;
@@ -35,6 +36,8 @@ namespace Miscellaneous
 
         static void RunSomeClassConstructor()
         {
+            RunClassConstructor(typeof(MainSerializer));
+
             RunClassConstructor(typeof(INIConstant));
             RunClassConstructor(typeof(INIComponent));
 

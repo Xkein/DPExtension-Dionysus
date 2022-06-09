@@ -15,7 +15,7 @@ namespace Extension.Serialization
         {
             if (type.IsSerializable == false
                 && type.Name.StartsWith("<>c__DisplayClass")
-                && type.GetCustomAttribute<CompilerGeneratedAttribute>() != null)
+                && type.IsDefined(typeof(CompilerGeneratedAttribute)))
             {
                 selector = this;
                 return new DelegateSerializationSurrogate();
