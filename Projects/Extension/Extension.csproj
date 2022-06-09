@@ -64,6 +64,8 @@
     <Compile Include="Ext\CommonExtension.cs" />
     <Compile Include="Ext\Extension.cs" />
     <Compile Include="Ext\InstanceExtension.cs" />
+    <Compile Include="Ext\SuperWeaponExt.cs" />
+    <Compile Include="Ext\SWTypeExt.cs" />
     <Compile Include="Ext\TypeExtension.cs" />
     <Compile Include="GlobalVars.cs" />
     <Compile Include="INI\EnumParser.cs" />
