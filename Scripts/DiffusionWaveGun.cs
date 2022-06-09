@@ -23,7 +23,7 @@ namespace Scripts
 
         public override void Awake()
         {
-            string section = DebugUtilities.GetAbstractID(Owner.OwnerObject.Convert<AbstractClass>());
+            string section = Owner.OwnerTypeRef.BaseAbstractType.ID;
             INI = INIComponent.CreateRulesIniComponent(section);
             INI.AttachToComponent(this);
         }

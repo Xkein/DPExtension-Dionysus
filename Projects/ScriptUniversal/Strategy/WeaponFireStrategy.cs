@@ -13,23 +13,35 @@ namespace ScriptUniversal.Strategy
     [Serializable]
     public class WeaponFireStrategy : FireStrategy
     {
-        public WeaponFireStrategy(Pointer<TechnoClass> techno, Pointer<WeaponTypeClass> weapon)
+        public WeaponFireStrategy(TechnoExt techno, WeaponTypeExt weapon)
         {
-            _techno = TechnoExt.ExtMap.Find(techno);
+            _techno = techno;
             _weapon = weapon;
         }
 
 
-        public TechnoExt Techno
+        public TechnoExt TechnoExt
         {
             get => _techno;
             set => _techno = value;
         }
 
-        public Pointer<WeaponTypeClass> Weapon
+        public WeaponTypeExt WeaponExt
         {
             get => _weapon;
             set => _weapon = value;
+        }
+
+        public Pointer<TechnoClass> Techno
+        {
+            get => TechnoExt.OwnerObject;
+            set => TechnoExt = TechnoExt.ExtMap.Find(value);
+        }
+
+        public Pointer<WeaponTypeClass> Weapon
+        {
+            get => WeaponExt.OwnerObject;
+            set => WeaponExt = WeaponTypeExt.ExtMap.Find(value);
         }
 
         public override int FireTime => Weapon.Ref.Burst;
@@ -60,7 +72,7 @@ namespace ScriptUniversal.Strategy
 
         public override bool CanAttack(Pointer<AbstractClass> pTarget)
         {
-            return Techno != null && Techno.OwnerObject.Ref.CanAttack(pTarget);
+            return !TechnoExt.Expired && Techno.Ref.CanAttack(pTarget);
         }
 
         protected override void Fire(CoordStruct where)
@@ -70,9 +82,9 @@ namespace ScriptUniversal.Strategy
 
         protected override void Fire(Pointer<AbstractClass> pTarget)
         {
-            if (Techno != null)
+            if (!TechnoExt.Expired)
             {
-                Pointer<BulletClass> pBullet = BulletFactory.CreateBullet(pTarget, Weapon, Techno.OwnerObject);
+                Pointer<BulletClass> pBullet = BulletFactory.CreateBullet(pTarget, Weapon, Techno);
                 var pExt = BulletExt.ExtMap.Find(pBullet);
                 OnCreateBullet?.Invoke(pExt);
             }
@@ -83,7 +95,7 @@ namespace ScriptUniversal.Strategy
 
         }
 
-        private ExtensionReference<TechnoExt> _techno;
-        private SwizzleablePointer<WeaponTypeClass> _weapon;
+        private TechnoExt _techno;
+        private WeaponTypeExt _weapon;
     }
 }

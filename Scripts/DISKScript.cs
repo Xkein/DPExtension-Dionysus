@@ -27,7 +27,7 @@ namespace Scripts
         static Pointer<BulletTypeClass> pBulletType => BulletTypeClass.ABSTRACTTYPE_ARRAY.Find("Invisible");
         static Pointer<WarheadTypeClass> pWH => WarheadTypeClass.ABSTRACTTYPE_ARRAY.Find("BlimpHEEffect");
 
-        ExtensionReference<TechnoExt> Target;
+        TechnoExt Target;
 
         private void KillStart(TechnoExt ext)
         {
@@ -35,15 +35,15 @@ namespace Scripts
             frames = 0;
             radius = 1024;
 
-            Target.Set(ext);
+            Target = ext;
         }
 
         private void KillUpdate()
         {
-            if(Target.TryGet(out TechnoExt ext))
+            if(Target is { Expired: false })
             {
-                Pointer<TechnoClass> pTechno = ext.OwnerObject;
-                TechnoTypeExt extType = ext.Type;
+                Pointer<TechnoClass> pTechno = Target.OwnerObject;
+                TechnoTypeExt extType = Target.Type;
 
                 CoordStruct curLocation = pTechno.Ref.Base.Base.GetCoords();
                 
@@ -78,7 +78,7 @@ namespace Scripts
                 angle = (angle + 4) % 360;
                 radius -= 11;
                 if (radius < 0) {
-                    KillStart(ext);
+                    KillStart(Target);
                 } 
             }
         }
@@ -90,7 +90,7 @@ namespace Scripts
 
         public override void OnFire(Pointer<AbstractClass> pTarget, int weaponIndex)
         {
-            if (Target.Get() == null)
+            if (Target == null || Target.Expired)
             {
                 if (pTarget.CastToTechno(out Pointer<TechnoClass> pTechno))
                 {

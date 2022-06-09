@@ -24,7 +24,7 @@ namespace Scripts
         [Serializable]
         public class StrafeStrategy : WeaponFireStrategy
         {
-            public StrafeStrategy(Pointer<TechnoClass> techno) : base(techno, techno.Ref.GetWeapon(0).Ref.WeaponType)
+            public StrafeStrategy(TechnoExt techno) : base(techno, WeaponTypeExt.ExtMap.Find(techno.OwnerRef.GetWeapon(0).Ref.WeaponType))
             {
 
             }
@@ -69,7 +69,7 @@ namespace Scripts
                 _secondFiring = GameObject.StartCoroutine(base.Firing());
                 yield return _secondFiring;
                 _secondFiring = null;
-                Weapon = Techno.OwnerObject.Ref.GetWeapon(0).Ref.WeaponType;
+                Weapon = Techno.Ref.GetWeapon(0).Ref.WeaponType;
             }
 
             private Coroutine _secondFiring;
@@ -78,7 +78,7 @@ namespace Scripts
         public override void Awake()
         {
             GameObject.AddComponent(_fireComponent = new FireComponent());
-            new StrafeStrategy(Owner.OwnerObject).AttachToComponent(_fireComponent);
+            new StrafeStrategy(Owner).AttachToComponent(_fireComponent);
         }
 
         public override void OnUpdate()

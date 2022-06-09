@@ -37,12 +37,12 @@ namespace Scripts
         public static int UniqueID = 114514;
         public MissileFall(TechnoExt target, GGI ggi, bool cluster) : base(target)
         {
-            Owner.Set(ggi.Owner);
+            Owner = ggi.Owner;
             Cluster = cluster;
         }
 
         int lifetime = 15;
-        new ExtensionReference<TechnoExt> Owner;
+        new TechnoExt Owner;
         bool Cluster;
         
         static Random random = new Random(1919810);
@@ -53,7 +53,7 @@ namespace Scripts
         int rof = 5;
         public override void OnUpdate()
         {
-            if (Owner.Get() == null || lifetime <= 0)
+            if (Owner.Expired || lifetime <= 0)
             {
                 DetachFromParent();
                 return;
@@ -73,7 +73,7 @@ namespace Scripts
 
             Func<int, Pointer<BulletClass>> CreateBullet = (int damage) => {
                 Pointer<BulletClass> pBullet = pWeapon.Ref.Projectile.Ref.
-                    CreateBullet(target.OwnerObject.Convert<AbstractClass>(), Owner.Get().OwnerObject,
+                    CreateBullet(target.OwnerObject.Convert<AbstractClass>(), Owner.OwnerObject,
                     damage, pWarhead, pWeapon.Ref.Speed, pWeapon.Ref.Bright);
                 return pBullet;
             };
