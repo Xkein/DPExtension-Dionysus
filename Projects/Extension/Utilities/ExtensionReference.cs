@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Extension.Utilities
 {
+    [Obsolete("Use extension reference directly.")]
     [Serializable]
     public struct ExtensionReference<TExt> : ISerializable where TExt : class, IExtension
     {

@@ -16,7 +16,7 @@ namespace Extension.Components
     {
         public ExtComponent(TExt owner, int id, string name) : base(id)
         {
-            _owner = owner;
+            Owner = owner;
             Name = name;
 
             _unstartedComponents = new List<Component>();
@@ -25,8 +25,9 @@ namespace Extension.Components
             _coroutineSystem = new CoroutineSystem();
         }
 
-        public TExt Owner => _owner;
-        public event Action OnAwake;
+        public TExt Owner { get; set; }
+
+        internal event Action OnAwake;
 
         public override void Awake()
         {
@@ -108,7 +109,6 @@ namespace Extension.Components
             component.DetachFromParent();
         }
 
-        ExtensionReference<TExt> _owner;
         List<Component> _unstartedComponents;
         private CoroutineSystem _coroutineSystem;
     }

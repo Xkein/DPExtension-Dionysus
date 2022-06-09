@@ -17,5 +17,7 @@ namespace Extension.Ext
 
         }
 
+        public ref TBase OwnerRef => ref OwnerObject.Ref;
+
     }
 }

@@ -41,18 +41,6 @@ namespace Extension.Ext
             base.LoadFromStream(stream);
         }
 
-        //public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        //{
-        //    base.GetObjectData(info, context);
-
-        //    info.AddValue("ScriptName", Script?.Name);
-        //}
-        //protected TechnoTypeExt(SerializationInfo info, StreamingContext context) : base(info, context)
-        //{
-        //    string scriptName = info.GetString("ScriptName");
-        //    Script = ScriptManager.GetScript<TechnoScript>(scriptName);
-        //}
-
         //[Hook(HookType.AresHook, Address = 0x711835, Size = 5)]
         static public unsafe UInt32 TechnoTypeClass_CTOR(REGISTERS* R)
         {

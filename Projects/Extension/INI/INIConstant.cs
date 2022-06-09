@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Extension.EventSystems;
+using Extension.Serialization;
 using Extension.Utilities;
 using PatcherYRpp;
 
@@ -29,7 +30,7 @@ namespace Extension.INI
             EventSystem.SaveGame.AddPermanentHandler(EventSystem.SaveGame.SaveGameEvent, (_, e) =>
             {
                 var args = (SaveGameEventArgs)e;
-                if (args.IsStart)
+                if (args.IsStartInStream)
                 {
                     args.Stream.WriteObject(_gameModeName);
                 }
@@ -38,7 +39,7 @@ namespace Extension.INI
             EventSystem.SaveGame.AddPermanentHandler(EventSystem.SaveGame.LoadGameEvent, (_, e) =>
             {
                 var args = (LoadGameEventArgs)e;
-                if (args.IsStart)
+                if (args.IsStartInStream)
                 {
                     args.Stream.ReadObject(out _gameModeName);
                 }

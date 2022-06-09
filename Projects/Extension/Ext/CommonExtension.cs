@@ -49,23 +49,30 @@ namespace Extension.Ext
         {
             _extComponent = new ExtComponent<TExt>(this as TExt, 0, _extComponentName);
             _decoratorComponent = new DecoratorComponent();
+
+            _extComponent.OnAwake += () => Type = CommonTypeExtension<TTypeExt, TTypeBase>.ExtMap.Find(this.OwnerObject.Ref.OwnType);
+            
             _extComponent.OnAwake += () => ScriptManager.CreateScriptableTo(_extComponent, Type.Scripts, this as TExt);
             _extComponent.OnAwake += () => _decoratorComponent.AttachToComponent(_extComponent);
         }
 
-        ExtensionReference<TTypeExt> type;
-        public TTypeExt Type
-        {
-            get
-            {
-                if (type.TryGet(out TTypeExt ext) == false)
-                {
-                    type.Set(OwnerObject.Ref.OwnType);
-                    ext = type.Get();
-                }
-                return ext;
-            }
-        }
+
+
+        public TTypeExt Type { get; internal set; }
+        public ref TTypeBase OwnerTypeRef => ref Type.OwnerRef;
+        //ExtensionReference<TTypeExt> type;
+        //public TTypeExt Type
+        //{
+        //    get
+        //    {
+        //        if (type.TryGet(out TTypeExt ext) == false)
+        //        {
+        //            type.Set(OwnerObject.Ref.OwnType);
+        //            ext = type.Get();
+        //        }
+        //        return ext;
+        //    }
+        //}
 
         public ExtComponent<TExt> ExtComponent => _extComponent.GetAwaked();
         public DecoratorComponent DecoratorComponent => _decoratorComponent;
