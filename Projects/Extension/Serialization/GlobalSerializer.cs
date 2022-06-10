@@ -113,7 +113,7 @@ namespace Extension.Serialization
         
         private string GetSavePath(string name)
         {
-            string saveDir = Path.Combine(".", "Saved Games");
+            string saveDir = Path.Combine(GlobalVars.RootDirectory, "Saved Games");
             if (!Directory.Exists(saveDir))
             {
                 Directory.CreateDirectory(saveDir);

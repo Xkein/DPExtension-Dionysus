@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,8 @@ namespace Extension
     public static partial class GlobalVars
     {
         public static string ExtensionVersion { get; } = typeof(GlobalVars).Assembly.GetName().Version.ToString();
+        public static string RootDirectory => AppDomain.CurrentDomain.BaseDirectory;
+        public static string DynamicPatcherDirectory => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DynamicPatcher");
 
         public static SerializationConfiguration Serialization;
     }
