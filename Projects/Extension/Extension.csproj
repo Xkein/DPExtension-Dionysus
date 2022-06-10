@@ -62,12 +62,12 @@
     <Compile Include="EventSystems\PointerExpireEventSystem.cs" />
     <Compile Include="EventSystems\SaveGameEventSystem.cs" />
     <Compile Include="Ext\AnimExt.cs" />
-    <Compile Include="Ext\CommonExtension.cs" />
-    <Compile Include="Ext\Extension.cs" />
-    <Compile Include="Ext\InstanceExtension.cs" />
+    <Compile Include="Ext\Generic\CommonExtension.cs" />
+    <Compile Include="Ext\Generic\Extension.cs" />
+    <Compile Include="Ext\Generic\InstanceExtension.cs" />
     <Compile Include="Ext\SuperWeaponExt.cs" />
     <Compile Include="Ext\SWTypeExt.cs" />
-    <Compile Include="Ext\TypeExtension.cs" />
+    <Compile Include="Ext\Generic\TypeExtension.cs" />
     <Compile Include="Ext\WeaponTypeExt.cs" />
     <Compile Include="GlobalVars.cs" />
     <Compile Include="INI\EnumParser.cs" />
@@ -84,7 +84,7 @@
     <Compile Include="Ext\AnimTypeExt.cs" />
     <Compile Include="Ext\BulletExt.cs" />
     <Compile Include="Ext\BulletTypeExt.cs" />
-    <Compile Include="Ext\Container.cs" />
+    <Compile Include="Ext\Generic\Container.cs" />
     <Compile Include="Components\IHaveComponent.cs" />
     <Compile Include="INI\INIConstant.cs" />
     <Compile Include="INI\NormalParser.cs" />
