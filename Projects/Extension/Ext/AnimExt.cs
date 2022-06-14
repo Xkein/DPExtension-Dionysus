@@ -13,6 +13,7 @@ namespace Extension.Ext
 #if !USE_ANIM_EXT
     [Obsolete("AnimExt is disable because performance consideration. Define symbol 'USE_ANIM_EXT' to use it.", true)]
 #endif
+    [Serializable]
     public partial class AnimExt : CommonInstanceExtension<AnimExt, AnimClass, AnimTypeExt, AnimTypeClass>
     {
         public AnimExt(Pointer<AnimClass> OwnerObject) : base(OwnerObject)
@@ -40,8 +41,8 @@ namespace Extension.Ext
             return 0;
         }
 
-        //[Hook(HookType.AresHook, Address = 0x426590, Size = 8)]
-        public static unsafe UInt32 AnimClass_SDDTOR(REGISTERS* R)
+        //[Hook(HookType.AresHook, Address = 0x4228E0, Size = 5)]
+        public static unsafe UInt32 AnimClass_DTOR(REGISTERS* R)
         {
             var pItem = (Pointer<AnimClass>)R->ECX;
 
