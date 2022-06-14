@@ -29,7 +29,9 @@ namespace Miscellaneous
         static string[] ignoreList = new[]
         {
             "ra2md.ini",
+            // reshader
             "reshade.ini",
+            "DefaultPreset.ini"
 
         }.Select(i => i.ToLower()).ToArray();
 
