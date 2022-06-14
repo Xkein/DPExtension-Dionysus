@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using PatcherYRpp;
@@ -21,8 +22,21 @@ namespace Extension.EventSystems
             Removed = removed;
         }
 
-        public Pointer<AbstractClass> ExpiredPointer { get; }
-        public bool Removed { get; }
+        public Pointer<AbstractClass> ExpiredPointer
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            protected set;
+        }
+
+        public bool Removed
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            protected set;
+        }
     }
 
     public class PointerExpireEventSystem : EventSystem
