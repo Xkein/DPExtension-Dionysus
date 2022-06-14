@@ -21,12 +21,27 @@ namespace Extension.EventSystems
         public static PointerExpireEventSystem PointerExpire { get; }
         public static SaveGameEventSystem SaveGame { get; }
 
+        private static event EventHandler OnClearTemporaryHandler;
 
         static EventSystem()
         {
             General = new GeneralEventSystem();
+            General.AddPermanentHandler(General.ScenarioClearClassesEvent, (sender, e) =>
+            {
+                OnClearTemporaryHandler?.Invoke(sender, e);
+            });
             PointerExpire = new PointerExpireEventSystem();
             SaveGame = new SaveGameEventSystem();
+        }
+
+        protected EventSystem()
+        {
+            Register();
+        }
+
+        ~EventSystem()
+        {
+            Unregister();
         }
 
         /// <summary>
@@ -51,28 +66,26 @@ namespace Extension.EventSystems
         /// <summary>
         /// add handler that only exists in single game scenario
         /// </summary>
-        /// <remarks>UNFINISHED</remarks>
         /// <param name="e"></param>
         /// <param name="handler"></param>
         public virtual void AddTemporaryHandler(EventBase e, EventHandler handler)
         {
-            AddHandler(_temporaryHandler, e, handler);
+            AddHandler(_temporaryHandlers, e, handler);
         }
         /// <summary>
         /// remove handler that only exists in single game scenario
         /// </summary>
-        /// <remarks>UNFINISHED</remarks>
         /// <param name="e"></param>
         /// <param name="handler"></param>
         public virtual void RemoveTemporaryHandler(EventBase e, EventHandler handler)
         {
-            RemoveHandler(_temporaryHandler, e, handler);
+            RemoveHandler(_temporaryHandlers, e, handler);
         }
 
         public virtual void Broadcast(EventBase e, EventArgs args)
         {
             Broadcast(_permanentHandlers, e, args);
-            Broadcast(_temporaryHandler, e, args);
+            Broadcast(_temporaryHandlers, e, args);
         }
 
 
@@ -100,19 +113,39 @@ namespace Extension.EventSystems
         {
             if (handlers.TryGetValue(e, out var handler))
             {
-                try
+                foreach (EventHandler h in handler.GetInvocationList().Cast<EventHandler>())
                 {
-                    handler(this, args);
-                }
-                catch (Exception exception)
-                {
-                    Logger.PrintException(exception);
+                    try
+                    {
+                        h(this, args);
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.PrintException(exception);
+                    }
                 }
             }
         }
 
+        private void Register()
+        {
+            OnClearTemporaryHandler += ClearTemporaryHandler;
+        }
+        private void Unregister()
+        {
+            OnClearTemporaryHandler -= ClearTemporaryHandler;
+        }
+        private void ClearTemporaryHandler(object sender, EventArgs e)
+        {
+            ClearTemporaryHandler();
+        }
+        private void ClearTemporaryHandler()
+        {
+            _temporaryHandlers.Clear();
+        }
+
         private Dictionary<EventBase, EventHandler> _permanentHandlers = new();
-        private Dictionary<EventBase, EventHandler> _temporaryHandler = new();
+        private Dictionary<EventBase, EventHandler> _temporaryHandlers = new();
     }
     
 }
