@@ -40,6 +40,22 @@ namespace GeneralHooks
             return 0;
         }
 
+        [Hook(HookType.AresHook, Address = 0x55AFB3, Size = 6)]
+        public static unsafe UInt32 LogicClass_Update(REGISTERS* R)
+        {
+            EventSystem.General.Broadcast(EventSystem.General.LogicClassUpdateEvent, new LogicClassUpdateEventArgs(true));
+
+            return 0;
+        }
+
+        [Hook(HookType.AresHook, Address = 0x55B719, Size = 5)]
+        public static unsafe UInt32 LogicClass_Update_Late(REGISTERS* R)
+        {
+            EventSystem.General.Broadcast(EventSystem.General.LogicClassUpdateEvent, new LogicClassUpdateEventArgs(false));
+
+            return 0;
+        }
+
         [Hook(HookType.AresHook, Address = 0x685659, Size = 0xA)]
         public static unsafe UInt32 Scenario_ClearClasses(REGISTERS* R)
         {

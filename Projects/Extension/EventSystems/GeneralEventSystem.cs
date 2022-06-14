@@ -17,6 +17,23 @@ namespace Extension.EventSystems
         public override string Description => "Raised when scenario start";
     }
 
+    public class LogicClassUpdateEvent : EventBase
+    {
+        public override string Name => "LogicClassUpdate";
+        public override string Description => "Raised when LogicClass update";
+    }
+
+    public class LogicClassUpdateEventArgs : EventArgs
+    {
+        public LogicClassUpdateEventArgs(bool isBeginUpdate)
+        {
+            IsBeginUpdate = isBeginUpdate;
+        }
+
+        public bool IsBeginUpdate { get; }
+        public bool IsLateUpdate => !IsBeginUpdate;
+    }
+
     public class GeneralEventSystem : EventSystem
     {
 
@@ -24,9 +41,11 @@ namespace Extension.EventSystems
         {
             ScenarioClearClassesEvent = new ScenarioClearClassesEvent();
             ScenarioStartEvent = new ScenarioStartEvent();
+            LogicClassUpdateEvent = new LogicClassUpdateEvent();
         }
 
         public ScenarioClearClassesEvent ScenarioClearClassesEvent { get; }
         public ScenarioStartEvent ScenarioStartEvent { get; }
+        public LogicClassUpdateEvent LogicClassUpdateEvent { get; }
     }
 }
