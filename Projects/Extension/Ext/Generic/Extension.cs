@@ -105,6 +105,13 @@ namespace Extension.Ext
             }
         }
 
+        public void Expire()
+        {
+            OnExpire();
+            
+            OwnerObject = Pointer<T>.Zero;
+        }
+
         // right after construction. only basic initialization tasks possible;
         // owner object is only partially constructed! do not use global state!
         protected virtual void InitializeConstants() { }
@@ -122,5 +129,7 @@ namespace Extension.Ext
 
         public virtual void LoadFromStream(IStream stream) { }
         public virtual void SaveToStream(IStream stream) { }
+
+        public virtual void OnExpire() { }
     }
 }

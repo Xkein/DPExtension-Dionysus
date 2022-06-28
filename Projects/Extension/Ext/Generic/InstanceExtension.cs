@@ -10,7 +10,7 @@ namespace Extension.Ext
     [Serializable]
     public abstract class InstanceExtension<TExt, TBase> : Extension<TBase> where TExt : Extension<TBase>
     {
-        public static Container<TExt, TBase> ExtMap = new Container<TExt, TBase>(typeof(TBase).Name);
+        public static Container<TExt, TBase> ExtMap = new MapContainer<TExt, TBase>(typeof(TBase).Name);
 
         protected InstanceExtension(Pointer<TBase> OwnerObject) : base(OwnerObject)
         {
