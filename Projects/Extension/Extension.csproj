@@ -61,11 +61,14 @@
     <Compile Include="EventSystems\PointerExpireEventSystem.cs" />
     <Compile Include="EventSystems\SaveGameEventSystem.cs" />
     <Compile Include="Ext\AnimExt.cs" />
+    <Compile Include="Ext\CellExt.cs" />
     <Compile Include="Ext\Generic\CommonExtension.cs" />
     <Compile Include="Ext\Generic\ECSInstanceExtension.cs" />
     <Compile Include="Ext\Generic\Extension.cs" />
     <Compile Include="Ext\Generic\InstanceExtension.cs" />
     <Compile Include="Ext\Generic\MapContainer.cs" />
+    <Compile Include="Ext\HouseExt.cs" />
+    <Compile Include="Ext\HouseTypeExt.cs" />
     <Compile Include="Ext\SuperWeaponExt.cs" />
     <Compile Include="Ext\SWTypeExt.cs" />
     <Compile Include="Ext\Generic\TypeExtension.cs" />
