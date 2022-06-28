@@ -20,7 +20,7 @@ namespace ComponentHooks
                 Pointer<BulletClass> pBullet = (IntPtr)R->EBP;
 
                 BulletExt ext = BulletExt.ExtMap.Find(pBullet);
-                ext.AttachedComponent.Foreach(c => c.OnUpdate());
+                ext.GameObject.Foreach(c => c.OnUpdate());
 
                 return 0;
             }
@@ -39,7 +39,7 @@ namespace ComponentHooks
                 Pointer<BulletClass> pBullet = (IntPtr)R->EBP;
 
                 BulletExt ext = BulletExt.ExtMap.Find(pBullet);
-                ext.AttachedComponent.Foreach(c => c.OnLateUpdate());
+                ext.GameObject.Foreach(c => c.OnLateUpdate());
 
                 return 0;
             }
@@ -59,7 +59,7 @@ namespace ComponentHooks
                 var pCoords = R->Stack<Pointer<CoordStruct>>(0x4);
 
                 BulletExt ext = BulletExt.ExtMap.Find(pBullet);
-                ext.AttachedComponent.Foreach(c => (c as IBulletScriptable)?.OnDetonate(pCoords));
+                ext.GameObject.Foreach(c => (c as IBulletScriptable)?.OnDetonate(pCoords));
 
                 return 0;
             }
@@ -78,7 +78,7 @@ namespace ComponentHooks
                 Pointer<BulletClass> pBullet = (IntPtr)R->ECX;
 
                 BulletExt ext = BulletExt.ExtMap.Find(pBullet);
-                ext.AttachedComponent.Foreach(c => c.OnRender());
+                ext.GameObject.Foreach(c => c.OnRender());
 
                 return 0;
             }

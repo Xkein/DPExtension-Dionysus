@@ -21,7 +21,7 @@ namespace ComponentHooks
                 Pointer<AnimClass> pAnim = (IntPtr)R->ECX;
 
                 AnimExt ext = AnimExt.ExtMap.Find(pAnim);
-                ext.AttachedComponent.Foreach(c => c.OnUpdate());
+                ext.GameObject.Foreach(c => c.OnUpdate());
 
                 return 0;
             }
@@ -49,7 +49,7 @@ namespace ComponentHooks
                 Pointer<AnimClass> pAnim = (IntPtr)R->ESI;
 
                 AnimExt ext = AnimExt.ExtMap.Find(pAnim);
-                ext.AttachedComponent.Foreach(c => c.OnLateUpdate());
+                ext.GameObject.Foreach(c => c.OnLateUpdate());
 
                 return 0;
             }
@@ -68,7 +68,7 @@ namespace ComponentHooks
                 Pointer<AnimClass> pAnim = (IntPtr)R->ECX;
 
                 AnimExt ext = AnimExt.ExtMap.Find(pAnim);
-                ext.AttachedComponent.Foreach(c => (c as IObjectScriptable)?.OnRemove());
+                ext.GameObject.Foreach(c => (c as IObjectScriptable)?.OnRemove());
 
                 return 0;
             }
@@ -87,7 +87,7 @@ namespace ComponentHooks
                 Pointer<AnimClass> pAnim = (IntPtr)R->ECX;
 
                 AnimExt ext = AnimExt.ExtMap.Find(pAnim);
-                ext.AttachedComponent.Foreach(c => c.OnRender());
+                ext.GameObject.Foreach(c => c.OnRender());
 
                 return 0;
             }

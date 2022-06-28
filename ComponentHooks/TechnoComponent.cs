@@ -20,7 +20,7 @@ namespace ComponentHooks
                 Pointer<TechnoClass> pTechno = (IntPtr)R->ESI;
 
                 TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
-                ext.AttachedComponent.Foreach(c => c.OnUpdate());
+                ext.GameObject.Foreach(c => c.OnUpdate());
 
                 return 0;
             }
@@ -39,7 +39,7 @@ namespace ComponentHooks
                 Pointer<TechnoClass> pTechno = (IntPtr)R->ESI;
 
                 TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
-                ext.AttachedComponent.Foreach(c => c.OnLateUpdate());
+                ext.GameObject.Foreach(c => c.OnLateUpdate());
 
                 return 0;
             }
@@ -59,7 +59,7 @@ namespace ComponentHooks
                 var faceDir = R->Stack<Direction>(0x8);
 
                 TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
-                ext.AttachedComponent.Foreach(c => (c as IObjectScriptable)?.OnPut(pCoord.Data, faceDir));
+                ext.GameObject.Foreach(c => (c as IObjectScriptable)?.OnPut(pCoord.Data, faceDir));
 
                 return 0;
             }
@@ -79,7 +79,7 @@ namespace ComponentHooks
                 Pointer<TechnoClass> pTechno = (IntPtr)R->ECX;
 
                 TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
-                ext.AttachedComponent.Foreach(c => (c as IObjectScriptable)?.OnRemove());
+                ext.GameObject.Foreach(c => (c as IObjectScriptable)?.OnRemove());
 
                 return 0;
             }
@@ -104,7 +104,7 @@ namespace ComponentHooks
                 var pAttackingHouse = R->Stack<Pointer<HouseClass>>(0x1C);
 
                 TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
-                ext.AttachedComponent.Foreach(c => (c as IObjectScriptable)?.OnReceiveDamage(pDamage, distanceFromEpicenter, pWH, pAttacker, ignoreDefenses, preventPassengerEscape, pAttackingHouse));
+                ext.GameObject.Foreach(c => (c as IObjectScriptable)?.OnReceiveDamage(pDamage, distanceFromEpicenter, pWH, pAttacker, ignoreDefenses, preventPassengerEscape, pAttackingHouse));
 
                 return 0;
             }
@@ -124,7 +124,7 @@ namespace ComponentHooks
                 var nWeaponIndex = R->Stack<int>(0x8);
 
                 TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
-                ext.AttachedComponent.Foreach(c => (c as ITechnoScriptable)?.OnFire(pTarget, nWeaponIndex));
+                ext.GameObject.Foreach(c => (c as ITechnoScriptable)?.OnFire(pTarget, nWeaponIndex));
 
                 return 0;
             }
@@ -141,7 +141,7 @@ namespace ComponentHooks
             try
             {
                 TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
-                ext.AttachedComponent.Foreach(c => c.OnRender());
+                ext.GameObject.Foreach(c => c.OnRender());
 
                 return 0;
             }

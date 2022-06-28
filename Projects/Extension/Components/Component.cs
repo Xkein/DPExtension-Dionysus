@@ -11,22 +11,23 @@ using DynamicPatcher;
 namespace Extension.Components
 {
     [Serializable]
-    public abstract class Component : IHaveComponent, IReloadable
+    public abstract class Component : IReloadable
     {
         public const int NO_ID = -1;
-        public Component()
+
+        protected Component()
         {
             ID = NO_ID;
             _transform = new Transform();
         }
 
-        public Component(bool withoutTransform = false)
+        protected Component(bool withoutTransform = false)
         {
             ID = NO_ID;
             _transform = withoutTransform ? null : new Transform();
         }
 
-        public Component(int id) : this()
+        protected Component(int id) : this()
         {
             ID = id;
         }
@@ -36,16 +37,12 @@ namespace Extension.Components
         public string Name { get; set; }
         public string Tag { get; set; }
         
-        public Component Parent { get => _parent; }
-        public Component Root { get => GetRoot(); }
-        public IGameObject GameObject => Root as IGameObject; // temporally use ExtComponent as GameObject
-
-        /// <summary>
-        /// don't use before finish
-        /// </summary>
+        public Component Parent => _parent;
+        public Component Root => GetRoot();
+        public GameObject GameObject => Root as GameObject;
+        
+        [Obsolete("don't use before finish")]
         public Transform Transform { get; }
-
-        public Component AttachedComponent => this;
 
         public Component GetRoot()
         {
@@ -158,7 +155,7 @@ namespace Extension.Components
 
         public Component GetComponentInChildren(Type type)
         {
-            return GetComponentInChildren(c => type.IsAssignableFrom(c.GetType()));
+            return GetComponentInChildren(type.IsInstanceOfType);
         }
 
         public TComponent GetComponentInChildren<TComponent>() where TComponent : Component
@@ -190,7 +187,7 @@ namespace Extension.Components
 
         public Component[] GetComponentsInChildren(Type type)
         {
-            return GetComponentsInChildren(c => type.IsAssignableFrom(c.GetType())).ToArray();
+            return GetComponentsInChildren(type.IsInstanceOfType).ToArray();
         }
         public TComponent[] GetComponentsInChildren<TComponent>() where TComponent : Component
         {
@@ -225,7 +222,7 @@ namespace Extension.Components
 
         public Component GetComponentInParent(Type type)
         {
-            return GetComponentInParent(c => type.IsAssignableFrom(c.GetType()));
+            return GetComponentInParent(type.IsInstanceOfType);
         }
 
         public TComponent GetComponentInParent<TComponent>() where TComponent : Component
@@ -254,7 +251,7 @@ namespace Extension.Components
 
         public Component[] GetComponentsInParent(Type type)
         {
-            return GetComponentsInParent(c => type.IsAssignableFrom(c.GetType())).ToArray();
+            return GetComponentsInParent(type.IsInstanceOfType).ToArray();
         }
         public TComponent[] GetComponentsInParent<TComponent>() where TComponent : Component
         {
@@ -393,7 +390,7 @@ namespace Extension.Components
         /// <param name="component"></param>
         public static void Destroy(Component component)
         {
-            component.Foreach(c => c.OnDestroy());
+            component.Destroy();
             component.DetachFromParent();
         }
 
@@ -415,6 +412,25 @@ namespace Extension.Components
                 ForeachChild(c => c.EnsureStarted());
                 _started = true;
             }
+        }
+
+        private void Destroy()
+        {
+            foreach (Component child in _children)
+            {
+                child.Destroy();
+            }
+
+            try
+            {
+                OnDestroy();
+            }
+            catch (Exception e)
+            {
+                Logger.PrintException(e);
+            }
+
+            _children.Clear();
         }
 
         protected Transform _transform;

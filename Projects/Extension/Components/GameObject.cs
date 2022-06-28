@@ -80,4 +80,101 @@ namespace Extension.Components
         void AddComponentEx(Component component, Component attached);
         void RemoveComponent(Component component);
     }
+
+    /// <summary>
+    /// although GameObject derived from Component, don't use it as Component now.
+    /// </summary>
+    [Serializable]
+    public sealed class GameObject : Component, IGameObject
+    {
+        public GameObject(string name) : base(0)
+        {
+            Name = name;
+
+            _unstartedComponents = new List<Component>();
+            _unstartedComponents.Add(this);
+
+            _coroutineSystem = new CoroutineSystem();
+        }
+
+        internal event Action OnAwake;
+
+        public override void Awake()
+        {
+            base.Awake();
+
+            OnAwake?.Invoke();
+        }
+
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+
+            if (_unstartedComponents.Count > 0)
+            {
+                Component.ForeachComponents(_unstartedComponents, c => c.EnsureStarted());
+                _unstartedComponents.Clear();
+            }
+
+            _coroutineSystem.Update();
+        }
+
+        /// <summary>
+        /// return myself and ensure awaked
+        /// </summary>
+        /// <returns></returns>
+        public GameObject GetAwaked()
+        {
+            EnsureAwaked();
+
+            return this;
+        }
+
+        public Coroutine StartCoroutine(IEnumerator enumerator)
+        {
+            return _coroutineSystem.StartCoroutine(enumerator);
+        }
+
+        public void StopCoroutine(IEnumerator enumerator)
+        {
+            _coroutineSystem.StopCoroutine(enumerator);
+        }
+        public void StopCoroutine(Coroutine coroutine)
+        {
+            _coroutineSystem.StopCoroutine(coroutine);
+        }
+
+        public new void AddComponent(Component component)
+        {
+            AddComponentEx(component, this);
+        }
+
+        public void AddComponentEx(Component component, Component attached)
+        {
+            if (component.Parent != attached)
+            {
+                component.AttachToComponent(attached);
+            }
+            else
+            {
+                // AddComponentEx will called again by AttachToComponent and enter this branch
+
+                component.EnsureAwaked();
+                _unstartedComponents.Add(component);
+            }
+        }
+
+        public new void RemoveComponent(Component component)
+        {
+            component.DetachFromParent();
+        }
+
+        public static void Destroy(GameObject gameObject)
+        {
+            Component.Destroy(gameObject);
+        }
+
+        List<Component> _unstartedComponents;
+        private CoroutineSystem _coroutineSystem;
+    }
 }

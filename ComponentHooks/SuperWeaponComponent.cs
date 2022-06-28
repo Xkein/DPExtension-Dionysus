@@ -22,7 +22,7 @@ namespace ComponentHooks
                 var isPlayer = R->Stack<bool>(0x8);
 
                 SuperWeaponExt ext = SuperWeaponExt.ExtMap.Find(pSuper);
-                ext.AttachedComponent.Foreach(c => (c as ISuperWeaponScriptable)?.OnLaunch(pCell.Data, isPlayer));
+                ext.GameObject.Foreach(c => (c as ISuperWeaponScriptable)?.OnLaunch(pCell.Data, isPlayer));
 
                 return 0;
             }

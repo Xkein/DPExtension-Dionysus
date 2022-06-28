@@ -52,7 +52,6 @@
   <ItemGroup>
     <Compile Include="Components\Component.cs" />
     <Compile Include="Components\ComponentManager.cs" />
-    <Compile Include="Components\ExtComponent.cs" />
     <Compile Include="Components\GameObject.cs" />
     <Compile Include="Coroutines\Coroutine.cs" />
     <Compile Include="Coroutines\WaitCondition.cs" />
@@ -63,6 +62,7 @@
     <Compile Include="EventSystems\SaveGameEventSystem.cs" />
     <Compile Include="Ext\AnimExt.cs" />
     <Compile Include="Ext\Generic\CommonExtension.cs" />
+    <Compile Include="Ext\Generic\ECSInstanceExtension.cs" />
     <Compile Include="Ext\Generic\Extension.cs" />
     <Compile Include="Ext\Generic\InstanceExtension.cs" />
     <Compile Include="Ext\Generic\MapContainer.cs" />
@@ -86,7 +86,6 @@
     <Compile Include="Ext\BulletExt.cs" />
     <Compile Include="Ext\BulletTypeExt.cs" />
     <Compile Include="Ext\Generic\Container.cs" />
-    <Compile Include="Components\IHaveComponent.cs" />
     <Compile Include="INI\INIConstant.cs" />
     <Compile Include="INI\NormalParser.cs" />
     <Compile Include="INI\Parser.cs" />
