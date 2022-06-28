@@ -119,7 +119,7 @@ namespace Scripts
                 decorator.CreateDecorator<PairDecorator<string, bool>>("super weapon is launched", LaunchedTag, false);
                 decorator.CreateDecorator<PairDecorator<string, bool>>("super weapon is charged at least once", BaseChargedTag, false);
 
-                ext.ExtComponent.CreateScriptComponent<SWLaunchListener>("super weapon launch listener for keepers", ext);
+                ext.GameObject.CreateScriptComponent<SWLaunchListener>("super weapon launch listener for keepers", ext);
             }
 
             {
@@ -275,7 +275,7 @@ namespace Scripts
                 return;
 
             SuperWeaponExt ext = SuperWeaponExt.ExtMap.Find(pSuper);
-            ref UniString altUIName = ref ext.ExtComponent.GetComponent<SWLaunchListener>().AltUIName;
+            ref UniString altUIName = ref ext.GameObject.GetComponent<SWLaunchListener>().AltUIName;
 
             bool baseCharged = ext.DecoratorComponent.GetValue<bool>(BaseChargedTag);
             int maxLevel = ext.DecoratorComponent.GetValue<int>(MaxLevelTag);

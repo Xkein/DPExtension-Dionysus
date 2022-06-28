@@ -407,10 +407,9 @@ namespace Miscellaneous
         {
             INIComponent.ClearBuffer();
 
-            void RefreshINIComponents<TExt>(TExt ext) where TExt : IHaveComponent
+            void RefreshINIComponents<TExt, TBase>(ECSInstanceExtension<TExt, TBase> ext) where TExt : Extension<TBase>
             {
-                Component root = ext.AttachedComponent;
-                INIComponent[] components = root.GetComponentsInChildren<INIComponent>();
+                INIComponent[] components = ext.GameObject.GetComponentsInChildren<INIComponent>();
                 if (components.Length > 0)
                 {
                     foreach (var component in components)
@@ -420,19 +419,21 @@ namespace Miscellaneous
                 }
             }
 
-            Logger.Log("refreshing techno's INIComponents...");
-            foreach (var pItem in TechnoClass.Array)
+            void Refresh<TExt, TBase>(Container<TExt, TBase> container, ref DynamicVectorClass<Pointer<TBase>> dvc) where TExt : ECSInstanceExtension<TExt, TBase>
             {
-                var ext = TechnoExt.ExtMap.Find(pItem);
-                RefreshINIComponents(ext);
+                Logger.Log("refreshing {0}'s INIComponents...", typeof(TExt).Name);
+                foreach (var pItem in dvc)
+                {
+                    var ext = container.Find(pItem);
+                    RefreshINIComponents(ext);
+                }
             }
 
-            Logger.Log("refreshing bullet's INIComponents...");
-            foreach (var pItem in BulletClass.Array)
-            {
-                var ext = BulletExt.ExtMap.Find(pItem);
-                RefreshINIComponents(ext);
-            }
+            Refresh(TechnoExt.ExtMap, ref TechnoClass.Array);
+            Refresh(BulletExt.ExtMap, ref BulletClass.Array);
+#if USE_ANIM_EXT
+            Refresh(AnimExt.ExtMap, ref AnimClass.Array);
+#endif
         }
 
         private static int oldSpeed = 1;

@@ -41,7 +41,7 @@ namespace Scripts
                     ext.OwnerObject.Ref.MoveTo(Target.Ref.GetCoords() + new CoordStruct(-500, -500, 4000 + MathEx.Random.Next(0, 1000)) + MathEx.CalculateRandomPointInSphere(256, 1024).ToCoordStruct(), default);
                     if (spin)
                     {
-                        ext.ExtComponent.CreateScriptComponent("AAHeatSeeker2", "ss", ext);
+                        ext.GameObject.CreateScriptComponent("AAHeatSeeker2", "ss", ext);
                     }
                 };
 

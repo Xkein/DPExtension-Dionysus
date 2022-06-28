@@ -29,9 +29,9 @@ namespace Scripts
     class EscortGroup
     {
         public static readonly DecoratorId ID = new DecoratorId(typeof(EscortGroup).GetHashCode());
-        public ExtensionReference<TechnoExt> Princess { get; set; }
-        public List<ExtensionReference<TechnoExt>> Escorts { get; set; }
-        public List<ExtensionReference<TechnoTypeExt>> EscortTypes { get; set; }
+        public TechnoExt Princess { get; set; }
+        public List<TechnoExt> Escorts { get; set; }
+        public List<TechnoTypeExt> EscortTypes { get; set; }
         public PatrolPath PatrolPath { get; set; }
         public int CloseEnough { get; set; } = Game.CellSize;
         public int RecreateDelay { get; set; } = 500;
@@ -40,8 +40,8 @@ namespace Scripts
         public EscortGroup(TechnoExt princess, List<TechnoTypeExt> escortTypes, List<CoordStruct> patrolPoints)
         {
             Princess = princess;
-            Escorts = new List<ExtensionReference<TechnoExt>>();
-            EscortTypes = escortTypes.Select(t => new ExtensionReference<TechnoTypeExt>(t)).ToList();
+            Escorts = new List<TechnoExt>();
+            EscortTypes = escortTypes;
             PatrolPath = new PatrolPath(patrolPoints);
             _delay = RecreateDelay;
         }
@@ -137,7 +137,7 @@ namespace Scripts
 
         private void Clean()
         {
-            Escorts.RemoveAll(e => e.Get() == null);
+            Escorts.RemoveAll(e => e.Expired);
         }
 
         private void UpdateEscorts()

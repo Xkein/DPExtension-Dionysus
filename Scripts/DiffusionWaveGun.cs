@@ -62,7 +62,7 @@ namespace Scripts
                     targets.Add(pCell.Convert<AbstractClass>());
                 }
             }
-            ext.ExtComponent.CreateScriptComponent<StraightRush>("first straight rush", ext, targets, BurstWeapon, Speed, FlyPercent, BurstMaxAngle);
+            ext.GameObject.CreateScriptComponent<StraightRush>("first straight rush", ext, targets, BurstWeapon, Speed, FlyPercent, BurstMaxAngle);
         }
 
         [Serializable]
@@ -104,7 +104,7 @@ namespace Scripts
                     var pBullet = BulletFactory.CreateBullet(pTarget, BurstWeapon, pOwner);
                     pBullet.Ref.MoveTo(location, new BulletVelocity(0, 0, 0));
                     BulletExt ext = BulletExt.ExtMap.Find(pBullet);
-                    ext.ExtComponent.CreateScriptComponent<DiffusionEffect>("brust out", ext, burstMaxAngle);
+                    ext.GameObject.CreateScriptComponent<DiffusionEffect>("brust out", ext, burstMaxAngle);
                 }
             }
 

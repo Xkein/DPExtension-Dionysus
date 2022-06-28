@@ -276,7 +276,7 @@ namespace Scripts
             foreach (Pointer<TechnoClass> pTechno in TechnoClass.Array)
             {
                 var ext = TechnoExt.ExtMap.Find(pTechno);
-                var jj = ext.AttachedComponent.GetComponent<JUMPJETScript>();
+                var jj = ext.GameObject.GetComponent<JUMPJETScript>();
                 if (jj != null)
                 {
                     list.Add(jj);

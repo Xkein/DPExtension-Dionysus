@@ -23,9 +23,9 @@ namespace Scripts
             if (weaponIndex == 1)
             {
                 var id = 1919810;
-                if (Owner.AttachedComponent.GetComponent(id) == null)
+                if (GameObject.GetComponent(id) == null)
                 {
-                    Owner.ExtComponent.CreateScriptComponent<NuclearLeakage>(id, "Nuclear Leakage Decorator", this);
+                    GameObject.CreateScriptComponent<NuclearLeakage>(id, "Nuclear Leakage Decorator", this);
                 }
             }
         }

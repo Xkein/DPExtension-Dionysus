@@ -91,9 +91,9 @@ namespace Scripts
             if (TryCreateBullet(out var pBullet))
             {
                 BulletExt bulletExt = BulletExt.ExtMap.Find(pBullet);
-                if (bulletExt.AttachedComponent.GetComponent(BulletBehavior.UniqueID) == null)
+                if (bulletExt.GameObject.GetComponent(BulletBehavior.UniqueID) == null)
                 {
-                    bulletExt.ExtComponent.CreateScriptComponent<BulletBehavior>(BulletBehavior.UniqueID, "Bullet Effect Decorator", bulletExt);
+                    bulletExt.GameObject.CreateScriptComponent<BulletBehavior>(BulletBehavior.UniqueID, "Bullet Effect Decorator", bulletExt);
                 }
 
                 pBullet.Ref.MoveTo(from.ToCoordStruct(), default);
