@@ -14,7 +14,8 @@ namespace Extension.Script
     public abstract class Scriptable<T> : ScriptComponent, IScriptable
     {
         public T Owner { get; protected set; }
-        public Scriptable(T owner) : base()
+
+        protected Scriptable(T owner) : base()
         {
             Owner = owner;
         }

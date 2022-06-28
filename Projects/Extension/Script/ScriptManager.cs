@@ -99,25 +99,27 @@ namespace Extension.Script
             return scripts;
         }
 
-        public static void CreateScriptableTo<T>(Component root, IEnumerable<Script> scripts, T owner)
+        public static void CreateScriptableTo(Component root, IEnumerable<Script> scripts, params object[] parameters)
         {
             if (scripts == null)
                 return;
 
             foreach (var script in scripts)
             {
-                CreateScriptableTo(root, script, owner);
+                CreateScriptableTo(root, script, parameters);
             }
         }
-        public static Scriptable<T> CreateScriptableTo<T>(Component root, Script script, T owner)
+
+        public static ScriptComponent CreateScriptableTo(Component root, Script script, params object[] parameters)
         {
             if (script == null)
                 return null;
 
-            var scriptComponent = CreateScriptable(script, owner);
+            var scriptComponent = CreateScriptable<ScriptComponent>(script, parameters);
             scriptComponent.AttachToComponent(root);
             return scriptComponent;
         }
+
         public static TScriptable CreateScriptable<TScriptable>(Script script, params object[] parameters) where TScriptable : ScriptComponent
         {
             if (script == null)
@@ -126,11 +128,6 @@ namespace Extension.Script
             var scriptable = Activator.CreateInstance(script.ScriptableType, parameters) as TScriptable;
             scriptable.Script = script;
             return scriptable;
-        }
-
-        public static Scriptable<T> CreateScriptable<T>(Script script, T owner)
-        {
-            return CreateScriptable<Scriptable<T>>(script, owner);
         }
 
         private static Type[] FindScriptTypes(Assembly assembly)
@@ -208,36 +205,38 @@ namespace Extension.Script
                 unsafe
                 {
                     // refresh modified scripts only
-                    void RefreshScriptComponents<TExt>(TExt ext) where TExt : IHaveComponent
+                    void RefreshScriptComponents<TExt, TBase>(ECSInstanceExtension<TExt, TBase> ext) where TExt : Extension<TBase>
                     {
-                        Component root = ext.AttachedComponent;
-                        ScriptComponent[] components = root.GetComponentsInChildren(c => c.GetType().Name == type.Name).Cast<ScriptComponent>().ToArray();
+                        ScriptComponent[] components = ext.GameObject.GetComponentsInChildren(c => c.GetType().Name == type.Name).Cast<ScriptComponent>().ToArray();
                         if (components.Length > 0)
                         {
                             foreach (var component in components)
                             {
+                                var root = component.Parent;
+                                var script = component.Script;
+
                                 component.DetachFromParent();
+
+                                CreateScriptableTo(root, script, ext);
                             }
-                            var scripts = components.Select(c => c.Script);
-                            CreateScriptableTo(root, scripts, ext);
                         }
                     }
-                    ref var technoArray = ref TechnoClass.Array;
-                    for (int i = 0; i < technoArray.Count; i++)
+
+                    void Refresh<TExt, TBase>(Container<TExt, TBase> container, ref DynamicVectorClass<Pointer<TBase>> dvc) where TExt : ECSInstanceExtension<TExt, TBase>
                     {
-                        var pItem = technoArray[i];
-                        var ext = TechnoExt.ExtMap.Find(pItem);
-                        RefreshScriptComponents(ext);
+                        Logger.Log("refreshing {0}'s ScriptComponents...", typeof(TExt).Name);
+                        foreach (var pItem in dvc)
+                        {
+                            var ext = container.Find(pItem);
+                            RefreshScriptComponents(ext);
+                        }
                     }
 
-                    ref var bulletArray = ref BulletClass.Array;
-                    for (int i = 0; i < bulletArray.Count; i++)
-                    {
-                        var pItem = bulletArray[i];
-                        var ext = BulletExt.ExtMap.Find(pItem);
-                        RefreshScriptComponents(ext);
-                    }
-
+                    Refresh(TechnoExt.ExtMap, ref TechnoClass.Array);
+                    Refresh(BulletExt.ExtMap, ref BulletClass.Array);
+#if USE_ANIM_EXT
+                    Refresh(AnimExt.ExtMap, ref AnimClass.Array);
+#endif
                 }
             }
         }
