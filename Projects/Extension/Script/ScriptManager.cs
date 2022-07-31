@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -250,5 +251,87 @@ namespace Extension.Script
         {
             Program.Patcher.AssemblyRefresh += Patcher_AssemblyRefresh;
         }
+
+
+        #region 使用lambda表达式树创建对象
+        public static TScriptable CreateScriptable<TScriptable>(Script script) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>();
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<TScriptable>;
+
+            var scriptable = func();
+            scriptable.Script = script;
+            return scriptable;
+        }
+
+        public static TScriptable CreateScriptable<T1, TScriptable>(Script script, T1 p1) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+                {
+                    Expression.Parameter(typeof(T1), "t1")
+                };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, TScriptable>;
+
+            var scriptable = func(p1);
+            scriptable.Script = script;
+            return scriptable;
+        }
+
+        public static TScriptable CreateScriptable<T1, T2, TScriptable>(Script script, T1 p1, T2 p2) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+                {
+                    Expression.Parameter(typeof(T1), "t1"),
+                    Expression.Parameter(typeof(T1), "t2")
+                };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, T2, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, T2, TScriptable>;
+
+            var scriptable = func(p1, p2);
+            scriptable.Script = script;
+            return scriptable;
+        }
+
+        private static Dictionary<string, object> ScriptCtors = new Dictionary<string, object>();
+        #endregion
+
+
     }
 }
