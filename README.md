@@ -34,8 +34,15 @@ Projects
 
 Features for Programmers
 -------------
-1. ECS (incomplete)
+1. Component System
 2. Coroutine system like unity
 3. INI Parser and INI Component
 4. EventSystem
 
+Support Me
+-----
+[Patreon](https://www.patreon.com/Xkein)
+
+[Alipay](https://github.com/Xkein/Images/blob/master/SupportMe/alipay.jpg?raw=true)
+
+[WeChat](https://github.com/Xkein/Images/blob/master/SupportMe/wechat.png?raw=true)
