@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatcherYRpp.UtilitiesTests", "PatcherYRpp.UtilitiesTests\PatcherYRpp.UtilitiesTests.csproj", "{F652EE6F-05C4-4C62-B00F-B73941AEB4AB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptUniversal", "ScriptUniversal\ScriptUniversal.csproj", "{FD57F300-23BA-41C7-AD77-155195CFF60E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.Lua", "Extension.Lua\Extension.Lua.csproj", "{F2F25186-795C-4B2E-B54C-99AE8D8BEB95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +45,10 @@ Global
 		{FD57F300-23BA-41C7-AD77-155195CFF60E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD57F300-23BA-41C7-AD77-155195CFF60E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD57F300-23BA-41C7-AD77-155195CFF60E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2F25186-795C-4B2E-B54C-99AE8D8BEB95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2F25186-795C-4B2E-B54C-99AE8D8BEB95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2F25186-795C-4B2E-B54C-99AE8D8BEB95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2F25186-795C-4B2E-B54C-99AE8D8BEB95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
