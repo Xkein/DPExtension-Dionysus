@@ -43,7 +43,7 @@ namespace Extension.Ext
     }
 
     [Serializable]
-    public abstract class CommonInstanceExtension<TExt, TBase, TTypeExt, TTypeBase> : ECSInstanceExtension<TExt, TBase>
+    public abstract class CommonInstanceExtension<TExt, TBase, TTypeExt, TTypeBase> : GOInstanceExtension<TExt, TBase>
         where TExt : Extension<TBase>
         where TBase : IOwnAbstractType<TTypeBase>
         where TTypeExt : CommonTypeExtension<TTypeExt, TTypeBase>

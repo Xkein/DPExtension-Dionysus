@@ -32,6 +32,7 @@ namespace Extension.Components
             ID = id;
         }
 
+        [Obsolete("don't use")]
         public int ID { get; set; }
 
         public string Name { get; set; }

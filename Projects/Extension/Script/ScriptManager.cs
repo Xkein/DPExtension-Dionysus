@@ -205,7 +205,7 @@ namespace Extension.Script
                 unsafe
                 {
                     // refresh modified scripts only
-                    void RefreshScriptComponents<TExt, TBase>(ECSInstanceExtension<TExt, TBase> ext) where TExt : Extension<TBase>
+                    void RefreshScriptComponents<TExt, TBase>(GOInstanceExtension<TExt, TBase> ext) where TExt : Extension<TBase>
                     {
                         ScriptComponent[] components = ext.GameObject.GetComponentsInChildren(c => c.GetType().Name == type.Name).Cast<ScriptComponent>().ToArray();
                         if (components.Length > 0)
@@ -222,7 +222,7 @@ namespace Extension.Script
                         }
                     }
 
-                    void Refresh<TExt, TBase>(Container<TExt, TBase> container, ref DynamicVectorClass<Pointer<TBase>> dvc) where TExt : ECSInstanceExtension<TExt, TBase>
+                    void Refresh<TExt, TBase>(Container<TExt, TBase> container, ref DynamicVectorClass<Pointer<TBase>> dvc) where TExt : GOInstanceExtension<TExt, TBase>
                     {
                         Logger.Log("refreshing {0}'s ScriptComponents...", typeof(TExt).Name);
                         foreach (var pItem in dvc)

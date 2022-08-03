@@ -64,6 +64,7 @@
     <Compile Include="Ext\CellExt.cs" />
     <Compile Include="Ext\Generic\CommonExtension.cs" />
     <Compile Include="Ext\Generic\ECSInstanceExtension.cs" />
+    <Compile Include="Ext\Generic\GOInstanceExtension.cs" />
     <Compile Include="Ext\Generic\Extension.cs" />
     <Compile Include="Ext\Generic\InstanceExtension.cs" />
     <Compile Include="Ext\Generic\MapContainer.cs" />

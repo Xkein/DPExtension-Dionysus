@@ -12,7 +12,7 @@ namespace Extension.Ext
 {
     [Obsolete("CellExt is disable because performance problem in serialization.", true)]
     [Serializable]
-    public partial class CellExt : ECSInstanceExtension<CellExt, CellClass>
+    public partial class CellExt : GOInstanceExtension<CellExt, CellClass>
     {
         public CellExt(Pointer<CellClass> OwnerObject) : base(OwnerObject)
         {
