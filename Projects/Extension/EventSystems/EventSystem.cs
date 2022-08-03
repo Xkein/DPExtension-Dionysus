@@ -14,25 +14,9 @@ namespace Extension.EventSystems
         public abstract string Description { get; }
     }
 
-    public abstract class EventSystem
+    public abstract partial class EventSystem
     {
         
-        public static GeneralEventSystem General { get; }
-        public static PointerExpireEventSystem PointerExpire { get; }
-        public static SaveGameEventSystem SaveGame { get; }
-
-        private static event EventHandler OnClearTemporaryHandler;
-
-        static EventSystem()
-        {
-            General = new GeneralEventSystem();
-            General.AddPermanentHandler(General.ScenarioClearClassesEvent, (sender, e) =>
-            {
-                OnClearTemporaryHandler?.Invoke(sender, e);
-            });
-            PointerExpire = new PointerExpireEventSystem();
-            SaveGame = new SaveGameEventSystem();
-        }
 
         protected EventSystem()
         {
@@ -127,14 +111,6 @@ namespace Extension.EventSystems
             }
         }
 
-        private void Register()
-        {
-            OnClearTemporaryHandler += ClearTemporaryHandler;
-        }
-        private void Unregister()
-        {
-            OnClearTemporaryHandler -= ClearTemporaryHandler;
-        }
         private void ClearTemporaryHandler(object sender, EventArgs e)
         {
             ClearTemporaryHandler();

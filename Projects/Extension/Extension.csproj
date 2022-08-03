@@ -57,6 +57,7 @@
     <Compile Include="Coroutines\WaitCondition.cs" />
     <Compile Include="Coroutines\YieldInstruction.cs" />
     <Compile Include="EventSystems\EventSystem.cs" />
+    <Compile Include="EventSystems\EventSystems.cs" />
     <Compile Include="EventSystems\GeneralEventSystem.cs" />
     <Compile Include="EventSystems\PointerExpireEventSystem.cs" />
     <Compile Include="EventSystems\SaveGameEventSystem.cs" />
