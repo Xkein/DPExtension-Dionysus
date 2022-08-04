@@ -17,6 +17,7 @@ using System.Linq;
 using Extension.Components;
 using System.Reflection;
 using System.Windows.Forms;
+using Extension;
 using Extension.INI;
 using PatcherYRpp.FileFormats;
 
@@ -33,7 +34,7 @@ namespace Miscellaneous
             "reshade.ini",
             "DefaultPreset.ini"
 
-        }.Select(i => i.ToLower()).ToArray();
+        }.Select(i => i.ToLower().Replace(@"\", "/")).ToArray();
 
         static string[] watchList = new[]
         {
@@ -41,7 +42,7 @@ namespace Miscellaneous
             "*.map",
             "*.yrm",
 
-        }.Select(i => i.ToLower()).ToArray();
+        }.Select(i => i.ToLower().Replace(@"\", "/")).ToArray();
 
         static string FindMainINI(string name)
         {
@@ -133,112 +134,112 @@ namespace Miscellaneous
             Logger.Log("reloading RulesClass");
             void ReadRules(Pointer<CCINIClass> ini)
             {
-                //RulesClass.Instance.Read_File(hRulesINI);
+                //RulesClass.Instance.Ref.Read_File(hRulesINI);
 
-                Logger.Log("reloading Colors -- skipped");
-                //RulesClass.Instance.Read_Colors(ini);
+                Logger.Log("reloading Colors");
+                RulesClass.Instance.Ref.Read_Colors(ini);
 
                 Logger.Log("reloading ColorAdd -- skipped");
-                //RulesClass.Instance.Read_ColorAdd(ini);
+                //RulesClass.Instance.Ref.Read_ColorAdd(ini);
 
                 Logger.Log("reloading Countries");
-                RulesClass.Instance.Read_Countries(ini);
+                RulesClass.Instance.Ref.Read_Countries(ini);
 
                 Logger.Log("reloading Sides");
-                RulesClass.Instance.Read_Sides(ini);
+                RulesClass.Instance.Ref.Read_Sides(ini);
 
                 Logger.Log("reloading OverlayTypes");
-                RulesClass.Instance.Read_OverlayTypes(ini);
+                RulesClass.Instance.Ref.Read_OverlayTypes(ini);
 
                 Logger.Log("reloading SuperWeaponTypes");
-                RulesClass.Instance.Read_SuperWeaponTypes(ini);
+                RulesClass.Instance.Ref.Read_SuperWeaponTypes(ini);
 
                 Logger.Log("reloading Warheads");
-                RulesClass.Instance.Read_Warheads(ini);
+                RulesClass.Instance.Ref.Read_Warheads(ini);
 
                 Logger.Log("reloading SmudgeTypes");
-                RulesClass.Instance.Read_SmudgeTypes(ini);
+                RulesClass.Instance.Ref.Read_SmudgeTypes(ini);
 
                 Logger.Log("reloading TerrainTypes");
-                RulesClass.Instance.Read_TerrainTypes(ini);
+                RulesClass.Instance.Ref.Read_TerrainTypes(ini);
 
                 Logger.Log("reloading BuildingTypes");
-                RulesClass.Instance.Read_BuildingTypes(ini);
+                RulesClass.Instance.Ref.Read_BuildingTypes(ini);
 
                 Logger.Log("reloading VehicleTypes");
-                RulesClass.Instance.Read_VehicleTypes(ini);
+                RulesClass.Instance.Ref.Read_VehicleTypes(ini);
 
                 Logger.Log("reloading AircraftTypes");
-                RulesClass.Instance.Read_AircraftTypes(ini);
+                RulesClass.Instance.Ref.Read_AircraftTypes(ini);
 
                 Logger.Log("reloading InfantryTypes");
-                RulesClass.Instance.Read_InfantryTypes(ini);
+                RulesClass.Instance.Ref.Read_InfantryTypes(ini);
 
                 Logger.Log("reloading Animations");
-                RulesClass.Instance.Read_Animations(ini);
+                RulesClass.Instance.Ref.Read_Animations(ini);
 
                 Logger.Log("reloading VoxelAnims");
-                RulesClass.Instance.Read_VoxelAnims(ini);
+                RulesClass.Instance.Ref.Read_VoxelAnims(ini);
 
                 Logger.Log("reloading Particles");
-                RulesClass.Instance.Read_Particles(ini);
+                RulesClass.Instance.Ref.Read_Particles(ini);
 
                 Logger.Log("reloading ParticleSystems");
-                RulesClass.Instance.Read_ParticleSystems(ini);
+                RulesClass.Instance.Ref.Read_ParticleSystems(ini);
 
                 Logger.Log("reloading JumpjetControls");
-                RulesClass.Instance.Read_JumpjetControls(ini);
+                RulesClass.Instance.Ref.Read_JumpjetControls(ini);
 
                 Logger.Log("reloading MultiplayerDialogSettings");
-                RulesClass.Instance.Read_MultiplayerDialogSettings(ini);
+                RulesClass.Instance.Ref.Read_MultiplayerDialogSettings(ini);
 
-                Logger.Log("reloading AI -- skipped");
-                //RulesClass.Instance.Read_AI(ini);
+                Logger.Log("reloading AI");
+                RulesClass.Instance.Ref.Read_AI(ini);
 
                 Logger.Log("reloading Powerups");
-                RulesClass.Instance.Read_Powerups(ini);
+                RulesClass.Instance.Ref.Read_Powerups(ini);
 
                 Logger.Log("reloading LandCharacteristics");
-                RulesClass.Instance.Read_LandCharacteristics(ini);
+                RulesClass.Instance.Ref.Read_LandCharacteristics(ini);
 
                 Logger.Log("reloading IQ");
-                RulesClass.Instance.Read_IQ(ini);
+                RulesClass.Instance.Ref.Read_IQ(ini);
 
-                Logger.Log("reloading General -- skipped");
-                //RulesClass.Instance.Read_General(ini);
+                Logger.Log("reloading General");
+                RulesClass.Instance.Ref.Read_General(ini);
 
                 Logger.Log("reloading Types -- skipped");
-                //RulesClass.Instance.Read_Types(ini);
+                //RulesClass.Instance.Ref.Read_Types(ini);
 
                 Logger.Log("reloading Difficulties");
-                RulesClass.Instance.Read_Difficulties(ini);
+                RulesClass.Instance.Ref.Read_Difficulties(ini);
 
                 Logger.Log("reloading CrateRules");
-                RulesClass.Instance.Read_CrateRules(ini);
+                RulesClass.Instance.Ref.Read_CrateRules(ini);
 
-                Logger.Log("reloading CombatDamage -- skipped");
-                //RulesClass.Instance.Read_CombatDamage(ini);
+                Logger.Log("reloading CombatDamage");
+                RulesClass.Instance.Ref.Read_CombatDamage(ini);
 
                 Logger.Log("reloading Radiation");
-                RulesClass.Instance.Read_Radiation(ini);
+                RulesClass.Instance.Ref.Read_Radiation(ini);
 
                 Logger.Log("reloading ElevationModel");
-                RulesClass.Instance.Read_ElevationModel(ini);
+                RulesClass.Instance.Ref.Read_ElevationModel(ini);
 
                 Logger.Log("reloading WallModel");
-                RulesClass.Instance.Read_WallModel(ini);
+                RulesClass.Instance.Ref.Read_WallModel(ini);
 
-                Logger.Log("reloading AudioVisual -- skipped");
-                //RulesClass.Instance.Read_AudioVisual(ini);
+                Logger.Log("reloading AudioVisual");
+                RulesClass.Instance.Ref.Read_AudioVisual(ini);
 
                 Logger.Log("reloading SpecialWeapons");
-                RulesClass.Instance.Read_SpecialWeapons(ini);
+                RulesClass.Instance.Ref.Read_SpecialWeapons(ini);
 
                 Logger.Log("reloading Tiberiums -- skipped");
-                //RulesClass.Instance.Read_Tiberiums(ini);
+                //RulesClass.Instance.Ref.Read_Tiberiums(ini);
 
                 Logger.Log("reloading AdvancedCommandBar");
-                RulesClass.Instance.Read_AdvancedCommandBar(ini, isMultiplayer: SessionClass.Instance.GameMode != GameMode.Campaign && SessionClass.Instance.GameMode != GameMode.Skirmish);
+                RulesClass.Instance.Ref.Read_AdvancedCommandBar(ini, isMultiplayer: SessionClass.Instance.GameMode != GameMode.Campaign && SessionClass.Instance.GameMode != GameMode.Skirmish);
             }
             Logger.Log("----------------------------------------");
             Logger.Log("reloading RulesClass from {0}", INIConstant.RulesName);
@@ -346,11 +347,11 @@ namespace Miscellaneous
         private static void OnINIChange(object sender, FileSystemEventArgs e)
         {
             string path = e.FullPath;
-            string fileName = Path.GetFileName(path);
+            string relPath = path.Replace(GlobalVars.RootDirectory, "").Replace(@"\", "/");
 
-            if (ignoreList.Contains(fileName.ToLower()))
+            if (ignoreList.Contains(relPath.ToLower()))
             {
-                Logger.Log("ignore file: {0}", fileName);
+                Logger.Log("ignore file: {0}", relPath);
                 return;
             }
 
@@ -360,7 +361,7 @@ namespace Miscellaneous
 
             try
             {
-                string iniName = FindMainINI(Path.GetFileName(path));
+                string iniName = FindMainINI(relPath);
 
                 Logger.Log("stop game and wait for editor to release the handle of file");
                 StopGame();
@@ -383,7 +384,7 @@ namespace Miscellaneous
                 }
                 else
                 {
-                    Logger.LogError("{} unsupported by realtime ini", iniName);
+                    Logger.LogError("{0} unsupported by realtime ini", iniName);
                 }
 
                 Logger.Log("----------------------------------------");
@@ -400,14 +401,14 @@ namespace Miscellaneous
 
             Logger.Log("{0} reloaded.", path);
             Logger.LogWarning("new changes are only be applied to current game.");
-            Logger.LogWarning("[BUG] you will get crash when restart.");
+            Logger.LogWarning("you may get crash in next game.");
         }
 
         static public void RefreshINIComponent()
         {
             INIComponent.ClearBuffer();
 
-            void RefreshINIComponents<TExt, TBase>(ECSInstanceExtension<TExt, TBase> ext) where TExt : Extension<TBase>
+            void RefreshINIComponents<TExt, TBase>(GOInstanceExtension<TExt, TBase> ext) where TExt : Extension<TBase>
             {
                 INIComponent[] components = ext.GameObject.GetComponentsInChildren<INIComponent>();
                 if (components.Length > 0)
@@ -419,7 +420,7 @@ namespace Miscellaneous
                 }
             }
 
-            void Refresh<TExt, TBase>(Container<TExt, TBase> container, ref DynamicVectorClass<Pointer<TBase>> dvc) where TExt : ECSInstanceExtension<TExt, TBase>
+            void Refresh<TExt, TBase>(Container<TExt, TBase> container, ref DynamicVectorClass<Pointer<TBase>> dvc) where TExt : GOInstanceExtension<TExt, TBase>
             {
                 Logger.Log("refreshing {0}'s INIComponents...", typeof(TExt).Name);
                 foreach (var pItem in dvc)
