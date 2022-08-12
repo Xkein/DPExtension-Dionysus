@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -250,5 +251,519 @@ namespace Extension.Script
         {
             Program.Patcher.AssemblyRefresh += Patcher_AssemblyRefresh;
         }
+
+
+        #region 使用lambda表达式树创建对象
+        public static TScriptable CreateScriptable<TScriptable>(Script script) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>();
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<TScriptable>;
+
+            var scriptable = func();
+            scriptable.Script = script;
+            return scriptable;
+        }
+
+        public static TScriptable CreateScriptable<T1, TScriptable>(Script script, T1 p1) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+                {
+                    Expression.Parameter(typeof(T1), "t1")
+                };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, TScriptable>;
+
+            var scriptable = func(p1);
+            scriptable.Script = script;
+            return scriptable;
+        }
+
+        public static TScriptable CreateScriptable<T1, T2, TScriptable>(Script script, T1 p1, T2 p2) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+                {
+                    Expression.Parameter(typeof(T1), "t1"),
+                    Expression.Parameter(typeof(T1), "t2")
+                };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, T2, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, T2, TScriptable>;
+
+            var scriptable = func(p1, p2);
+            scriptable.Script = script;
+            return scriptable;
+        }
+
+        public static TScriptable CreateScriptable<T1, T2, T3, TScriptable>(Script script, T1 p1, T2 p2, T3 p3) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+            {
+                    Expression.Parameter(typeof(T1), "t1"),
+                    Expression.Parameter(typeof(T2), "t2"),
+                    Expression.Parameter(typeof(T3), "t3")
+            };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, T2, T3, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, T2, T3, TScriptable>;
+
+            var scriptable = func(p1, p2, p3);
+            scriptable.Script = script;
+            return scriptable;
+        }
+        public static TScriptable CreateScriptable<T1, T2, T3, T4, TScriptable>(Script script, T1 p1, T2 p2, T3 p3, T4 p4) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+            {
+                    Expression.Parameter(typeof(T1), "t1"),
+                    Expression.Parameter(typeof(T2), "t2"),
+                    Expression.Parameter(typeof(T3), "t3"),
+                    Expression.Parameter(typeof(T4), "t4")
+            };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, T2, T3, T4, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, T2, T3, T4, TScriptable>;
+
+            var scriptable = func(p1, p2, p3, p4);
+            scriptable.Script = script;
+            return scriptable;
+        }
+        public static TScriptable CreateScriptable<T1, T2, T3, T4, T5, TScriptable>(Script script, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+            {
+                    Expression.Parameter(typeof(T1), "t1"),
+                    Expression.Parameter(typeof(T2), "t2"),
+                    Expression.Parameter(typeof(T3), "t3"),
+                    Expression.Parameter(typeof(T4), "t4"),
+                    Expression.Parameter(typeof(T5), "t5")
+            };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, T2, T3, T4, T5, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, T2, T3, T4, T5, TScriptable>;
+
+            var scriptable = func(p1, p2, p3, p4, p5);
+            scriptable.Script = script;
+            return scriptable;
+        }
+        public static TScriptable CreateScriptable<T1, T2, T3, T4, T5, T6, TScriptable>(Script script, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+            {
+                    Expression.Parameter(typeof(T1), "t1"),
+                    Expression.Parameter(typeof(T2), "t2"),
+                    Expression.Parameter(typeof(T3), "t3"),
+                    Expression.Parameter(typeof(T4), "t4"),
+                    Expression.Parameter(typeof(T5), "t5"),
+                    Expression.Parameter(typeof(T6), "t6")
+            };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, T2, T3, T4, T5, T6, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, T2, T3, T4, T5, T6, TScriptable>;
+
+            var scriptable = func(p1, p2, p3, p4, p5, p6);
+            scriptable.Script = script;
+            return scriptable;
+        }
+        public static TScriptable CreateScriptable<T1, T2, T3, T4, T5, T6, T7, TScriptable>(Script script, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+            {
+                    Expression.Parameter(typeof(T1), "t1"),
+                    Expression.Parameter(typeof(T2), "t2"),
+                    Expression.Parameter(typeof(T3), "t3"),
+                    Expression.Parameter(typeof(T4), "t4"),
+                    Expression.Parameter(typeof(T5), "t5"),
+                    Expression.Parameter(typeof(T6), "t6"),
+                    Expression.Parameter(typeof(T7), "t7")
+            };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, T2, T3, T4, T5, T6, T7, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, T2, T3, T4, T5, T6, T7, TScriptable>;
+
+            var scriptable = func(p1, p2, p3, p4, p5, p6, p7);
+            scriptable.Script = script;
+            return scriptable;
+        }
+        public static TScriptable CreateScriptable<T1, T2, T3, T4, T5, T6, T7, T8, TScriptable>(Script script, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7, T8 p8) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+            {
+                    Expression.Parameter(typeof(T1), "t1"),
+                    Expression.Parameter(typeof(T2), "t2"),
+                    Expression.Parameter(typeof(T3), "t3"),
+                    Expression.Parameter(typeof(T4), "t4"),
+                    Expression.Parameter(typeof(T5), "t5"),
+                    Expression.Parameter(typeof(T6), "t6"),
+                    Expression.Parameter(typeof(T7), "t7"),
+                    Expression.Parameter(typeof(T8), "t8")
+            };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, T2, T3, T4, T5, T6, T7, T8, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, T2, T3, T4, T5, T6, T7, T8, TScriptable>;
+
+            var scriptable = func(p1, p2, p3, p4, p5, p6, p7, p8);
+            scriptable.Script = script;
+            return scriptable;
+        }
+        public static TScriptable CreateScriptable<T1, T2, T3, T4, T5, T6, T7, T8, T9, TScriptable>(Script script, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7, T8 p8, T9 p9) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+            {
+                    Expression.Parameter(typeof(T1), "t1"),
+                    Expression.Parameter(typeof(T2), "t2"),
+                    Expression.Parameter(typeof(T3), "t3"),
+                    Expression.Parameter(typeof(T4), "t4"),
+                    Expression.Parameter(typeof(T5), "t5"),
+                    Expression.Parameter(typeof(T6), "t6"),
+                    Expression.Parameter(typeof(T7), "t7"),
+                    Expression.Parameter(typeof(T8), "t8"),
+                    Expression.Parameter(typeof(T9), "t9")
+            };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TScriptable>;
+
+            var scriptable = func(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+            scriptable.Script = script;
+            return scriptable;
+        }
+        public static TScriptable CreateScriptable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TScriptable>(Script script, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7, T8 p8, T9 p9, T10 p10) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+            {
+                    Expression.Parameter(typeof(T1), "t1"),
+                    Expression.Parameter(typeof(T2), "t2"),
+                    Expression.Parameter(typeof(T3), "t3"),
+                    Expression.Parameter(typeof(T4), "t4"),
+                    Expression.Parameter(typeof(T5), "t5"),
+                    Expression.Parameter(typeof(T6), "t6"),
+                    Expression.Parameter(typeof(T7), "t7"),
+                    Expression.Parameter(typeof(T8), "t8"),
+                    Expression.Parameter(typeof(T9), "t9"),
+                    Expression.Parameter(typeof(T10), "t10")
+            };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TScriptable>;
+
+            var scriptable = func(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);
+            scriptable.Script = script;
+            return scriptable;
+        }
+        public static TScriptable CreateScriptable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TScriptable>(Script script, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7, T8 p8, T9 p9, T10 p10, T11 p11) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+            {
+                    Expression.Parameter(typeof(T1), "t1"),
+                    Expression.Parameter(typeof(T2), "t2"),
+                    Expression.Parameter(typeof(T3), "t3"),
+                    Expression.Parameter(typeof(T4), "t4"),
+                    Expression.Parameter(typeof(T5), "t5"),
+                    Expression.Parameter(typeof(T6), "t6"),
+                    Expression.Parameter(typeof(T7), "t7"),
+                    Expression.Parameter(typeof(T8), "t8"),
+                    Expression.Parameter(typeof(T9), "t9"),
+                    Expression.Parameter(typeof(T10), "t10"),
+                    Expression.Parameter(typeof(T11), "t11")
+            };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TScriptable>;
+
+            var scriptable = func(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+            scriptable.Script = script;
+            return scriptable;
+        }
+        public static TScriptable CreateScriptable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TScriptable>(Script script, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7, T8 p8, T9 p9, T10 p10, T11 p11, T12 p12) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+            {
+                    Expression.Parameter(typeof(T1), "t1"),
+                    Expression.Parameter(typeof(T2), "t2"),
+                    Expression.Parameter(typeof(T3), "t3"),
+                    Expression.Parameter(typeof(T4), "t4"),
+                    Expression.Parameter(typeof(T5), "t5"),
+                    Expression.Parameter(typeof(T6), "t6"),
+                    Expression.Parameter(typeof(T7), "t7"),
+                    Expression.Parameter(typeof(T8), "t8"),
+                    Expression.Parameter(typeof(T9), "t9"),
+                    Expression.Parameter(typeof(T10), "t10"),
+                    Expression.Parameter(typeof(T11), "t11"),
+                    Expression.Parameter(typeof(T12), "t12")
+            };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TScriptable>;
+
+            var scriptable = func(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12);
+            scriptable.Script = script;
+            return scriptable;
+        }
+        public static TScriptable CreateScriptable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TScriptable>(Script script, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7, T8 p8, T9 p9, T10 p10, T11 p11, T12 p12, T13 p13) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+            {
+                    Expression.Parameter(typeof(T1), "t1"),
+                    Expression.Parameter(typeof(T2), "t2"),
+                    Expression.Parameter(typeof(T3), "t3"),
+                    Expression.Parameter(typeof(T4), "t4"),
+                    Expression.Parameter(typeof(T5), "t5"),
+                    Expression.Parameter(typeof(T6), "t6"),
+                    Expression.Parameter(typeof(T7), "t7"),
+                    Expression.Parameter(typeof(T8), "t8"),
+                    Expression.Parameter(typeof(T9), "t9"),
+                    Expression.Parameter(typeof(T10), "t10"),
+                    Expression.Parameter(typeof(T11), "t11"),
+                    Expression.Parameter(typeof(T12), "t12"),
+                    Expression.Parameter(typeof(T13), "t13")
+            };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TScriptable>;
+
+            var scriptable = func(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13);
+            scriptable.Script = script;
+            return scriptable;
+        }
+        public static TScriptable CreateScriptable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TScriptable>(Script script, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7, T8 p8, T9 p9, T10 p10, T11 p11, T12 p12, T13 p13, T14 p14) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+            {
+                    Expression.Parameter(typeof(T1), "t1"),
+                    Expression.Parameter(typeof(T2), "t2"),
+                    Expression.Parameter(typeof(T3), "t3"),
+                    Expression.Parameter(typeof(T4), "t4"),
+                    Expression.Parameter(typeof(T5), "t5"),
+                    Expression.Parameter(typeof(T6), "t6"),
+                    Expression.Parameter(typeof(T7), "t7"),
+                    Expression.Parameter(typeof(T8), "t8"),
+                    Expression.Parameter(typeof(T9), "t9"),
+                    Expression.Parameter(typeof(T10), "t10"),
+                    Expression.Parameter(typeof(T11), "t11"),
+                    Expression.Parameter(typeof(T12), "t12"),
+                    Expression.Parameter(typeof(T13), "t13"),
+                    Expression.Parameter(typeof(T14), "t14")
+            };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TScriptable>;
+
+            var scriptable = func(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14);
+            scriptable.Script = script;
+            return scriptable;
+        }
+        public static TScriptable CreateScriptable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TScriptable>(Script script, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7, T8 p8, T9 p9, T10 p10, T11 p11, T12 p12, T13 p13, T14 p14, T15 p15) where TScriptable : ScriptComponent
+        {
+            if (script == null)
+                return null;
+
+            if (!ScriptCtors.ContainsKey(script.ScriptableType.Name))
+            {
+                List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+            {
+                    Expression.Parameter(typeof(T1), "t1"),
+                    Expression.Parameter(typeof(T2), "t2"),
+                    Expression.Parameter(typeof(T3), "t3"),
+                    Expression.Parameter(typeof(T4), "t4"),
+                    Expression.Parameter(typeof(T5), "t5"),
+                    Expression.Parameter(typeof(T6), "t6"),
+                    Expression.Parameter(typeof(T7), "t7"),
+                    Expression.Parameter(typeof(T8), "t8"),
+                    Expression.Parameter(typeof(T9), "t9"),
+                    Expression.Parameter(typeof(T10), "t10"),
+                    Expression.Parameter(typeof(T11), "t11"),
+                    Expression.Parameter(typeof(T12), "t12"),
+                    Expression.Parameter(typeof(T13), "t13"),
+                    Expression.Parameter(typeof(T14), "t14"),
+                    Expression.Parameter(typeof(T15), "t15")
+            };
+
+                var ctor = script.ScriptableType.GetConstructors()[0];
+                NewExpression ctorExpression = Expression.New(ctor, parameterExpressions);
+                var expression = Expression.Lambda<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TScriptable>>(ctorExpression, parameterExpressions);
+                var lambda = expression.Compile();
+                ScriptCtors.Add(script.ScriptableType.Name, lambda);
+            }
+
+            var func = ScriptCtors[script.ScriptableType.Name] as Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TScriptable>;
+
+            var scriptable = func(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15);
+            scriptable.Script = script;
+            return scriptable;
+        }
+
+
+
+        private static Dictionary<string, object> ScriptCtors = new Dictionary<string, object>();
+        #endregion
+
+
     }
 }
