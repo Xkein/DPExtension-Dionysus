@@ -163,8 +163,8 @@ namespace Extension.Components
                 buffer = new INIBuffer(_name, _section);
 
                 // read ini section
-                var pINI = YRMemory.Create<CCINIClass>();
-                var pFile = YRMemory.Create<CCFileClass>(_name);
+                var pINI = YRMemory.Allocate<CCINIClass>().Construct();
+                var pFile = YRMemory.Allocate<CCFileClass>().Construct(_name);
                 INIReader reader = new INIReader(pINI);
                 pINI.Ref.ReadCCFile(pFile);
                 YRMemory.Delete(pFile);

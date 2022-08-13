@@ -10,6 +10,7 @@ using Extension.EventSystems;
 
 namespace Extension.Serialization
 {
+    // slow when amount upto 10k
     class GlobalSerializer : IGameSerializer
     {
         public void Serialize(Stream serializationStream, object graph)
