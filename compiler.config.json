@@ -12,14 +12,18 @@
     "PatcherYRpp.Utilities.dll",
     "Extension.dll",
     "Extension.FX.dll",
+    "Extension.Lua.dll",
     "ScriptUniversal.dll",
 
-    "Microsoft.VisualStudio.Interop.dll"
+    "Microsoft.VisualStudio.Interop.dll",
+    "XLua.Mini"
   ],
   "preprocessor_symbols": [
     "_USE_ANIM_EXT",
+    "_USE_CELL_EXT",
 
     "REALTIME_INI",
+
     "FX_ENABLE",
     "_FX_USED3D",
     "_FX_TOFIX",

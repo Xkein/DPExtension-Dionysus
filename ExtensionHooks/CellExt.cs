@@ -12,7 +12,7 @@ namespace ExtensionHooks
 {
     public class CellExtHooks
     {
-#if false
+#if USE_CELL_EXT
         [Hook(HookType.AresHook, Address = 0x47BDA1, Size = 5)]
         public static unsafe UInt32 CellClass_CTOR(REGISTERS* R)
         {
