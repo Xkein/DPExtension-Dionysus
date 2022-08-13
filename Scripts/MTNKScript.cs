@@ -43,7 +43,7 @@ namespace Scripts
             nextLocation.Z += 50;
             if (lastLocation.DistanceFrom(nextLocation) > 100)
             {
-                Pointer<LaserDrawClass> pLaser = YRMemory.Create<LaserDrawClass>(lastLocation, nextLocation, innerColor, outerColor, outerSpread, 30);
+                Pointer<LaserDrawClass> pLaser = YRMemory.Allocate<LaserDrawClass>().Construct(lastLocation, nextLocation, innerColor, outerColor, outerSpread, 30);
                 pLaser.Ref.Thickness = 10;
                 pLaser.Ref.IsHouseColor = true;
                 //Logger.Log("laser [({0}, {1}, {2}) -> ({3}, {4}, {5})]", lastLocation.X, lastLocation.Y, lastLocation.Z, nextLocation.X, nextLocation.Y, nextLocation.Z);

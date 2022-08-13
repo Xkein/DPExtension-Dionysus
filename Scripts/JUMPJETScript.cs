@@ -85,13 +85,13 @@ namespace Scripts
                     ColorStruct chargeOuterSpread = new ColorStruct(10, 10, 10);
 
                     // draw laser from jumpjet to mean point
-                    Pointer<LaserDrawClass> pLaser = YRMemory.Create<LaserDrawClass>(
+                    Pointer<LaserDrawClass> pLaser = YRMemory.Allocate<LaserDrawClass>().Construct(
                         jj.Owner.OwnerObject.Ref.Base.Base.GetCoords(), mean, chargeInnerColor, chargeOuterColor, chargeOuterSpread, 1);
                     pLaser.Ref.Thickness = 1;
                     pLaser.Ref.IsHouseColor = true;
 
                     // create merge anim on mean point
-                    Pointer<AnimClass> pAnim = YRMemory.Create<AnimClass>(ChargeAnimType, mean);
+                    Pointer<AnimClass> pAnim = YRMemory.Allocate<AnimClass>().Construct(ChargeAnimType, mean);
 
                     energy += supply;
                 }
@@ -116,16 +116,16 @@ namespace Scripts
 
             foreach (CoordStruct point in Points)
             {
-                Pointer<LaserDrawClass> pMergeLaser = YRMemory.Create<LaserDrawClass>(point, mean, attackInnerColor, attackOuterColor, attackOuterSpread, 10);
+                Pointer<LaserDrawClass> pMergeLaser = YRMemory.Allocate<LaserDrawClass>().Construct(point, mean, attackInnerColor, attackOuterColor, attackOuterSpread, 10);
                 pMergeLaser.Ref.Thickness = 4;
                 pMergeLaser.Ref.IsHouseColor = true;
             }
 
             // create merge anim on mean point
-            Pointer<AnimClass> pAnim = YRMemory.Create<AnimClass>(AttackAnimType, mean);
+            Pointer<AnimClass> pAnim = YRMemory.Allocate<AnimClass>().Construct(AttackAnimType, mean);
 
             // draw laser from mean to target
-            Pointer<LaserDrawClass> pLaser = YRMemory.Create<LaserDrawClass>(mean, pTarget.Ref.GetCoords(), attackInnerColor, attackOuterColor, attackOuterSpread, 10);
+            Pointer<LaserDrawClass> pLaser = YRMemory.Allocate<LaserDrawClass>().Construct(mean, pTarget.Ref.GetCoords(), attackInnerColor, attackOuterColor, attackOuterSpread, 10);
             pLaser.Ref.Thickness = MathEx.Clamp(3 * Jumpjets.Count, 6, 15);
             pLaser.Ref.IsHouseColor = true;
 

@@ -62,7 +62,7 @@ namespace Scripts
                     targets.Add(pCell.Convert<AbstractClass>());
                 }
             }
-            ext.GameObject.CreateScriptComponent<StraightRush>("first straight rush", ext, targets, BurstWeapon, Speed, FlyPercent, BurstMaxAngle);
+            ext.GameObject.CreateScriptComponent(nameof(StraightRush), "first straight rush", ext, targets, BurstWeapon, Speed, FlyPercent, BurstMaxAngle);
         }
 
         [Serializable]
@@ -70,15 +70,16 @@ namespace Scripts
         {
             public StraightRush(BulletExt owner, List<Pointer<AbstractClass>> targets, Pointer<WeaponTypeClass> burstWeapon, float speed, float flyPercent, float burstMaxAngle) : base(owner)
             {
-                Targets = targets.Select(t => new SwizzleablePointer<AbstractClass>(t)).ToList();
                 BurstWeapon = burstWeapon;
                 this.speed = speed;
                 this.flyPercent = flyPercent;
                 this.burstMaxAngle = burstMaxAngle;
+
+                BrustBullets = targets.Select(t => new SwizzleablePointer<BulletClass>(BulletFactory.CreateBullet(t, BurstWeapon, owner.OwnerObject.Ref.Owner))).ToList();
             }
 
             CoordStruct StartCoord;
-            List<SwizzleablePointer<AbstractClass>> Targets;
+            List<SwizzleablePointer<BulletClass>> BrustBullets;
             SwizzleablePointer<WeaponTypeClass> BurstWeapon;
             float speed;
             float flyPercent;
@@ -99,12 +100,11 @@ namespace Scripts
                 var pWeapon = BurstWeapon;
                 var location = pMe.Ref.Base.Location;
 
-                foreach (var pTarget in Targets)
+                foreach (var pBullet in BrustBullets)
                 {
-                    var pBullet = BulletFactory.CreateBullet(pTarget, BurstWeapon, pOwner);
                     pBullet.Ref.MoveTo(location, new BulletVelocity(0, 0, 0));
                     BulletExt ext = BulletExt.ExtMap.Find(pBullet);
-                    ext.GameObject.CreateScriptComponent<DiffusionEffect>("brust out", ext, burstMaxAngle);
+                    ext.GameObject.CreateScriptComponent(nameof(DiffusionEffect), "brust out", ext, burstMaxAngle);
                 }
             }
 

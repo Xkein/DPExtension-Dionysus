@@ -93,7 +93,7 @@ namespace Scripts
                 BulletExt bulletExt = BulletExt.ExtMap.Find(pBullet);
                 if (bulletExt.GameObject.GetComponent(BulletBehavior.UniqueID) == null)
                 {
-                    bulletExt.GameObject.CreateScriptComponent<BulletBehavior>(BulletBehavior.UniqueID, "Bullet Effect Decorator", bulletExt);
+                    bulletExt.GameObject.CreateScriptComponent(nameof(BulletBehavior), BulletBehavior.UniqueID, "Bullet Effect Decorator", bulletExt);
                 }
 
                 pBullet.Ref.MoveTo(from.ToCoordStruct(), default);
@@ -161,7 +161,7 @@ namespace Scripts
                         var pAnimType = Debris[random.Next(0, Debris.Length)];
                         if (pAnimType.IsNull == false)
                         {
-                            Pointer<AnimClass> pAnim = YRMemory.Create<AnimClass>(pAnimType, location);
+                            Pointer<AnimClass> pAnim = YRMemory.Allocate<AnimClass>().Construct(pAnimType, location);
                             pAnim.Ref.Bounce.Velocity += new SingleVector3D(0, 0, 20);
                             //Console.WriteLine($"fly debris {(string)pAnimType.Ref.Base.Base.ID}!");
                         }
@@ -175,7 +175,7 @@ namespace Scripts
                 pBullet.Ref.Base.Location += 
                     (direction.Normalize() * MathEx.Clamp(direction.Length(), 5, 200)).ToCoordStruct();
 
-                Pointer<LaserDrawClass> pLaser = YRMemory.Create<LaserDrawClass>(location, target, innerColor, outerColor, outerSpread, 1);
+                Pointer<LaserDrawClass> pLaser = YRMemory.Allocate<LaserDrawClass>().Construct(location, target, innerColor, outerColor, outerSpread, 1);
                 pLaser.Ref.Thickness = 1;
                 pLaser.Ref.IsHouseColor = true;
 

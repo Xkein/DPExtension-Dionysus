@@ -25,7 +25,7 @@ namespace Scripts
             {
                 TechnoExt pTargetExt = TechnoExt.ExtMap.Find(pTechno);
                 if (pTargetExt.GameObject.GetComponent(MissileFall.UniqueID) == null) {
-                    pTargetExt.GameObject.CreateScriptComponent<MissileFall>(MissileFall.UniqueID, "Missile Fall Decorator", pTargetExt, this, weaponIndex != 0);
+                    pTargetExt.GameObject.CreateScriptComponent(nameof(MissileFall), MissileFall.UniqueID, "Missile Fall Decorator", pTargetExt, this, weaponIndex != 0);
                 }
             }
         }

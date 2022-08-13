@@ -57,7 +57,7 @@ namespace Scripts
                         double x = radius * Math.Cos((start + i * increasement) * Math.PI / 180);
                         double y = radius * Math.Sin((start + i * increasement) * Math.PI / 180);
                         CoordStruct to = curLocation + new CoordStruct((int)x, (int)y, -height);
-                        Pointer<LaserDrawClass> pLaser = YRMemory.Create<LaserDrawClass>(from, to, innerColor, outerColor, outerSpread, 8);
+                        Pointer<LaserDrawClass> pLaser = YRMemory.Allocate<LaserDrawClass>().Construct(from, to, innerColor, outerColor, outerSpread, 8);
                         pLaser.Ref.Thickness = 10;
                         pLaser.Ref.IsHouseColor = true;
                         
@@ -67,6 +67,7 @@ namespace Scripts
                             // MapClass.FlashbangWarheadAt(damage, pWH, to);
                             Pointer<BulletClass> pBullet = pBulletType.Ref.CreateBullet(pTechno.Convert<AbstractClass>(), Owner.OwnerObject, damage, pWH, 100, true);
                             pBullet.Ref.Detonate(to);
+                            pBullet.Ref.Base.UnInit();
                         }
                         else {
                             frames++;

@@ -119,7 +119,7 @@ namespace Scripts
                 decorator.CreateDecorator<PairDecorator<string, bool>>("super weapon is launched", LaunchedTag, false);
                 decorator.CreateDecorator<PairDecorator<string, bool>>("super weapon is charged at least once", BaseChargedTag, false);
 
-                ext.GameObject.CreateScriptComponent<SWLaunchListener>("super weapon launch listener for keepers", ext);
+                ext.GameObject.CreateScriptComponent(nameof(SWLaunchListener), "super weapon launch listener for keepers", ext);
             }
 
             {

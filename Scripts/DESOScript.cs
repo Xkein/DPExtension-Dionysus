@@ -25,7 +25,7 @@ namespace Scripts
                 var id = 1919810;
                 if (GameObject.GetComponent(id) == null)
                 {
-                    GameObject.CreateScriptComponent<NuclearLeakage>(id, "Nuclear Leakage Decorator", this);
+                    GameObject.CreateScriptComponent(nameof(NuclearLeakage), id, "Nuclear Leakage Decorator", this);
                 }
             }
         }
@@ -69,7 +69,8 @@ namespace Scripts
 
             pBullet.Ref.MoveTo(curLocation, new BulletVelocity(0, 0, 0));
             pBullet.Ref.Detonate(curLocation);
-            
+            pBullet.Ref.Base.UnInit();
+
             pWeapon = Weapon2;
             pWarhead = Warhead2;
 
@@ -80,6 +81,7 @@ namespace Scripts
 
             pBullet.Ref.MoveTo(curLocation, new BulletVelocity(0, 0, 0));
             pBullet.Ref.Detonate(curLocation);
+            pBullet.Ref.Base.UnInit();
         }
     }
 
