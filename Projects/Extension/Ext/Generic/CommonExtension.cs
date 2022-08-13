@@ -63,7 +63,14 @@ namespace Extension.Ext
             base.OnAwake(gameObject);
 
             Type = CommonTypeExtension<TTypeExt, TTypeBase>.ExtMap.Find(OwnerObject.Ref.OwnType);
-            ScriptManager.CreateScriptableTo(gameObject, Type.Scripts, this as TExt);
+
+            if (Type.Scripts != null)
+            {
+                foreach (var script in Type.Scripts)
+                {
+                    ScriptManager.CreateScriptableTo(gameObject, script, this as TExt);
+                }
+            }
         }
     }
 }

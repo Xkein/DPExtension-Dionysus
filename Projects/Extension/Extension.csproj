@@ -105,6 +105,16 @@
     <Compile Include="Script\Script.cs" />
     <Compile Include="Script\Scriptable.cs" />
     <Compile Include="Script\ScriptComponent.cs" />
+    <Compile Include="Script\ScriptComponentHelpers.g.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ScriptComponentHelpers.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Script\ScriptManager.Instantiator.g.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ScriptManager.Instantiator.tt</DependentUpon>
+    </Compile>
     <Compile Include="Serialization\CoroutineSurrogate.cs" />
     <Compile Include="Serialization\DefaultSerializationSurrogate.cs" />
     <Compile Include="Serialization\DelegateSurrogate.cs" />
@@ -139,6 +149,18 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Script\ScriptComponentHelpers.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ScriptComponentHelpers.g.cs</LastGenOutput>
+    </Content>
+    <Content Include="Script\ScriptManager.Instantiator.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ScriptManager.Instantiator.g.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
