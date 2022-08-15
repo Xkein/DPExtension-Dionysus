@@ -136,6 +136,7 @@
     <Compile Include="Ext\TechnoTypeExt.cs" />
     <Compile Include="Utilities\SwizzleablePointer.cs" />
     <Compile Include="World.cs" />
+    <Compile Include="ZhangSanExtension\SampleLogTechnoExt.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PatcherYRpp.Utilities\PatcherYRpp.Utilities.csproj">

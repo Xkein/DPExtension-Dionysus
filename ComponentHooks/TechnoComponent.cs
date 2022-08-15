@@ -1,4 +1,4 @@
-﻿using DynamicPatcher;
+using DynamicPatcher;
 using Extension.Ext;
 using Extension.Script;
 using PatcherYRpp;
@@ -20,6 +20,8 @@ namespace ComponentHooks
                 Pointer<TechnoClass> pTechno = (IntPtr)R->ESI;
 
                 TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
+                ext?.OnUpdate();
+
                 ext.GameObject.Foreach(c => c.OnUpdate());
 
                 return 0;
@@ -124,6 +126,7 @@ namespace ComponentHooks
                 var nWeaponIndex = R->Stack<int>(0x8);
 
                 TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
+                ext?.OnFire(pTarget, nWeaponIndex);
                 ext.GameObject.Foreach(c => (c as ITechnoScriptable)?.OnFire(pTarget, nWeaponIndex));
 
                 return 0;

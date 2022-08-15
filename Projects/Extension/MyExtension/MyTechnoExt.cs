@@ -7,11 +7,26 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using Extension.INI;
+using System.Reflection;
+using System.Linq.Expressions;
 
 namespace Extension.Ext
 {
     public partial class TechnoExt
     {
+
+
+        public void OnUpdate()
+        {
+            PartialHelper.TechnoOnUpdateAction(this);
+        }
+
+        public void OnFire(Pointer<AbstractClass> pTarget, int weaponIndex)
+        {
+            PartialHelper.TechnoFireAction(this,pTarget, weaponIndex);
+        }
+
+
         public string MyExtensionTest = nameof(MyExtensionTest);
     }
 
