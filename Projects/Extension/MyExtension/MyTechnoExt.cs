@@ -15,10 +15,14 @@ namespace Extension.Ext
     public partial class TechnoExt
     {
 
+        public void OnPut(CoordStruct coord,Direction faceDir)
+        {
+            PartialHelper.TechnoPutAction(this,coord,faceDir);
+        }
 
         public void OnUpdate()
         {
-            PartialHelper.TechnoOnUpdateAction(this);
+            PartialHelper.TechnoUpdateAction(this);
         }
 
         public void OnFire(Pointer<AbstractClass> pTarget, int weaponIndex)
@@ -26,6 +30,16 @@ namespace Extension.Ext
             PartialHelper.TechnoFireAction(this,pTarget, weaponIndex);
         }
 
+        public void OnRemove()
+        {
+            PartialHelper.TechnoRemoveAction(this);
+        }
+
+        public void OnReceiveDamage(Pointer<int> pDamage, int DistanceFromEpicenter, Pointer<WarheadTypeClass> pWH,
+            Pointer<ObjectClass> pAttacker, bool IgnoreDefenses, bool PreventPassengerEscape, Pointer<HouseClass> pAttackingHouse)
+        {
+            PartialHelper.TechnoReceiveDamageAction(this,pDamage,DistanceFromEpicenter,pWH,pAttacker,IgnoreDefenses,PreventPassengerEscape,pAttackingHouse);
+        }
 
         public string MyExtensionTest = nameof(MyExtensionTest);
     }

@@ -61,6 +61,7 @@ namespace ComponentHooks
                 var faceDir = R->Stack<Direction>(0x8);
 
                 TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
+                ext?.OnPut(pCoord.Data, faceDir);
                 ext.GameObject.Foreach(c => (c as IObjectScriptable)?.OnPut(pCoord.Data, faceDir));
 
                 return 0;
@@ -81,6 +82,7 @@ namespace ComponentHooks
                 Pointer<TechnoClass> pTechno = (IntPtr)R->ECX;
 
                 TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
+                ext?.OnRemove();
                 ext.GameObject.Foreach(c => (c as IObjectScriptable)?.OnRemove());
 
                 return 0;
@@ -106,6 +108,7 @@ namespace ComponentHooks
                 var pAttackingHouse = R->Stack<Pointer<HouseClass>>(0x1C);
 
                 TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
+                ext?.OnReceiveDamage(pDamage, distanceFromEpicenter, pWH, pAttacker, ignoreDefenses, preventPassengerEscape, pAttackingHouse);
                 ext.GameObject.Foreach(c => (c as IObjectScriptable)?.OnReceiveDamage(pDamage, distanceFromEpicenter, pWH, pAttacker, ignoreDefenses, preventPassengerEscape, pAttackingHouse));
 
                 return 0;

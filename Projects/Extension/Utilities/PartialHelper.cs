@@ -57,9 +57,15 @@ namespace Extension.Utilities
     static class PartialHelper
     {
 
-        public static Action<TechnoExt> TechnoOnUpdateAction = (owner) => { };
+        public static Action<TechnoExt,CoordStruct, Direction> TechnoPutAction = (owner,coord,faceDir) => { };
+
+        public static Action<TechnoExt> TechnoUpdateAction = (owner) => { };
+
+        public static Action<TechnoExt> TechnoRemoveAction = (owner) => { };
 
         public static Action<TechnoExt,Pointer<AbstractClass>, int> TechnoFireAction = (owner,pTarget, weaponIndex) => { };
+
+        public static Action<TechnoExt,Pointer<int>,int ,Pointer<WarheadTypeClass>,Pointer<ObjectClass>,bool,bool,Pointer<HouseClass>> TechnoReceiveDamageAction = (owner,pDamage,distanceFromEpicenter,pWH,pAttacker,IgnoreDefenses,PreventPassengerEscape,pAttackingHouse) => { };
 
 
         static PartialHelper()
@@ -69,6 +75,26 @@ namespace Extension.Utilities
 
             foreach (var method in methods)
             {
+
+                if (method.GetCustomAttribute(typeof(PutActionAttribute)) != null)
+                {
+                    List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+                    { Expression.Parameter(typeof(CoordStruct), "coord"), Expression.Parameter(typeof(Direction), "faceDir") };
+
+                    ParameterExpression parameterExpression = Expression.Parameter(typeof(TechnoExt), "owner");
+                    MethodCallExpression methodCall = Expression.Call(parameterExpression, method, parameterExpressions);
+
+                    var parameterExpressionAll = new List<ParameterExpression>()
+                    { };
+                    parameterExpressionAll.Add(parameterExpression);
+                    parameterExpressionAll.AddRange(parameterExpressions);
+                    Expression<Action<TechnoExt, CoordStruct, Direction>> expression = Expression.Lambda<Action<TechnoExt, CoordStruct, Direction>>
+                       (methodCall, parameterExpressionAll);
+                    var lambda = expression.Compile();
+
+                    TechnoPutAction += lambda;
+                }
+
                 if (method.GetCustomAttribute(typeof(UpdateActionAttribute)) != null)
                 {
                     List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -84,7 +110,26 @@ namespace Extension.Utilities
                     Expression<Action<TechnoExt>> expression = Expression.Lambda<Action<TechnoExt>>
                        (methodCall, parameterExpressionAll);
                     var lambda = expression.Compile();
-                    TechnoOnUpdateAction += lambda;
+                    TechnoUpdateAction += lambda;
+                }
+
+
+                if (method.GetCustomAttribute(typeof(RemoveActionAttribute)) != null)
+                {
+                    List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+                    { };
+
+                    ParameterExpression parameterExpression = Expression.Parameter(typeof(TechnoExt), "owner");
+                    MethodCallExpression methodCall = Expression.Call(parameterExpression, method, parameterExpressions);
+
+                    var parameterExpressionAll = new List<ParameterExpression>()
+                    { };
+                    parameterExpressionAll.Add(parameterExpression);
+                    parameterExpressionAll.AddRange(parameterExpressions);
+                    Expression<Action<TechnoExt>> expression = Expression.Lambda<Action<TechnoExt>>
+                       (methodCall, parameterExpressionAll);
+                    var lambda = expression.Compile();
+                    TechnoRemoveAction += lambda;
                 }
 
                 if (method.GetCustomAttribute(typeof(FireActionAttribute)) != null)
@@ -105,6 +150,34 @@ namespace Extension.Utilities
 
                     TechnoFireAction += lambda;
                 }
+
+                if (method.GetCustomAttribute(typeof(ReceiveDamageActionAttribute)) != null)
+                {
+                    List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
+                    {
+                        Expression.Parameter(typeof(Pointer<int>), "pDamage"),
+                        Expression.Parameter(typeof(int), "DistanceFromEpicenter"),
+                        Expression.Parameter(typeof(Pointer<WarheadTypeClass>), "pWh"),
+                        Expression.Parameter(typeof(Pointer<ObjectClass>), "pAttacker"),
+                        Expression.Parameter(typeof(bool), "IgnoreDefenses"),
+                        Expression.Parameter(typeof(bool), "PreventPassengerEscape"),
+                        Expression.Parameter(typeof(Pointer<HouseClass>), "pAttackingHouse")
+                    };
+
+                    ParameterExpression parameterExpression = Expression.Parameter(typeof(TechnoExt), "owner");
+                    MethodCallExpression methodCall = Expression.Call(parameterExpression, method, parameterExpressions);
+
+                    var parameterExpressionAll = new List<ParameterExpression>()
+                    { };
+                    parameterExpressionAll.Add(parameterExpression);
+                    parameterExpressionAll.AddRange(parameterExpressions);
+                    Expression<Action<TechnoExt, Pointer<int>, int, Pointer<WarheadTypeClass>, Pointer<ObjectClass>, bool, bool, Pointer<HouseClass>>> expression = Expression.Lambda<Action<TechnoExt, Pointer<int>, int, Pointer<WarheadTypeClass>, Pointer<ObjectClass>, bool, bool, Pointer<HouseClass>>>
+                       (methodCall, parameterExpressionAll);
+                    var lambda = expression.Compile();
+
+                    TechnoReceiveDamageAction += lambda;
+                }
+
             }
         }
 
