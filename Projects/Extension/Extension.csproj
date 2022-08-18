@@ -74,6 +74,7 @@
     <Compile Include="Ext\SuperWeaponExt.cs" />
     <Compile Include="Ext\SWTypeExt.cs" />
     <Compile Include="Ext\Generic\TypeExtension.cs" />
+    <Compile Include="Ext\WarheadTypeExt.cs" />
     <Compile Include="Ext\WeaponTypeExt.cs" />
     <Compile Include="GlobalVars.cs" />
     <Compile Include="INI\EnumParser.cs" />
@@ -100,7 +101,10 @@
     <Compile Include="INI\FindTypeParser.cs" />
     <Compile Include="INI\YRParsers\TechnoTypeClassParser.cs" />
     <Compile Include="INI\YRParsers\WeaponTypeClassParser.cs" />
+    <Compile Include="MyExtension\AttachEffectScriptExtension.cs" />
     <Compile Include="MyExtension\MyTechnoExt.cs" />
+    <Compile Include="MyExtension\MyWarheadExt.cs" />
+    <Compile Include="Script\AttachEffectScriptable.cs" />
     <Compile Include="Script\IScriptable.cs" />
     <Compile Include="Script\Script.cs" />
     <Compile Include="Script\Scriptable.cs" />
@@ -164,5 +168,6 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
