@@ -16,7 +16,7 @@ namespace Scripts
     public class SesshoSakura : ICanCluster<SesshoSakura>
     {
         public ICluster<SesshoSakura> Cluster { get; set; }
-
+        
         public CoordStruct Point => throw new NotImplementedException();
 
         public Pointer<HouseClass> Owner => throw new NotImplementedException();

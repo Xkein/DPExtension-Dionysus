@@ -14,7 +14,6 @@ using Extension.Decorators;
 using Extension.Utilities;
 using System.Threading.Tasks;
 using System.Linq;
-using Extension.Components;
 using System.Reflection;
 using System.Windows.Forms;
 using Extension;
@@ -406,7 +405,7 @@ namespace Miscellaneous
 
         static public void RefreshINIComponent()
         {
-            INIComponent.ClearBuffer();
+            INIComponentManager.ClearBuffer();
 
             void RefreshINIComponents<TExt, TBase>(GOInstanceExtension<TExt, TBase> ext) where TExt : Extension<TBase>
             {

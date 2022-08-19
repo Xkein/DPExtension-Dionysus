@@ -6,8 +6,8 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using DynamicPatcher;
-using Extension.Components;
 using Extension.Ext;
+using Extension.INI;
 using Extension.Lua;
 using Extension.Script;
 using PatcherYRpp;
@@ -15,6 +15,33 @@ using PatcherYRpp.Utilities;
 
 namespace Scripts
 {
+    public class UseLuaConfig : INIConfig
+    {
+        public override void Read(INIComponent ini)
+        {
+            string luaScriptFile = ini.Get<string>("UseLua.File");
+            string luaScriptString = ini.Get<string>("UseLua.String");
+
+            string script = luaScriptString;
+            if (string.IsNullOrEmpty(script))
+            {
+                if (string.IsNullOrEmpty(luaScriptFile))
+                {
+                    Logger.LogError("[{0}] has empty lua script file path!", ini.INISection);
+                }
+                else
+                {
+                    string pakName = luaScriptFile.Replace(".lua", "").Replace('/', '.').Replace('\\', '.');
+                    script = $"require '{pakName}'";
+                }
+            }
+
+            Script = script;
+        }
+
+        public string Script;
+    }
+
     [Serializable]
     public class UseLua : ScriptComponent, ITechnoScriptable, IBulletScriptable, ISuperWeaponScriptable, IAnimScriptable
     {
@@ -29,32 +56,14 @@ namespace Scripts
         }
 
         private IExtension Owner;
-        INIComponent INI;
-        private string LuaScriptFile => INI.Get<string>("UseLua.File");
-        private string LuaScriptString => INI.Get<string>("UseLua.String");
+        INIComponentWith<UseLuaConfig> INI;
 
         public override void Awake()
         {
             string section = DebugUtilities.GetAbstractID(Owner.OwnerObject);
-            INI = INIComponent.CreateRulesIniComponent(section);
-            INI.AttachToComponent(this);
+            INI = this.CreateRulesIniComponentWith<UseLuaConfig>(section);
 
-            string script = LuaScriptString;
-            if (string.IsNullOrEmpty(script))
-            {
-                if (string.IsNullOrEmpty(LuaScriptFile))
-                {
-                    Logger.LogError("[{0}] has empty lua script file path!", section);
-                }
-                else
-                {
-                    string pakName = LuaScriptFile.Replace(".lua", "").Replace('/', '.').Replace('\\', '.');
-                    script = $"require '{pakName}'";
-                }
-            }
-
-            Lua = new LuaComponent(script);
-            Lua.Owner = Owner;
+            Lua = new LuaComponent(INI.Data.Script) { Owner = Owner };
             Lua.AttachToComponent(this);
         }
 

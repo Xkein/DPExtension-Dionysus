@@ -16,6 +16,7 @@ using Extension.Coroutines;
 using Extension.Decorators;
 using Extension.Utilities;
 using PatcherYRpp.Utilities;
+using Extension.INI;
 
 namespace Scripts
 {
@@ -26,9 +27,7 @@ namespace Scripts
 
         public override void Awake()
         {
-            string section = Owner.OwnerObject.Ref.Type.Ref.BaseAbstractType.ID;
-            INI = INIComponent.CreateRulesIniComponent(section);
-            INI.AttachToComponent(this);
+            INI = INIComponent.CreateRulesIniComponent(Owner.OwnerTypeRef.BaseAbstractType.ID);
         }
 
         INIComponent INI;

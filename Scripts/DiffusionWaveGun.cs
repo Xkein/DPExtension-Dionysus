@@ -1,5 +1,5 @@
-﻿using Extension.Components;
-using Extension.Ext;
+﻿using Extension.Ext;
+using Extension.INI;
 using Extension.Script;
 using Extension.Utilities;
 using PatcherYRpp;
@@ -14,6 +14,35 @@ using System.Threading.Tasks;
 
 namespace Scripts
 {
+    public class DiffusionWaveGunConfig : INIConfig
+    {
+        public override void Read(INIComponent ini)
+        {
+            FirstWeapon = ini.Get("DiffusionWaveGun.FirstWeapon", WeaponTypeClass.ABSTRACTTYPE_ARRAY.Find("Medusa"));
+            BurstWeapon = ini.Get("DiffusionWaveGun.BurstWeapon", WeaponTypeClass.ABSTRACTTYPE_ARRAY.Find("Medusa"));
+
+            Range = ini.Get("DiffusionWaveGun.SearchRange", Game.CellSize * 5);
+            BrustCount = ini.Get("DiffusionWaveGun.BrustCount", 10);
+
+            Speed = ini.Get("DiffusionWaveGun.FirstWeaponSpeed", 0.05f);
+            FlyPercent = ini.Get("DiffusionWaveGun.FlyPercent", 0.4f);
+            BurstMaxAngle = ini.Get("DiffusionWaveGun.BurstMaxAngle", 72f) / 90f;
+        }
+
+        public Pointer<WeaponTypeClass> FirstWeapon;
+        public Pointer<WeaponTypeClass> BurstWeapon;
+
+        // search range
+        public int Range;
+        // count of BurstWeapon
+        public int BrustCount;
+        // the speed of FirstWeapon
+        public float Speed;
+        // the length percent from owner to target. the FirstWeapon will burst when reach this
+        public float FlyPercent;
+        public float BurstMaxAngle;
+    }
+
     [Serializable]
     public class DiffusionWaveGun : TechnoScriptable
     {
@@ -23,24 +52,18 @@ namespace Scripts
 
         public override void Awake()
         {
-            string section = Owner.OwnerTypeRef.BaseAbstractType.ID;
-            INI = INIComponent.CreateRulesIniComponent(section);
-            INI.AttachToComponent(this);
+            INI = this.CreateRulesIniComponentWith<DiffusionWaveGunConfig>(Owner.OwnerTypeRef.BaseAbstractType.ID);
         }
 
-        INIComponent INI;
+        INIComponentWith<DiffusionWaveGunConfig> INI;
 
-        Pointer<WeaponTypeClass> FirstWeapon => INI.Get("DiffusionWaveGun.FirstWeapon", WeaponTypeClass.ABSTRACTTYPE_ARRAY.Find("Medusa"));
-        Pointer<WeaponTypeClass> BurstWeapon => INI.Get("DiffusionWaveGun.BurstWeapon", WeaponTypeClass.ABSTRACTTYPE_ARRAY.Find("Medusa"));
-        // search range
-        int Range => INI.Get("DiffusionWaveGun.SearchRange", Game.CellSize * 5);
-        // count of BurstWeapon
-        int BrustCount => INI.Get("DiffusionWaveGun.BrustCount", 10);
-        // the speed of FirstWeapon
-        float Speed => INI.Get("DiffusionWaveGun.FirstWeaponSpeed", 0.05f);
-        // the length percent from owner to target. the FirstWeapon will burst when reach this
-        float FlyPercent => INI.Get("DiffusionWaveGun.FlyPercent", 0.4f);
-        float BurstMaxAngle => INI.Get("DiffusionWaveGun.BurstMaxAngle", 72f) / 90f;
+        Pointer<WeaponTypeClass> FirstWeapon => INI.Data.FirstWeapon;
+        Pointer<WeaponTypeClass> BurstWeapon => INI.Data.BurstWeapon;
+        int Range => INI.Data.Range;
+        int BrustCount => INI.Data.BrustCount;
+        float Speed => INI.Data.Speed;
+        float FlyPercent => INI.Data.FlyPercent;
+        float BurstMaxAngle => INI.Data.BurstMaxAngle;
 
         public override void OnFire(Pointer<AbstractClass> pTarget, int weaponIndex)
         {

@@ -8,9 +8,19 @@ using PatcherYRpp;
 using Extension.Ext;
 using Extension.Script;
 using System.Threading.Tasks;
+using Extension.Utilities;
+using Extension.INI;
 
 namespace Scripts
 {
+    public class MTNKConfig : INIAutoConfig
+    {
+        [INIField(Key = "FireSuperWeapon")]
+        public Pointer<SuperWeaponTypeClass> SuperWeapon;
+
+        public bool HasLaserTail = true;
+    }
+
     [Serializable]
     public class MTNK : TechnoScriptable
     {
@@ -34,28 +44,36 @@ namespace Scripts
 
         CoordStruct lastLocation;
 
+        INIComponentWith<MTNKConfig> INI;
+
+        public override void Awake()
+        {
+            INI = this.CreateRulesIniComponentWith<MTNKConfig>(Owner.OwnerTypeRef.BaseAbstractType.ID);
+        }
+
         public override void OnUpdate()
         {
-            Pointer<TechnoClass> pTechno = Owner.OwnerObject;
-            TechnoTypeExt extType = Owner.Type;
-
-            CoordStruct nextLocation = pTechno.Ref.Base.Base.GetCoords();
-            nextLocation.Z += 50;
-            if (lastLocation.DistanceFrom(nextLocation) > 100)
+            if (INI.Data.HasLaserTail)
             {
-                Pointer<LaserDrawClass> pLaser = YRMemory.Allocate<LaserDrawClass>().Construct(lastLocation, nextLocation, innerColor, outerColor, outerSpread, 30);
-                pLaser.Ref.Thickness = 10;
-                pLaser.Ref.IsHouseColor = true;
-                //Logger.Log("laser [({0}, {1}, {2}) -> ({3}, {4}, {5})]", lastLocation.X, lastLocation.Y, lastLocation.Z, nextLocation.X, nextLocation.Y, nextLocation.Z);
+                Pointer<TechnoClass> pTechno = Owner.OwnerObject;
 
-                lastLocation = nextLocation;
+                CoordStruct nextLocation = pTechno.Ref.Base.Base.GetCoords();
+                nextLocation.Z += 50;
+                if (lastLocation.DistanceFrom(nextLocation) > 100)
+                {
+                    Pointer<LaserDrawClass> pLaser = YRMemory.Allocate<LaserDrawClass>().Construct(lastLocation, nextLocation, innerColor, outerColor, outerSpread, 30);
+                    pLaser.Ref.Thickness = 10;
+                    pLaser.Ref.IsHouseColor = true;
+                    //Logger.Log("laser [({0}, {1}, {2}) -> ({3}, {4}, {5})]", lastLocation.X, lastLocation.Y, lastLocation.Z, nextLocation.X, nextLocation.Y, nextLocation.Z);
+
+                    lastLocation = nextLocation;
+                }
             }
         }
         
         public override void OnFire(Pointer<AbstractClass> pTarget, int weaponIndex) 
         {
-            TechnoTypeExt extType = Owner.Type;
-            Pointer<SuperWeaponTypeClass> pSWType = extType.FireSuperWeapon;
+            Pointer<SuperWeaponTypeClass> pSWType = INI.Data.SuperWeapon;
 
             if (pSWType.IsNull == false) {
                 Pointer<TechnoClass> pTechno = Owner.OwnerObject;
