@@ -198,7 +198,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -225,7 +225,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -252,7 +252,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -279,7 +279,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -306,7 +306,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -333,7 +333,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -360,7 +360,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -387,7 +387,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -414,7 +414,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -441,7 +441,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -468,7 +468,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -495,7 +495,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -522,7 +522,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -549,7 +549,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -576,7 +576,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
@@ -603,7 +603,7 @@ namespace Extension.Script
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()

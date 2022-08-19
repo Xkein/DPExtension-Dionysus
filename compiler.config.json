@@ -11,6 +11,8 @@
     "PatcherYRpp.dll",
     "PatcherYRpp.Utilities.dll",
     "Extension.dll",
+    "Extension.Ext.dll",
+    "Extension.Script.dll",
     "Extension.FX.dll",
     "Extension.Lua.dll",
     "ScriptUniversal.dll",

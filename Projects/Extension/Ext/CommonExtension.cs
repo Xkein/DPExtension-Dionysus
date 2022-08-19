@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
@@ -70,6 +70,27 @@ namespace Extension.Ext
                 {
                     ScriptManager.CreateScriptableTo(gameObject, script, this as TExt);
                 }
+            }
+            foreach (var script in s_GlobalScripts)
+            {
+                ScriptManager.CreateScriptableTo(gameObject, script, this as TExt);
+            }
+        }
+
+
+
+        private static List<Script.Script> s_GlobalScripts = new();
+
+        public static void AddGlobalScript(Script.Script script)
+        {
+            var oldScript = s_GlobalScripts.Find(s => s.Name == script.Name);
+            if (oldScript != null)
+            {
+                oldScript.ScriptableType = script.ScriptableType;
+            }
+            else
+            {
+                s_GlobalScripts.Add(script);
             }
         }
     }

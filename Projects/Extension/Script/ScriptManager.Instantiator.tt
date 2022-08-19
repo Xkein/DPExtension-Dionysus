@@ -69,7 +69,7 @@ for (int idx = 0; idx < MAX_COUNT; idx++) {
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.Name;
+            string uniqueCtorName = script.ScriptableType.FullName;
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()

@@ -19,6 +19,11 @@ namespace Extension.Script
         // type name -> script
         static Dictionary<string, Script> Scripts = new Dictionary<string, Script>();
 
+        public static bool TryGetScript(string scriptName, out Script script)
+        {
+            return Scripts.TryGetValue(scriptName, out script);
+        }
+
         /// <summary>
         /// create script or get a exist script by script name
         /// </summary>
@@ -27,30 +32,27 @@ namespace Extension.Script
         public static Script GetScript(string scriptName)
         {
             if(scriptName == null)
-                return null; 
+                return null;
 
-            if (Scripts.TryGetValue(scriptName, out Script script))
+            if (TryGetScript(scriptName, out Script script))
             {
                 return script;
             }
             else
             {
                 Script newScript = new Script(scriptName);
-                try
-                {
-                    Assembly assembly = FindScriptAssembly(scriptName);
+                Assembly assembly = FindScriptAssembly(scriptName);
 
-                    RefreshScript(newScript, assembly);
-
-                    Scripts.Add(scriptName, newScript);
-                    return newScript;
-                }
-                catch (Exception e)
+                if (assembly == null)
                 {
                     Logger.LogError("ScriptManager could not find script: {0}", scriptName);
-                    Logger.PrintException(e);
                     return null;
                 }
+
+                RefreshScript(newScript, assembly);
+
+                Scripts.Add(scriptName, newScript);
+                return newScript;
             }
         }
         /// <summary>
@@ -62,8 +64,14 @@ namespace Extension.Script
         {
             List<Script> scripts = new List<Script>();
 
-            var pair = Program.Patcher.FileAssembly.First((pair) => pair.Key.EndsWith(fileName));
+            var pair = Program.Patcher.FileAssembly.FirstOrDefault((pair) => pair.Key.EndsWith(fileName));
             Assembly assembly = pair.Value;
+
+            if (assembly == null)
+            {
+                Logger.LogError("ScriptManager could not find scripts in file: {0}", fileName);
+                return scripts;
+            }
 
             Type[] types = FindScriptTypes(assembly);
 
@@ -99,27 +107,7 @@ namespace Extension.Script
             return scripts;
         }
 
-        //public static ScriptComponent CreateScriptableTo(Component root, Script script, params object[] parameters)
-        //{
-        //    if (script == null)
-        //        return null;
-
-        //    var scriptComponent = CreateScriptable<ScriptComponent>(script, parameters);
-        //    scriptComponent.AttachToComponent(root);
-        //    return scriptComponent;
-        //}
-
-        //public static TScriptable CreateScriptable<TScriptable>(Script script, params object[] parameters) where TScriptable : ScriptComponent
-        //{
-        //    if (script == null)
-        //        return null;
-
-        //    var scriptable = Activator.CreateInstance(script.ScriptableType, parameters) as TScriptable;
-        //    scriptable.Script = script;
-        //    return scriptable;
-        //}
-
-        private static Type[] FindScriptTypes(Assembly assembly)
+        public static Type[] FindScriptTypes(Assembly assembly)
         {
             Type[] types = assembly.GetTypes();
             if (types == null || types.Length == 0)
@@ -128,7 +116,7 @@ namespace Extension.Script
             return types.Where(t => typeof(IScriptable).IsAssignableFrom(t)).ToArray();
         }
 
-        private static Assembly FindScriptAssembly(string scriptName)
+        public static Assembly FindScriptAssembly(string scriptName)
         {
             foreach (var pair in Program.Patcher.FileAssembly)
             {
@@ -143,8 +131,13 @@ namespace Extension.Script
                 }
             }
 
+            // may find in AppDomain.CurrentDomain.GetAssemblies() later
+
             return null;
         }
+
+
+
 
         private static void RefreshScript(Script script, Assembly assembly)
         {
@@ -166,7 +159,7 @@ namespace Extension.Script
             foreach (Type type in types)
             {
                 string scriptName = type.Name;
-                if (Scripts.TryGetValue(scriptName, out Script script))
+                if (TryGetScript(scriptName, out Script script))
                 {
                     RefreshScript(script, assembly);
                 }
@@ -181,63 +174,66 @@ namespace Extension.Script
         }
 
 
-        private static void Patcher_AssemblyRefresh(object sender, AssemblyRefreshEventArgs args)
+        private static void InjectGlobalScript(Type type)
         {
-            Assembly assembly = args.RefreshedAssembly;
-            RefreshScripts(assembly);
+            var attribute = type.GetCustomAttribute<GlobalScriptableAttribute>();
+            if (attribute == null || attribute.Types == null || attribute.Types.Length == 0)
+                return;
 
-            Type[] types = FindScriptTypes(assembly);
+            Script script = new Script(type.FullName);
+            script.ScriptableType = type;
+
+            foreach (var scriptedType in attribute.Types)
+            {
+                var addGlobalScript = scriptedType.GetMethod("AddGlobalScript", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+                addGlobalScript.Invoke(null, new object[] { script });
+            }
+
+            Logger.Log("[ScriptManager] global script {0} injected into {1}.", type.FullName, string.Join(", ", attribute.Types.Select(t => t.FullName)));
+        }
+
+        private static void InjectAllGlobalScripts(Assembly assembly)
+        {
+            var types = FindScriptTypes(assembly).Where(t => t.IsDefined(typeof(GlobalScriptableAttribute)));
+
             foreach (Type type in types)
             {
-
-                // [warning!] unsafe change to scriptable
-                unsafe
-                {
-                    // refresh modified scripts only
-                    void RefreshScriptComponents<TExt, TBase>(GOInstanceExtension<TExt, TBase> ext) where TExt : Extension<TBase>
-                    {
-                        ScriptComponent[] components = ext.GameObject.GetComponentsInChildren(c => c.GetType().Name == type.Name).Cast<ScriptComponent>().ToArray();
-                        if (components.Length > 0)
-                        {
-                            foreach (var component in components)
-                            {
-                                var root = component.Parent;
-                                var script = component.Script;
-
-                                component.DetachFromParent();
-
-                                CreateScriptableTo(root, script, ext);
-                            }
-                        }
-                    }
-
-                    void Refresh<TExt, TBase>(Container<TExt, TBase> container, ref DynamicVectorClass<Pointer<TBase>> dvc) where TExt : GOInstanceExtension<TExt, TBase>
-                    {
-                        Logger.Log("refreshing {0}'s ScriptComponents...", typeof(TExt).Name);
-                        foreach (var pItem in dvc)
-                        {
-                            var ext = container.Find(pItem);
-                            RefreshScriptComponents(ext);
-                        }
-                    }
-
-                    Refresh(TechnoExt.ExtMap, ref TechnoClass.Array);
-                    Refresh(BulletExt.ExtMap, ref BulletClass.Array);
-#if USE_ANIM_EXT
-                    Refresh(AnimExt.ExtMap, ref AnimClass.Array);
-#endif
-                }
+                InjectGlobalScript(type);
             }
         }
 
-        private static void RefreshScriptable<TExt, TBase>() where TExt : IScriptable
+        private static void InjectAllGlobalScripts()
         {
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            assemblies = assemblies
+                .Where(a => !a.IsDynamic)
+                .Where(a => a.Location.StartsWith(GlobalVars.DynamicPatcherDirectory) || Program.Patcher.FileAssembly.ContainsValue(a))
+                .ToArray();
 
+            foreach (var assembly in assemblies)
+            {
+                InjectAllGlobalScripts(assembly);
+            }
+
+        }
+
+
+
+
+        private static void Patcher_AssemblyRefresh(object sender, AssemblyRefreshEventArgs args)
+        {
+            Assembly assembly = args.RefreshedAssembly;
+
+            ScriptCtors.Clear();
+            RefreshScripts(assembly);
+            InjectAllGlobalScripts(assembly);
         }
 
         static ScriptManager()
         {
             Program.Patcher.AssemblyRefresh += Patcher_AssemblyRefresh;
+
+            InjectAllGlobalScripts();
         }
 
     }

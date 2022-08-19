@@ -15,7 +15,7 @@ namespace Extension.Script
     [Serializable]
     public class Script
     {
-        public Script(string name)
+        internal Script(string name)
         {
             Name = name;
         }

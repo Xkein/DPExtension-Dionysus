@@ -48,6 +48,14 @@
     <Compile Include="Strategy\WeaponFireStrategy.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Extension.Ext\Extension.Ext.csproj">
+      <Project>{d0c97578-1f0d-419c-a3db-31946cf25cc6}</Project>
+      <Name>Extension.Ext</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Extension.Script\Extension.Script.csproj">
+      <Project>{fb5159d2-722b-4161-9ea6-a77b10350107}</Project>
+      <Name>Extension.Script</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Extension\Extension.csproj">
       <Project>{957E3C34-E736-4145-8B05-2DC1BCFA79E1}</Project>
       <Name>Extension</Name>
