@@ -10,16 +10,23 @@ namespace Extension.Ext
 {
     public class MapContainer<TExt, TBase> : Container<TExt, TBase> where TExt : Extension<TBase>
     {
-        Dictionary<Pointer<TBase>, TExt> Items;
+        Dictionary<Pointer<TBase>, TExt> m_Items;
 
-        public MapContainer(string name) : base(name)
+        ExtensionFactory<TExt, TBase> m_Factory;
+
+        public MapContainer(string name) : this(name, new LambdaExtensionFactory<TExt, TBase>())
         {
-            Items = new Dictionary<Pointer<TBase>, TExt>();
+        }
+
+        public MapContainer(string name, ExtensionFactory<TExt, TBase> factory) : base(name)
+        {
+            m_Items = new Dictionary<Pointer<TBase>, TExt>();
+            m_Factory = factory;
         }
 
         public override TExt Find(Pointer<TBase> key)
         {
-            if (Items.TryGetValue(key, out TExt ext))
+            if (m_Items.TryGetValue(key, out TExt ext))
             {
                 return ext;
             }
@@ -28,28 +35,28 @@ namespace Extension.Ext
 
         protected override TExt Allocate(Pointer<TBase> key)
         {
-            TExt val = Activator.CreateInstance(typeof(TExt), key) as TExt;
-            Items.Add(key, val);
+            TExt val = m_Factory.Create(key);
+            m_Items.Add(key, val);
 
             return val;
         }
 
         protected override void SetItem(Pointer<TBase> key, TExt ext)
         {
-            Items[key] = ext;
+            m_Items[key] = ext;
         }
 
         public override void RemoveItem(Pointer<TBase> key)
         {
-            Items.Remove(key);
+            m_Items.Remove(key);
         }
 
         public override void Clear()
         {
-            if (Items.Count > 0)
+            if (m_Items.Count > 0)
             {
-                Logger.Log("Cleared {0} items from {1}.\n", Items.Count, Name);
-                Items.Clear();
+                Logger.Log("Cleared {0} items from {1}.\n", m_Items.Count, Name);
+                m_Items.Clear();
             }
         }
 

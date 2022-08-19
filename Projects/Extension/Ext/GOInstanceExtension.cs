@@ -20,13 +20,24 @@ namespace Extension.Ext
         protected GOInstanceExtension(Pointer<TBase> OwnerObject) : base(OwnerObject)
         {
             m_GameObject = new GameObject(s_GameObjectName);
-            m_DecoratorComponent = new DecoratorComponent();
 
             m_GameObject.OnAwake += () => OnAwake(m_GameObject);
         }
 
         public GameObject GameObject => m_GameObject.GetAwaked();
-        public DecoratorComponent DecoratorComponent => m_DecoratorComponent;
+        public DecoratorComponent DecoratorComponent
+        {
+            get
+            {
+                if (m_DecoratorComponent == null)
+                {
+                    m_DecoratorComponent = new DecoratorComponent();
+                    m_DecoratorComponent.AttachToComponent(m_GameObject);
+                }
+
+                return m_DecoratorComponent;
+            }
+        }
 
         public override void SaveToStream(IStream stream)
         {
@@ -48,7 +59,7 @@ namespace Extension.Ext
         /// <param name="gameObject">unawaked GameObject</param>
         protected virtual void OnAwake(GameObject gameObject)
         {
-            m_DecoratorComponent.AttachToComponent(m_GameObject);
+
         }
 
         public override void OnExpire()
