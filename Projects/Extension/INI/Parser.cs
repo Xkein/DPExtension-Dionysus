@@ -72,14 +72,30 @@ namespace Extension.INI
         /// <param name="val"></param>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        public static bool ParseList<T>(this IParser<T> parser, string val, ref List<T> buffer)
+        public static bool ParseList<T, TList>(this IParser<T> parser, string val, ref TList buffer) where TList : IList<T>
+        {
+            return parser.ParseCollection(val, ref buffer);
+        }
+
+        /// <summary>
+        /// parse value into collection
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parser"></param>
+        /// <param name="val"></param>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        public static bool ParseCollection<T, TCollection>(this IParser<T> parser, string val, ref TCollection buffer) where TCollection : ICollection<T>
         {
             string[] strs = SplitValue(val);
             T[] aBuffer = new T[strs.Length];
             if (parser.ParseArray(val, ref aBuffer, strs.Length))
             {
                 buffer.Clear();
-                buffer.AddRange(aBuffer);
+                foreach (T v in aBuffer)
+                {
+                    buffer.Add(v);
+                }
                 return true;
             }
 

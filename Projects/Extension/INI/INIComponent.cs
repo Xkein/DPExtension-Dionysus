@@ -7,9 +7,9 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using Extension.EventSystems;
-using Extension.INI;
+using Extension.Components;
 
-namespace Extension.Components
+namespace Extension.INI
 {
     /// <summary>
     /// Component used to get ini value lazily
@@ -154,9 +154,9 @@ namespace Extension.Components
         /// <summary>
         /// find buffer of create buffer stored globally
         /// </summary>
-        public void ReRead()
+        public virtual void ReRead()
         {
-            INIBuffer buffer = FindBuffer(_name, _section);
+            INIBuffer buffer = INIComponentManager.FindBuffer(_name, _section);
 
             if (buffer == null)
             {
@@ -181,106 +181,10 @@ namespace Extension.Components
 
                 YRMemory.Delete(pINI);
 
-                SetBuffer(_name, _section, buffer);
+                INIComponentManager.SetBuffer(_name, _section, buffer);
             }
 
             _buffer = buffer;
-        }
-
-        static INIComponent()
-        {
-            EventSystem.General.AddPermanentHandler(EventSystem.General.ScenarioClearClassesEvent, ScenarioClearClassesEventHandler);
-        }
-
-        private static void ScenarioClearClassesEventHandler(object sender, EventArgs e)
-        {
-            INIComponent.ClearBuffer();
-        }
-
-        /// <summary>
-        /// buffer to store parsed and unparsed pairs in ini
-        /// </summary>
-        class INIBuffer
-        {
-            public INIBuffer(string name, string section)
-            {
-                Name = name;
-                Section = section;
-                Unparsed = new Dictionary<string, string>();
-                Parsed = new Dictionary<string, object>();
-            }
-
-            public string Name;
-            public string Section;
-            public Dictionary<string, string> Unparsed;
-            public Dictionary<string, object> Parsed;
-
-            public bool GetParsed<T>(string key, out T val)
-            {
-                if (Parsed.TryGetValue(key, out object parsed))
-                {
-                    val = (T)parsed;
-                    return true;
-                }
-
-                T tmp = default;
-                if (Unparsed.TryGetValue(key, out string unparsed) && Parsers.GetParser<T>().Parse(unparsed, ref tmp))
-                {
-                    Parsed[key] = val = tmp;
-                    return true;
-                }
-
-                val = default;
-                return false;
-            }
-
-            public bool GetParsedList<T>(string key, out T[] val)
-            {
-                if (Parsed.TryGetValue(key, out object parsed))
-                {
-                    val = (T[])parsed;
-                    return true;
-                }
-
-                List<T> tmp = new List<T>();
-                if (Unparsed.TryGetValue(key, out string unparsed) && Parsers.GetParser<T>().ParseList(unparsed, ref tmp))
-                {
-                    Parsed[key] = val = tmp.ToArray();
-                    return true;
-                }
-
-                val = default;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// share buffer for all INIComponent to avoid redundant read
-        /// </summary>
-        private static Dictionary<(string name, string section), INIBuffer> buffers = new();
-
-        private static INIBuffer FindBuffer(string name, string section)
-        {
-            if (buffers.TryGetValue((name, section), out INIBuffer buffer))
-            {
-                return buffer;
-            }
-
-            return null;
-        }
-
-        private static void SetBuffer(string name, string section, INIBuffer buffer)
-        {
-            buffers[(name, section)] = buffer;
-        }
-
-
-        /// <summary>
-        /// clear all parsed and unparsed buffer
-        /// </summary>
-        public static void ClearBuffer()
-        {
-            buffers.Clear();
         }
 
         public override void LoadFromStream(IStream stream)
@@ -293,5 +197,27 @@ namespace Extension.Components
         [NonSerialized]
         private INIBuffer _buffer;
         private INIComponent _nextIniComponent;
+    }
+
+    public static class INIComponentHelpers
+    {
+        public static INIComponent CreateAiIniComponent(this Component component, string section)
+        {
+            INIComponent ini = INIComponent.CreateAiIniComponent(section);
+            ini.AttachToComponent(component);
+            return ini;
+        }
+        public static INIComponent CreateArtIniComponent(this Component component, string section)
+        {
+            INIComponent ini = INIComponent.CreateArtIniComponent(section);
+            ini.AttachToComponent(component);
+            return ini;
+        }
+        public static INIComponent CreateRulesIniComponent(this Component component, string section)
+        {
+            INIComponent ini = INIComponent.CreateRulesIniComponent(section);
+            ini.AttachToComponent(component);
+            return ini;
+        }
     }
 }

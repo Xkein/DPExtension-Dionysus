@@ -75,13 +75,27 @@ namespace Extension.INI
         /// <param name="list"></param>
         /// <param name="parser"></param>
         /// <returns></returns>
-        public bool ReadList<T>(string section, string key, ref List<T> buffer, IParser<T> parser = null)
+        public bool ReadList<T, TList>(string section, string key, ref TList buffer, IParser<T> parser = null) where TList : IList<T>
+        {
+            return ReadCollection(section, key, ref buffer, parser);
+        }
+
+        /// <summary>
+        /// read data into collection
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="section"></param>
+        /// <param name="key"></param>
+        /// <param name="list"></param>
+        /// <param name="parser"></param>
+        /// <returns></returns>
+        public bool ReadCollection<T, TCollection>(string section, string key, ref TCollection buffer, IParser<T> parser = null) where TCollection : ICollection<T>
         {
             parser ??= Parsers.GetParser<T>();
 
             if (ReadString(section, key, out string val))
             {
-                return parser.ParseList(val, ref buffer);
+                return parser.ParseCollection(val, ref buffer);
             }
 
             return false;
