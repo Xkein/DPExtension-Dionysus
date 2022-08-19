@@ -16,7 +16,7 @@ namespace Extension.Script
 
 
     [Serializable]
-    public class SuperWeaponScriptable : Scriptable<SuperWeaponExt>, ISuperWeaponScriptable
+    public abstract class SuperWeaponScriptable : Scriptable<SuperWeaponExt>, ISuperWeaponScriptable
     {
         public SuperWeaponScriptable(SuperWeaponExt owner) : base(owner)
         {

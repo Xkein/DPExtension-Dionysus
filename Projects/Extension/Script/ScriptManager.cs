@@ -45,11 +45,17 @@ namespace Extension.Script
 
                 if (assembly == null)
                 {
-                    Logger.LogError("ScriptManager could not find script: {0}", scriptName);
+                    Logger.LogError("[ScriptManager] could not find script: {0}", scriptName);
                     return null;
                 }
 
                 RefreshScript(newScript, assembly);
+
+                if (newScript.ScriptableType.IsDefined(typeof(GlobalScriptableAttribute)))
+                {
+                    Logger.LogWarning("[ScriptManager] not allow to get global scriptable: {0}", scriptName);
+                    return null;
+                }
 
                 Scripts.Add(scriptName, newScript);
                 return newScript;
@@ -168,11 +174,27 @@ namespace Extension.Script
                     script = GetScript(scriptName);
                 }
 
-                Logger.Log("refresh script: {0}", script.Name);
+                if (script != null)
+                {
+                    Logger.Log("refresh script: {0}", script.Name);
+                }
             }
 
         }
 
+
+        private static void InjectScript(Type type)
+        {
+            if (type.IsInterface || type.IsAbstract)
+                return;
+
+            Script script = new Script(type.FullName);
+            script.ScriptableType = type;
+
+            Scripts[script.Name] = script;
+
+            Logger.Log("[ScriptManager] script {0} injected.", script.Name);
+        }
 
         private static void InjectGlobalScript(Type type)
         {
@@ -189,20 +211,29 @@ namespace Extension.Script
                 addGlobalScript.Invoke(null, new object[] { script });
             }
 
-            Logger.Log("[ScriptManager] global script {0} injected into {1}.", type.FullName, string.Join(", ", attribute.Types.Select(t => t.FullName)));
+            Logger.Log("[ScriptManager] global script {0} injected into {1}.", script.Name, string.Join(", ", attribute.Types.Select(t => t.FullName)));
         }
 
-        private static void InjectAllGlobalScripts(Assembly assembly)
+        private static void InjectAllScripts(Assembly assembly)
         {
-            var types = FindScriptTypes(assembly).Where(t => t.IsDefined(typeof(GlobalScriptableAttribute)));
+            var types = FindScriptTypes(assembly);
+
+            bool injectAll = !Program.Patcher.FileAssembly.ContainsValue(assembly);
 
             foreach (Type type in types)
             {
-                InjectGlobalScript(type);
+                if (type.IsDefined(typeof(GlobalScriptableAttribute)))
+                {
+                    InjectGlobalScript(type);
+                }
+                else if (injectAll)
+                {
+                    InjectScript(type);
+                }
             }
         }
 
-        private static void InjectAllGlobalScripts()
+        private static void InjectAllScripts()
         {
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             assemblies = assemblies
@@ -212,7 +243,7 @@ namespace Extension.Script
 
             foreach (var assembly in assemblies)
             {
-                InjectAllGlobalScripts(assembly);
+                InjectAllScripts(assembly);
             }
 
         }
@@ -226,14 +257,14 @@ namespace Extension.Script
 
             ScriptCtors.Clear();
             RefreshScripts(assembly);
-            InjectAllGlobalScripts(assembly);
+            InjectAllScripts(assembly);
         }
 
         static ScriptManager()
         {
             Program.Patcher.AssemblyRefresh += Patcher_AssemblyRefresh;
 
-            InjectAllGlobalScripts();
+            InjectAllScripts();
         }
 
     }

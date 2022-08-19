@@ -14,7 +14,7 @@ namespace Extension.Script
 
 #if USE_ANIM_EXT
     [Serializable]
-    public class AnimScriptable : Scriptable<AnimExt>, IAnimScriptable
+    public abstract class AnimScriptable : Scriptable<AnimExt>, IAnimScriptable
     {
         public AnimScriptable(AnimExt owner) : base(owner)
         {

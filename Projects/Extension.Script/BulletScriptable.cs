@@ -15,7 +15,7 @@ namespace Extension.Script
 
 
     [Serializable]
-    public class BulletScriptable : Scriptable<BulletExt>, IBulletScriptable
+    public abstract class BulletScriptable : Scriptable<BulletExt>, IBulletScriptable
     {
         public BulletScriptable(BulletExt owner) : base(owner)
         {

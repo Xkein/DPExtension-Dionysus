@@ -14,7 +14,7 @@ namespace Extension.Script
     }
 
     [Serializable]
-    public class TechnoScriptable : Scriptable<TechnoExt>, ITechnoScriptable
+    public abstract class TechnoScriptable : Scriptable<TechnoExt>, ITechnoScriptable
     {
         public TechnoScriptable(TechnoExt owner) : base(owner)
         {
