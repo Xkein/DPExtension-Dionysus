@@ -42,11 +42,15 @@ namespace Extension.INI
 
         private void ReReadData()
         {
-            T data = new();
+            T data = INIComponentManager.FindData(ININame, INISection) as T;
 
-            data.Read(this);
+            if (data == null)
+            {
+                data = new();
+                data.Read(this);
+            }
 
-            INIComponentManager.SetData(Name, INISection, m_Data = data);
+            INIComponentManager.SetData(ININame, INISection, m_Data = data);
         }
 
 
