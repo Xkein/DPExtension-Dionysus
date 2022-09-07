@@ -87,7 +87,7 @@ namespace Miscellaneous
             EventSystem.General.RemovePermanentHandler(EventSystem.General.ScenarioStartEvent, ScenarioStartEventHandler);
             Task.Delay(1000).ContinueWith(_ =>
             {
-                Program.Patcher.AssemblyRefresh += Patcher_AssemblyRefresh;
+                PatcherManager.Patcher.AssemblyRefresh += Patcher_AssemblyRefresh;
             });
         }
 

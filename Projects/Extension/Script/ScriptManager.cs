@@ -16,6 +16,7 @@ namespace Extension.Script
 {
     public partial class ScriptManager
     {
+        static Patcher DynamicPatcher => PatcherManager.Patcher;
         // type name -> script
         static Dictionary<string, Script> Scripts = new Dictionary<string, Script>();
 
@@ -70,7 +71,7 @@ namespace Extension.Script
         {
             List<Script> scripts = new List<Script>();
 
-            var pair = Program.Patcher.FileAssembly.FirstOrDefault((pair) => pair.Key.EndsWith(fileName));
+            var pair = DynamicPatcher.FileAssembly.FirstOrDefault((pair) => pair.Key.EndsWith(fileName));
             Assembly assembly = pair.Value;
 
             if (assembly == null)
@@ -124,7 +125,7 @@ namespace Extension.Script
 
         public static Assembly FindScriptAssembly(string scriptName)
         {
-            foreach (var pair in Program.Patcher.FileAssembly)
+            foreach (var pair in DynamicPatcher.FileAssembly)
             {
                 Assembly assembly = pair.Value;
                 Type[] types = FindScriptTypes(assembly);
@@ -218,7 +219,7 @@ namespace Extension.Script
         {
             var types = FindScriptTypes(assembly);
 
-            bool injectAll = !Program.Patcher.FileAssembly.ContainsValue(assembly);
+            bool injectAll = !DynamicPatcher.FileAssembly.ContainsValue(assembly);
 
             foreach (Type type in types)
             {
@@ -238,7 +239,7 @@ namespace Extension.Script
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             assemblies = assemblies
                 .Where(a => !a.IsDynamic)
-                .Where(a => a.Location.StartsWith(GlobalVars.DynamicPatcherDirectory) || Program.Patcher.FileAssembly.ContainsValue(a))
+                .Where(a => a.Location.StartsWith(GlobalVars.DynamicPatcherDirectory) || DynamicPatcher.FileAssembly.ContainsValue(a))
                 .ToArray();
 
             foreach (var assembly in assemblies)
@@ -262,7 +263,7 @@ namespace Extension.Script
 
         static ScriptManager()
         {
-            Program.Patcher.AssemblyRefresh += Patcher_AssemblyRefresh;
+            DynamicPatcher.AssemblyRefresh += Patcher_AssemblyRefresh;
 
             InjectAllScripts();
         }

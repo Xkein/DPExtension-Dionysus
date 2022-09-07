@@ -346,7 +346,7 @@ namespace Miscellaneous
         private static void OnINIChange(object sender, FileSystemEventArgs e)
         {
             string path = e.FullPath;
-            string relPath = path.Replace(GlobalVars.RootDirectory, "").Replace(@"\", "/");
+            string relPath = Path.GetRelativePath(GlobalVars.RootDirectory, path).Replace("\\", "/");
 
             if (ignoreList.Contains(relPath.ToLower()))
             {
@@ -454,7 +454,7 @@ namespace Miscellaneous
         [Hook(HookType.WriteBytesHook, Address = 0x7E03E8, Size = 1)]
         static public unsafe byte[] Watch()
         {
-            string watchDir = AppDomain.CurrentDomain.BaseDirectory;
+            string watchDir = GlobalVars.RootDirectory;
 
             Logger.LogWithColor("realtime ini feature will be activated a bit later.", ConsoleColor.Magenta);
             Task.Delay(TimeSpan.FromSeconds(2.5)).ContinueWith(_ =>
@@ -470,7 +470,7 @@ namespace Miscellaneous
 
                 foreach (var filter in watchList)
                 {
-                    var watcher = new CodeWatcher(AppDomain.CurrentDomain.BaseDirectory, filter);
+                    var watcher = new CodeWatcher(watchDir, filter);
 
                     watcher.OnCodeChanged += OnINIChange;
                     watcher.StartWatchPath();
