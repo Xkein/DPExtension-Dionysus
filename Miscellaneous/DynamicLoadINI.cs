@@ -49,7 +49,7 @@ namespace Miscellaneous
             {
 	            string section = "#include";
 	            int length = pINI.Ref.GetKeyCount(section);
-                INIReader reader = new INIReader(pINI);
+                INIReader reader = new INIFileReader(pINI);
                 for (int i = 0; i < length; i++)
                 {
 		            string key = pINI.Ref.GetKeyName(section, i);
@@ -405,35 +405,8 @@ namespace Miscellaneous
 
         static public void RefreshINIComponent()
         {
-            INIComponentManager.ClearBuffer();
+            Ini.ClearBuffer();
 
-            void RefreshINIComponents<TExt, TBase>(GOInstanceExtension<TExt, TBase> ext) where TExt : Extension<TBase>
-            {
-                INIComponent[] components = ext.GameObject.GetComponentsInChildren<INIComponent>();
-                if (components.Length > 0)
-                {
-                    foreach (var component in components)
-                    {
-                        component.ReRead();
-                    }
-                }
-            }
-
-            void Refresh<TExt, TBase>(Container<TExt, TBase> container, ref DynamicVectorClass<Pointer<TBase>> dvc) where TExt : GOInstanceExtension<TExt, TBase>
-            {
-                Logger.Log("refreshing {0}'s INIComponents...", typeof(TExt).Name);
-                foreach (var pItem in dvc)
-                {
-                    var ext = container.Find(pItem);
-                    RefreshINIComponents(ext);
-                }
-            }
-
-            Refresh(TechnoExt.ExtMap, ref TechnoClass.Array);
-            Refresh(BulletExt.ExtMap, ref BulletClass.Array);
-#if USE_ANIM_EXT
-            Refresh(AnimExt.ExtMap, ref AnimClass.Array);
-#endif
         }
 
         private static int oldSpeed = 1;

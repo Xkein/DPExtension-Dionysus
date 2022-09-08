@@ -27,7 +27,7 @@ namespace Scripts
 
         public override void Awake()
         {
-            INI = INIComponent.CreateRulesIniComponent(Owner.OwnerTypeRef.BaseAbstractType.ID);
+            INI = this.CreateRulesIniComponent(Owner.OwnerTypeRef.BaseAbstractType.ID);
         }
 
         INIComponent INI;

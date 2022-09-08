@@ -16,7 +16,7 @@ namespace Scripts
 {
     public class DiffusionWaveGunConfig : INIConfig
     {
-        public override void Read(INIComponent ini)
+        public override void Read(IConfigReader ini)
         {
             FirstWeapon = ini.Get("DiffusionWaveGun.FirstWeapon", WeaponTypeClass.ABSTRACTTYPE_ARRAY.Find("Medusa"));
             BurstWeapon = ini.Get("DiffusionWaveGun.BurstWeapon", WeaponTypeClass.ABSTRACTTYPE_ARRAY.Find("Medusa"));

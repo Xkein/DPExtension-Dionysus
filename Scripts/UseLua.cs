@@ -17,7 +17,7 @@ namespace Scripts
 {
     public class UseLuaConfig : INIConfig
     {
-        public override void Read(INIComponent ini)
+        public override void Read(IConfigReader ini)
         {
             string luaScriptFile = ini.Get<string>("UseLua.File");
             string luaScriptString = ini.Get<string>("UseLua.String");
@@ -27,7 +27,7 @@ namespace Scripts
             {
                 if (string.IsNullOrEmpty(luaScriptFile))
                 {
-                    Logger.LogError("[{0}] has empty lua script file path!", ini.INISection);
+                    Logger.LogError("[{0}] has empty lua script file path!", ini.Section);
                 }
                 else
                 {
