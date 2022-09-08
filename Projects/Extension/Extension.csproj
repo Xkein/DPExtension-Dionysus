@@ -71,7 +71,9 @@
     <Compile Include="Ext\TypeExtension.cs" />
     <Compile Include="GlobalVars.cs" />
     <Compile Include="INI\EnumParser.cs" />
+    <Compile Include="INI\Ini.cs" />
     <Compile Include="INI\INIBuffer.cs" />
+    <Compile Include="INI\INIBufferReader.cs" />
     <Compile Include="INI\INIComponent.cs" />
     <Compile Include="Components\RequireComponent.cs" />
     <Compile Include="Components\Transform.cs" />
@@ -87,6 +89,8 @@
     <Compile Include="INI\INIComponentWith.cs" />
     <Compile Include="INI\INIConfig.cs" />
     <Compile Include="INI\INIConstant.cs" />
+    <Compile Include="INI\INIFileBuffer.cs" />
+    <Compile Include="INI\INIFileReader.cs" />
     <Compile Include="INI\NormalParser.cs" />
     <Compile Include="INI\Parser.cs" />
     <Compile Include="INI\Parsers.cs" />

@@ -62,4 +62,61 @@ namespace Extension.INI
             return false;
         }
     }
+
+    internal class INILinkedBuffer
+    {
+        public INILinkedBuffer(INIBuffer buffer, INILinkedBuffer nextBuffer = null)
+        {
+            m_Buffer = buffer;
+            m_LinkedBuffer = nextBuffer;
+        }
+
+        public string Name => m_Buffer.Name;
+        public string Dependency => m_LinkedBuffer != null ? Name + "->" + m_LinkedBuffer.Dependency : Name;
+        public string Section => m_Buffer.Section;
+
+        public bool Expired { get; set; }
+
+        public bool GetUnparsed(string key, out string val)
+        {
+            if (m_Buffer.Unparsed.TryGetValue(key, out val))
+                return true;
+
+            if (m_LinkedBuffer != null)
+            {
+                return m_LinkedBuffer.GetUnparsed(key, out val);
+            }
+
+            return false;
+        }
+
+        public bool GetParsed<T>(string key, out T val)
+        {
+            if (m_Buffer.GetParsed(key, out val))
+                return true;
+
+            if (m_LinkedBuffer != null)
+            {
+                return m_LinkedBuffer.GetParsed(key, out val);
+            }
+
+            return false;
+        }
+
+        public bool GetParsedList<T>(string key, out T[] val)
+        {
+            if (m_Buffer.GetParsedList(key, out val))
+                return true;
+
+            if (m_LinkedBuffer != null)
+            {
+                return m_LinkedBuffer.GetParsedList(key, out val);
+            }
+
+            return false;
+        }
+
+        private INIBuffer m_Buffer;
+        private INILinkedBuffer m_LinkedBuffer;
+    }
 }

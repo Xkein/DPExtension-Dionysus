@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Extension.INI;
 using PatcherYRpp;
 
 namespace Extension.Ext
@@ -18,6 +19,17 @@ namespace Extension.Ext
         }
 
         public ref TBase OwnerRef => ref OwnerObject.Ref;
+
+
+        protected sealed override void LoadFromINIFile(Pointer<CCINIClass> pINI)
+        {
+            base.LoadFromINIFile(pINI);
+
+            INIReader reader = new INIFileReader(pINI);
+            LoadFromINI(reader);
+        }
+
+        protected abstract void LoadFromINI(INIReader reader);
 
     }
 }

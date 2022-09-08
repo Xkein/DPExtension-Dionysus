@@ -1,5 +1,4 @@
-﻿using PatcherYRpp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace Extension.INI
 {
-    public class INIReader
+    public interface INonaggressiveReader
     {
-        Pointer<CCINIClass> IniFile;
-        byte[] readBuffer = new byte[2048];
+        bool Read<T>(string section, string key, ref T buffer, IParser<T> parser = null);
+        bool ReadArray<T>(string section, string key, ref T[] buffer, int count = -1, IParser<T> parser = null);
+        bool ReadCollection<T, TCollection>(string section, string key, ref TCollection buffer, IParser<T> parser = null) where TCollection : ICollection<T>;
+    }
 
-        public INIReader(Pointer<CCINIClass> pINI)
-        {
-            IniFile = pINI;
-        }
+    public abstract class INIReader : INonaggressiveReader
+    {
 
         public Encoding Encoding { get; set; } = Encoding.UTF8;
 
@@ -101,30 +100,6 @@ namespace Extension.INI
             return false;
         }
 
-
-
-        private string GetString()
-        {
-            string str = Encoding.GetString(readBuffer);
-            str = str.Substring(0, str.IndexOf('\0'));
-            str = str.Trim();
-
-            return str;
-        }
-        private int ReadBuffer(string section, string key)
-        {
-            return IniFile.Ref.ReadString(section, key, "", readBuffer, readBuffer.Length);
-        }
-        private bool ReadString(string section, string key, out string buffer)
-        {
-            if (ReadBuffer(section, key) > 0)
-            {
-                buffer = GetString();
-                return true;
-            }
-
-            buffer = null;
-            return false;
-        }
+        protected abstract bool ReadString(string section, string key, out string val);
     }
 }

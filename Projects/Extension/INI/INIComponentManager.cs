@@ -1,14 +1,36 @@
 ﻿using Extension.EventSystems;
+using PatcherYRpp;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Extension.INI
 {
-    public static class INIComponentManager
+    internal static class INIComponentManager
     {
+        public static string GetDependency(string iniName)
+        {
+            if (iniName.Equals(INIConstant.RulesName, StringComparison.OrdinalIgnoreCase))
+            {
+                if (SessionClass.Instance.GameMode == GameMode.Campaign)
+                {
+                    return GetMergedName(INIConstant.MapName, INIConstant.RulesName);
+                }
+
+                return GetMergedName(INIConstant.MapName, INIConstant.GameModeName, INIConstant.RulesName);
+            }
+
+            return iniName;
+        }
+
+        private static string GetMergedName(params string[] names)
+        {
+            return string.Join("->", names);
+        }
 
 
         static INIComponentManager()
@@ -21,54 +43,70 @@ namespace Extension.INI
             ClearBuffer();
         }
 
-        /// <summary>
-        /// share buffer for all INIComponent to avoid redundant read
-        /// </summary>
-        private static Dictionary<(string name, string section), INIBuffer> s_Buffers = new();
+        private static Dictionary<string, INIFileBuffer> s_File = new();
 
-        /// <summary>
-        /// share buffer for all INIComponent to avoid redundant read
-        /// </summary>
-        private static Dictionary<(string name, string section), INIConfig> s_Config = new();
+        private static INIFileBuffer FindFile(string name)
+        {
+            if (!s_File.TryGetValue(name, out INIFileBuffer buffer))
+            {
+                buffer = new INIFileBuffer(name);
+
+                s_File[name] = buffer;
+            }
+
+            return buffer;
+        }
 
         internal static INIBuffer FindBuffer(string name, string section)
         {
-            if (s_Buffers.TryGetValue((name, section), out INIBuffer buffer))
+            return FindFile(name).GetSection(section);
+        }
+
+
+        private static Dictionary<(string dependency, string section), INILinkedBuffer> s_LinkedBuffer = new();
+        private static Dictionary<INILinkedBuffer, INIConfig> s_Config = new();
+
+        internal static INILinkedBuffer FindLinkedBuffer(string dependency, string section)
+        {
+            if (!s_LinkedBuffer.TryGetValue((dependency, section), out INILinkedBuffer linkedBuffer))
             {
-                return buffer;
+                string[] names = dependency.Replace("->", "+").Split('+');
+                foreach (string name in names.Reverse())
+                {
+                    var buffer = FindBuffer(name, section);
+                    linkedBuffer = new INILinkedBuffer(buffer, linkedBuffer);
+                }
+
+                s_LinkedBuffer[(dependency, section)] = linkedBuffer;
+            }
+            return linkedBuffer;
+        }
+
+        internal static T FindConfig<T>(INILinkedBuffer linkedBuffer, INIBufferReader reader) where T : INIConfig, new()
+        {
+            if (!s_Config.TryGetValue(linkedBuffer, out INIConfig config))
+            {
+                config = new T();
+                config.Read(reader);
+
+                s_Config[linkedBuffer] = config;
             }
 
-            return null;
+            return (T)config;
         }
-
-        internal static void SetBuffer(string name, string section, INIBuffer buffer)
-        {
-            s_Buffers[(name, section)] = buffer;
-        }
-
-
-        internal static INIConfig FindData(string name, string section)
-        {
-            if (s_Config.TryGetValue((name, section), out INIConfig data))
-            {
-                return data;
-            }
-
-            return null;
-        }
-
-        internal static void SetData(string name, string section, INIConfig data)
-        {
-            s_Config[(name, section)] = data;
-        }
-
 
         /// <summary>
         /// clear all parsed and unparsed buffer
         /// </summary>
         public static void ClearBuffer()
         {
-            s_Buffers.Clear();
+            foreach (INILinkedBuffer linkedBuffer in s_LinkedBuffer.Values)
+            {
+                linkedBuffer.Expired = true;
+            }
+
+            s_File.Clear();
+            s_LinkedBuffer.Clear();
             s_Config.Clear();
         }
     }

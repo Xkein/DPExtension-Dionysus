@@ -8,15 +8,14 @@ namespace Extension.INI
     /// Component used to get ini value lazily
     /// </summary>
     [Serializable]
-    public class INIComponentWith<T> : INIComponent where T : INIConfig, new()
+    public class INIComponentWith<T> : INIComponent, IConfigWrapper<T> where T : INIConfig, new()
     {
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="name">the ini filename</param>
+        /// <param name="dependency">the ini filename or denpendency chain</param>
         /// <param name="section">the section name in ini</param>
-        /// <param name="nextIniComponent">next INIComponent to read if key not found in current INIComponent</param>
-        public INIComponentWith(string name, string section, INIComponent nextIniComponent = null) : base(name, section, nextIniComponent)
+        public INIComponentWith(string dependency, string section) : base(dependency, section)
         {
         }
 
@@ -24,100 +23,43 @@ namespace Extension.INI
         {
             get
             {
-                if (m_Data == null)
+                if (m_Config == null)
                 {
-                    ReReadData();
+                    var buffer = INIComponentManager.FindLinkedBuffer(Dependency, Section);
+                    m_Config = INIComponentManager.FindConfig<T>(buffer, GetReader());
                 }
 
-                return m_Data;
+                return m_Config;
             }
         }
 
-        public override void ReRead()
+        public override void ResetBuffer()
         {
-            m_Data = null;
+            base.ResetBuffer();
 
-            base.ReRead();
+            m_Config = null;
         }
 
-        private void ReReadData()
-        {
-            T data = INIComponentManager.FindData(ININame, INISection) as T;
-
-            if (data == null)
-            {
-                data = new();
-                data.Read(this);
-            }
-
-            INIComponentManager.SetData(ININame, INISection, m_Data = data);
-        }
-
-
-        /// <summary>
-        /// create INIComponent that read Ai
-        /// </summary>
-        /// <param name="section"></param>
-        /// <returns></returns>
-        public static new INIComponentWith<T> CreateAiIniComponent(string section)
-        {
-            var art = new INIComponentWith<T>(INIConstant.AiName, section);
-            return art;
-        }
-
-        /// <summary>
-        /// create INIComponent that read Art
-        /// </summary>
-        /// <param name="section"></param>
-        /// <returns></returns>
-        public static new INIComponentWith<T> CreateArtIniComponent(string section)
-        {
-            var art = new INIComponentWith<T>(INIConstant.ArtName, section);
-            return art;
-        }
-
-        /// <summary>
-        /// create INIComponent that read Rules, GameMode and Map
-        /// </summary>
-        /// <param name="section"></param>
-        /// <returns></returns>
-        public static new INIComponentWith<T> CreateRulesIniComponent(string section)
-        {
-            var rules = new INIComponentWith<T>(INIConstant.RulesName, section);
-            INIComponentWith<T> map;
-            if (SessionClass.Instance.GameMode != GameMode.Campaign)
-            {
-                var mode = new INIComponentWith<T>(INIConstant.GameModeName, section, rules);
-                map = new INIComponentWith<T>(INIConstant.MapName, section, mode);
-            }
-            else
-            {
-                map = new INIComponentWith<T>(INIConstant.MapName, section, rules);
-            }
-            return map;
-        }
-
-
-        [NonSerialized] private T m_Data;
+        [NonSerialized] private T m_Config;
     }
 
     public static class INIComponentWithHelpers
     {
         public static INIComponentWith<T> CreateAiIniComponentWith<T>(this Component component, string section) where T : INIConfig, new()
         {
-            var ini = INIComponentWith<T>.CreateAiIniComponent(section);
+            var ini = new INIComponentWith<T>(INIComponentManager.GetDependency(INIConstant.AiName), section);
             ini.AttachToComponent(component);
             return ini;
         }
         public static INIComponentWith<T> CreateArtIniComponentWith<T>(this Component component, string section) where T : INIConfig, new()
         {
-            var ini = INIComponentWith<T>.CreateArtIniComponent(section);
+            var ini = new INIComponentWith<T>(INIComponentManager.GetDependency(INIConstant.ArtName), section);
             ini.AttachToComponent(component);
             return ini;
         }
         public static INIComponentWith<T> CreateRulesIniComponentWith<T>(this Component component, string section) where T : INIConfig, new()
         {
-            var ini = INIComponentWith<T>.CreateRulesIniComponent(section);
+            var ini = new INIComponentWith<T>(INIComponentManager.GetDependency(INIConstant.RulesName), section);
             ini.AttachToComponent(component);
             return ini;
         }

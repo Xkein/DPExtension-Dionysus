@@ -15,207 +15,100 @@ namespace Extension.INI
     /// Component used to get ini value lazily
     /// </summary>
     [Serializable]
-    public class INIComponent : Component
+    public class INIComponent : Component, ISectionReader
     {
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="name">the ini filename</param>
+        /// <param name="dependency">the ini filename or denpendency chain</param>
         /// <param name="section">the section name in ini</param>
-        /// <param name="nextIniComponent">next INIComponent to read if key not found in current INIComponent</param>
-        public INIComponent(string name, string section, INIComponent nextIniComponent = null)
+        public INIComponent(string dependency, string section)
         {
-            _name = name;
+            _dependency = dependency;
             _section = section;
-            _nextIniComponent = nextIniComponent;
-            nextIniComponent?.AttachToComponent(this);
-            ReRead();
         }
 
-        /// <summary>
-        /// create INIComponent that read Ai
-        /// </summary>
-        /// <param name="section"></param>
-        /// <returns></returns>
-        public static INIComponent CreateAiIniComponent(string section)
+        public string Dependency
         {
-            var art = new INIComponent(INIConstant.AiName, section);
-            return art;
-        }
-
-        /// <summary>
-        /// create INIComponent that read Art
-        /// </summary>
-        /// <param name="section"></param>
-        /// <returns></returns>
-        public static INIComponent CreateArtIniComponent(string section)
-        {
-            var art = new INIComponent(INIConstant.ArtName, section);
-            return art;
-        }
-
-        /// <summary>
-        /// create INIComponent that read Rules, GameMode and Map
-        /// </summary>
-        /// <param name="section"></param>
-        /// <returns></returns>
-        public static INIComponent CreateRulesIniComponent(string section)
-        {
-            var rules = new INIComponent(INIConstant.RulesName, section);
-            INIComponent map;
-            if (SessionClass.Instance.GameMode != GameMode.Campaign)
-            {
-                var mode = new INIComponent(INIConstant.GameModeName, section, rules);
-                map = new INIComponent(INIConstant.MapName, section, mode);
-            }
-            else
-            {
-                map = new INIComponent(INIConstant.MapName, section, rules);
-            }
-            return map;
-        }
-
-        public string ININame
-        {
-            get => _name;
+            get => _dependency;
             set
             {
-                _name = value;
-                ReRead();
+                _dependency = value;
+                ResetBuffer();
             }
         }
-
-        public string INISection
+        public string Section
         {
             get => _section;
             set
             {
                 _section = value;
-                ReRead();
+                ResetBuffer();
             }
         }
 
         /// <summary>
         /// get key value from ini
         /// </summary>
-        /// <remarks>you can only get basic type value</remarks>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <param name="def"></param>
         /// <returns></returns>
         public T Get<T>(string key, T def = default)
         {
-            if (_buffer == null)
-            {
-                return def;
-            }
-
-            if (_buffer.GetParsed(key, out T val))
-            {
-                return val;
-            }
-
-            if (_nextIniComponent != null)
-            {
-                return _nextIniComponent.Get(key, def);
-            }
-
-            return def;
+            return GetReader().Get(key, def);
         }
 
         /// <summary>
         /// get key values from ini
         /// </summary>
-        /// <remarks>you can only get basic type value</remarks>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <param name="def"></param>
         /// <returns></returns>
         public T[] GetList<T>(string key, T[] def = default)
         {
-            if (_buffer == null)
-            {
-                return def;
-            }
-
-            if (_buffer.GetParsedList(key, out T[] val))
-            {
-                return val;
-            }
-
-            if (_nextIniComponent != null)
-            {
-                return _nextIniComponent.GetList(key, def);
-            }
-
-            return def;
+            return GetReader().GetList(key, def);
         }
 
-        /// <summary>
-        /// find buffer of create buffer stored globally
-        /// </summary>
-        public virtual void ReRead()
+        protected INIBufferReader GetReader()
         {
-            INIBuffer buffer = INIComponentManager.FindBuffer(_name, _section);
-
-            if (buffer == null)
+            if (_ini == null)
             {
-                buffer = new INIBuffer(_name, _section);
-
-                // read ini section
-                var pINI = YRMemory.Allocate<CCINIClass>().Construct();
-                var pFile = YRMemory.Allocate<CCFileClass>().Construct(_name);
-                INIReader reader = new INIReader(pINI);
-                pINI.Ref.ReadCCFile(pFile);
-                YRMemory.Delete(pFile);
-
-                // read all pairs as <string, string> first
-                int keyCount = pINI.Ref.GetKeyCount(_section);
-                for (int i = 0; i < keyCount; i++)
-                {
-                    string key = pINI.Ref.GetKeyName(_section, i);
-                    string val = null;
-                    reader.Read(_section, key, ref val);
-                    buffer.Unparsed[key] = val;
-                }
-
-                YRMemory.Delete(pINI);
-
-                INIComponentManager.SetBuffer(_name, _section, buffer);
+                _ini = new INIBufferReader(_dependency, _section);
             }
 
-            _buffer = buffer;
+            return _ini;
         }
 
-        public override void LoadFromStream(IStream stream)
+        public virtual void ResetBuffer()
         {
-            ReRead();
+            _ini = null;
         }
 
-        private string _name;
+        private string _dependency;
         private string _section;
         [NonSerialized]
-        private INIBuffer _buffer;
-        private INIComponent _nextIniComponent;
+        private INIBufferReader _ini;
     }
 
     public static class INIComponentHelpers
     {
         public static INIComponent CreateAiIniComponent(this Component component, string section)
         {
-            INIComponent ini = INIComponent.CreateAiIniComponent(section);
+            INIComponent ini = new INIComponent(INIComponentManager.GetDependency(INIConstant.AiName), section);
             ini.AttachToComponent(component);
             return ini;
         }
         public static INIComponent CreateArtIniComponent(this Component component, string section)
         {
-            INIComponent ini = INIComponent.CreateArtIniComponent(section);
+            INIComponent ini = new INIComponent(INIComponentManager.GetDependency(INIConstant.ArtName), section);
             ini.AttachToComponent(component);
             return ini;
         }
         public static INIComponent CreateRulesIniComponent(this Component component, string section)
         {
-            INIComponent ini = INIComponent.CreateRulesIniComponent(section);
+            INIComponent ini = new INIComponent(INIComponentManager.GetDependency(INIConstant.RulesName), section);
             ini.AttachToComponent(component);
             return ini;
         }

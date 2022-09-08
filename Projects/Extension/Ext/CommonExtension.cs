@@ -29,11 +29,8 @@ namespace Extension.Ext
 
         public List<Script.Script> Scripts => _scripts;
 
-        protected override void LoadFromINIFile(Pointer<CCINIClass> pINI)
+        protected override void LoadFromINI(INIReader reader)
         {
-            base.LoadFromINIFile(pINI);
-
-            INIReader reader = new INIReader(pINI);
             string section = OwnerObject.Convert<AbstractTypeClass>().Ref.ID;
 
             reader.Read(section, "Scripts", ref _scripts);

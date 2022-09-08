@@ -21,18 +21,34 @@ namespace Extension.INI
         //public object Max { get; set; }
     }
 
+    public interface ISectionReader
+    {
+        string Section { get; }
+        T Get<T>(string key, T def = default);
+        T[] GetList<T>(string key, T[] def = default);
+    }
+
+    public interface IConfigReader : INonaggressiveReader, ISectionReader
+    {
+    }
+
+    public interface IConfigWrapper<T> where T : INIConfig
+    {
+        T Data { get; }
+    }
+
     public abstract class INIConfig
     {
         /// <summary>
-        /// read data from INIComponent
+        /// read data from reader
         /// </summary>
         /// <param name="ini"></param>
-        public abstract void Read(INIComponent ini);
+        public abstract void Read(IConfigReader ini);
     }
 
     public abstract class INIAutoConfig : INIConfig
     {
-        public sealed override void Read(INIComponent ini)
+        public sealed override void Read(IConfigReader ini)
         {
             FieldInfo[] fields = this.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
             MethodInfo getList = ini.GetType().GetMethod("GetList");
