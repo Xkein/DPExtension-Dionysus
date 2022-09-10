@@ -62,7 +62,7 @@ namespace Extension.INI
                     MethodInfo getMethod = (field.FieldType.IsArray ? getList : get).MakeGenericMethod(field.FieldType);
 
                     string key = iniField?.Key ?? field.Name;
-                    var val = getMethod.Invoke(ini, new object[] { key, field.GetValue(this) });
+                    var val = getMethod.Invoke(ini, new object[] { key, field.GetValue(this), null });
                     field.SetValue(this, val);
                 }
             }

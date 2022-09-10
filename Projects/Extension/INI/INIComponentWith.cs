@@ -27,6 +27,13 @@ namespace Extension.INI
                 {
                     var buffer = INIComponentManager.FindLinkedBuffer(Dependency, Section);
                     m_Config = INIComponentManager.FindConfig<T>(buffer, GetReader());
+                    m_Buffer = buffer;
+                }
+
+                if (m_Buffer.Expired)
+                {
+                    m_Config = null;
+                    return Data;
                 }
 
                 return m_Config;
@@ -41,6 +48,7 @@ namespace Extension.INI
         }
 
         [NonSerialized] private T m_Config;
+        [NonSerialized] private INILinkedBuffer m_Buffer;
     }
 
     public static class INIComponentWithHelpers
