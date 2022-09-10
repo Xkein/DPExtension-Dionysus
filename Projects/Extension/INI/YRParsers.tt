@@ -9,9 +9,12 @@ using PatcherYRpp;
 
 <#
 	List<string> yrTypeList = new(){
+        "BulletTypeClass",
+        "HouseTypeClass",
 		"SuperWeaponTypeClass",
 		"TechnoTypeClass",
-		"WeaponTypeClass"
+		"WeaponTypeClass",
+        "WarheadTypeClass",
 	};
 
 	List<string> parserList = yrTypeList.Select(t => t + "Parser").ToList();
@@ -21,7 +24,7 @@ namespace Extension.INI
 {
     internal partial class YRParsers
     {
-        public static partial void Register()
+        public static partial void RegisterFindTypeParsers()
         {
 <# foreach(string parser in parserList) { #>
             new <#= parser#>().Register();

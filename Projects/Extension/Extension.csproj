@@ -70,6 +70,7 @@
     <Compile Include="Ext\MapContainer.cs" />
     <Compile Include="Ext\TypeExtension.cs" />
     <Compile Include="GlobalVars.cs" />
+    <Compile Include="INI\BasicStructureParser.cs" />
     <Compile Include="INI\EnumParser.cs" />
     <Compile Include="INI\Ini.cs" />
     <Compile Include="INI\INIBuffer.cs" />
