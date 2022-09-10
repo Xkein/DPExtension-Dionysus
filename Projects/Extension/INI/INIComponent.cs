@@ -54,9 +54,9 @@ namespace Extension.INI
         /// <param name="key"></param>
         /// <param name="def"></param>
         /// <returns></returns>
-        public T Get<T>(string key, T def = default)
+        public T Get<T>(string key, T def = default, IParser<T> parser = null)
         {
-            return GetReader().Get(key, def);
+            return GetReader().Get(key, def, parser);
         }
 
         /// <summary>
@@ -66,9 +66,9 @@ namespace Extension.INI
         /// <param name="key"></param>
         /// <param name="def"></param>
         /// <returns></returns>
-        public T[] GetList<T>(string key, T[] def = default)
+        public T[] GetList<T>(string key, T[] def = default, IParser<T> parser = null)
         {
-            return GetReader().GetList(key, def);
+            return GetReader().GetList(key, def, parser);
         }
 
         protected INIBufferReader GetReader()

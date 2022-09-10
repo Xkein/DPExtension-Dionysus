@@ -37,9 +37,9 @@ namespace Extension.INI
         /// <param name="key"></param>
         /// <param name="def"></param>
         /// <returns></returns>
-        public T Get<T>(string key, T def = default)
+        public T Get<T>(string key, T def = default, IParser<T> parser = null)
         {
-            if (GetBuffer().GetParsed(key, out T val))
+            if (GetBuffer().GetParsed(key, out T val, parser ?? Parsers.GetParser<T>()))
             {
                 return val;
             }
@@ -55,9 +55,9 @@ namespace Extension.INI
         /// <param name="key"></param>
         /// <param name="def"></param>
         /// <returns></returns>
-        public T[] GetList<T>(string key, T[] def = default)
+        public T[] GetList<T>(string key, T[] def = default, IParser<T> parser = null)
         {
-            if (GetBuffer().GetParsedList(key, out T[] val))
+            if (GetBuffer().GetParsedList(key, out T[] val, parser ?? Parsers.GetParser<T>()))
             {
                 return val;
             }

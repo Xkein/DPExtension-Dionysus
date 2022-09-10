@@ -24,8 +24,8 @@ namespace Extension.INI
     public interface ISectionReader
     {
         string Section { get; }
-        T Get<T>(string key, T def = default);
-        T[] GetList<T>(string key, T[] def = default);
+        T Get<T>(string key, T def = default, IParser<T> parser = null);
+        T[] GetList<T>(string key, T[] def = default, IParser<T> parser = null);
     }
 
     public interface IConfigReader : INonaggressiveReader, ISectionReader
