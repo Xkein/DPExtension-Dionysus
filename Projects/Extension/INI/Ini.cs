@@ -7,8 +7,26 @@ using System.Threading.Tasks;
 
 namespace Extension.INI
 {
+    /// <summary>
+    /// Handy ini reading tool
+    /// </summary>
     public static class Ini
     {
+
+        /// <summary>
+        /// Rules dependency chain
+        /// </summary>
+        public static string RulesDependency => GetDependency(INIConstant.RulesName);
+        /// <summary>
+        /// Art dependency chain
+        /// </summary>
+        public static string ArtDependency => GetDependency(INIConstant.ArtName);
+        /// <summary>
+        /// Ai dependency chain
+        /// </summary>
+        public static string AiDependency => GetDependency(INIConstant.AiName);
+
+
         /// <summary>
         /// Get dependency chain for ini
         /// </summary>
