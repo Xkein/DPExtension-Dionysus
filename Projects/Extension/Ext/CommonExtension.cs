@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
+using DynamicPatcher;
 using Extension.Components;
 using Extension.Decorators;
 using Extension.INI;
@@ -61,16 +62,28 @@ namespace Extension.Ext
 
             Type = CommonTypeExtension<TTypeExt, TTypeBase>.ExtMap.Find(OwnerObject.Ref.OwnType);
 
+            Action<Script.Script> createScriptable = (script) =>
+            {
+                try
+                {
+                    ScriptManager.CreateScriptableTo(gameObject, script, this as TExt);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError("unable to create scriptable {0}", script.ScriptableType.FullName);
+                    Logger.PrintException(e);
+                }
+            };
             if (Type.Scripts != null)
             {
                 foreach (var script in Type.Scripts)
                 {
-                    ScriptManager.CreateScriptableTo(gameObject, script, this as TExt);
+                    createScriptable(script);
                 }
             }
             foreach (var script in s_GlobalScripts)
             {
-                ScriptManager.CreateScriptableTo(gameObject, script, this as TExt);
+                createScriptable(script);
             }
         }
 
