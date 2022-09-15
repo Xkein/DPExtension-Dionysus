@@ -69,13 +69,13 @@ for (int idx = 0; idx < MAX_COUNT; idx++) {
             if (script == null)
                 return null;
                 
-            string uniqueCtorName = script.ScriptableType.FullName;
+            string uniqueCtorName = script.ScriptableType.FullName + "@<#= idx#>";
             if (!ScriptCtors.TryGetValue(uniqueCtorName, out var func))
             {
                 List<ParameterExpression> parameterExpressions = new List<ParameterExpression>()
                     { <#= string.Join(", ", Enumerable.Range(1, idx).Select(i => $"Expression.Parameter(typeof(T{i}), \"t{i}\")"))#> };
 
-                var constructor = script.ScriptableType.GetConstructors()[0];
+                var constructor = script.ScriptableType.GetConstructors().First(c => c.GetParameters().Count() == parameterExpressions.Count);
                 NewExpression ctorExpression = Expression.New(constructor, parameterExpressions);
                 var expression = Expression.Lambda<Func<<#= string.Join(", ", Enumerable.Range(1, idx).Select(i => $"T{i}")) + (idx > 0 ? ", " : "")#>ScriptComponent>>(ctorExpression, parameterExpressions);
                 var lambda = expression.Compile();
