@@ -95,7 +95,7 @@ namespace Extension.EventSystems
         }
         private void Broadcast(Dictionary<EventBase, EventHandler> handlers, EventBase e, EventArgs args)
         {
-            if (handlers.TryGetValue(e, out var handler))
+            if (handlers.TryGetValue(e, out var handler) && handler != null)
             {
                 foreach (EventHandler h in handler.GetInvocationList().Cast<EventHandler>())
                 {
