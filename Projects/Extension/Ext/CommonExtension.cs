@@ -62,45 +62,20 @@ namespace Extension.Ext
 
             Type = CommonTypeExtension<TTypeExt, TTypeBase>.ExtMap.Find(OwnerObject.Ref.OwnType);
 
-            Action<Script.Script> createScriptable = (script) =>
-            {
-                try
-                {
-                    ScriptManager.CreateScriptableTo(gameObject, script, this as TExt);
-                }
-                catch (Exception e)
-                {
-                    Logger.LogError("unable to create scriptable {0}", script.ScriptableType.FullName);
-                    Logger.PrintException(e);
-                }
-            };
             if (Type.Scripts != null)
             {
                 foreach (var script in Type.Scripts)
                 {
-                    createScriptable(script);
+                    try
+                    {
+                        ScriptManager.CreateScriptableTo(gameObject, script, this as TExt);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError("unable to create scriptable {0}", script.ScriptableType.FullName);
+                        Logger.PrintException(e);
+                    }
                 }
-            }
-            foreach (var script in s_GlobalScripts)
-            {
-                createScriptable(script);
-            }
-        }
-
-
-
-        private static List<Script.Script> s_GlobalScripts = new();
-
-        public static void AddGlobalScript(Script.Script script)
-        {
-            var oldScript = s_GlobalScripts.Find(s => s.Name == script.Name);
-            if (oldScript != null)
-            {
-                oldScript.ScriptableType = script.ScriptableType;
-            }
-            else
-            {
-                s_GlobalScripts.Add(script);
             }
         }
     }
