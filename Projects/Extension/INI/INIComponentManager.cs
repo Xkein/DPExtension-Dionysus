@@ -24,7 +24,17 @@ namespace Extension.INI
                 return GetMergedName(INIConstant.MapName, INIConstant.GameModeName, INIConstant.RulesName);
             }
 
+            if (iniName.Equals(INIConstant.AiName, StringComparison.OrdinalIgnoreCase))
+            {
+                return GetMergedName(INIConstant.MapName, INIConstant.AiName);
+            }
+
             return iniName;
+        }
+
+        public static string[] SplitDependency(string dependency)
+        {
+            return dependency.Replace("->", "+").Split('+');
         }
 
         private static string GetMergedName(params string[] names)
@@ -45,7 +55,7 @@ namespace Extension.INI
 
         private static Dictionary<string, INIFileBuffer> s_File = new();
 
-        private static INIFileBuffer FindFile(string name)
+        internal static INIFileBuffer FindFile(string name)
         {
             if (!s_File.TryGetValue(name, out INIFileBuffer buffer))
             {
@@ -70,7 +80,7 @@ namespace Extension.INI
         {
             if (!s_LinkedBuffer.TryGetValue((dependency, section), out INILinkedBuffer linkedBuffer))
             {
-                string[] names = dependency.Replace("->", "+").Split('+');
+                string[] names = SplitDependency(dependency);
                 foreach (string name in names.Reverse())
                 {
                     var buffer = FindBuffer(name, section);
