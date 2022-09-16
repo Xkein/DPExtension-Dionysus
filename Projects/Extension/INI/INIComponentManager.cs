@@ -64,7 +64,7 @@ namespace Extension.INI
 
 
         private static Dictionary<(string dependency, string section), INILinkedBuffer> s_LinkedBuffer = new();
-        private static Dictionary<INILinkedBuffer, INIConfig> s_Config = new();
+        private static Dictionary<INILinkedBuffer, Dictionary<Type, INIConfig>> s_Configs = new();
 
         internal static INILinkedBuffer FindLinkedBuffer(string dependency, string section)
         {
@@ -84,12 +84,17 @@ namespace Extension.INI
 
         internal static T FindConfig<T>(INILinkedBuffer linkedBuffer, INIBufferReader reader) where T : INIConfig, new()
         {
-            if (!s_Config.TryGetValue(linkedBuffer, out INIConfig config))
+            if (!s_Configs.TryGetValue(linkedBuffer, out var configs))
+            {
+                s_Configs[linkedBuffer] = configs = new(1);
+            }
+
+            if (!configs.TryGetValue(typeof(T), out INIConfig config))
             {
                 config = new T();
                 config.Read(reader);
 
-                s_Config[linkedBuffer] = config;
+                configs[typeof(T)] = config;
             }
 
             return (T)config;
@@ -107,7 +112,7 @@ namespace Extension.INI
 
             s_File.Clear();
             s_LinkedBuffer.Clear();
-            s_Config.Clear();
+            s_Configs.Clear();
         }
     }
 }
