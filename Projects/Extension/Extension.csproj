@@ -74,6 +74,7 @@
     <Compile Include="INI\EnumParser.cs" />
     <Compile Include="INI\Ini.cs" />
     <Compile Include="INI\INIBuffer.cs" />
+    <Compile Include="INI\INIBufferPreloader.cs" />
     <Compile Include="INI\INIBufferReader.cs" />
     <Compile Include="INI\INIComponent.cs" />
     <Compile Include="Components\RequireComponent.cs" />
