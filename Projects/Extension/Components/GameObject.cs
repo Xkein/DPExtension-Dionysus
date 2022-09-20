@@ -174,7 +174,13 @@ namespace Extension.Components
             Component.Destroy(gameObject);
         }
 
-        List<Component> _unstartedComponents;
+        internal void AddComponentNotAwake(Component component)
+        {
+            base.AddComponent(component);
+            _unstartedComponents.Add(component);
+        }
+
+        private List<Component> _unstartedComponents;
         private CoroutineSystem _coroutineSystem;
     }
 }

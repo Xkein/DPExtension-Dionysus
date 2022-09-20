@@ -18,13 +18,6 @@ namespace Extension.Components
         protected Component()
         {
             ID = NO_ID;
-            _transform = new Transform();
-        }
-
-        protected Component(bool withoutTransform = false)
-        {
-            ID = NO_ID;
-            _transform = withoutTransform ? null : new Transform();
         }
 
         protected Component(int id) : this()
@@ -41,8 +34,8 @@ namespace Extension.Components
         public Component Parent => _parent;
         public Component Root => GetRoot();
         public GameObject GameObject => Root as GameObject;
-        
-        [Obsolete("don't use before finish")]
+
+        [Obsolete("don't use")]
         public Transform Transform { get; }
 
         public Component GetRoot()
@@ -60,7 +53,6 @@ namespace Extension.Components
 
             DetachFromParent();
 
-            _parent = component;
             component.AddComponent(this);
             GameObject?.AddComponentEx(this, component);
         }
@@ -68,7 +60,6 @@ namespace Extension.Components
         public void DetachFromParent()
         {
             Parent?.RemoveComponent(this);
-            _parent = null;
         }
 
 
@@ -261,13 +252,15 @@ namespace Extension.Components
 
 
 
-        protected virtual void AddComponent(Component component)
+        protected void AddComponent(Component component)
         {
+            component._parent = this;
             _children.Add(component);
         }
-        protected virtual void RemoveComponent(Component component)
+        protected void RemoveComponent(Component component)
         {
             _children.Remove(component);
+            component._parent = null;
         }
 
 
@@ -434,10 +427,10 @@ namespace Extension.Components
             _children.Clear();
         }
 
-        protected Transform _transform;
+        internal Transform _transform;
         [NonSerialized] // set back in OnDeserialized
-        protected Component _parent = null;
-        protected List<Component> _children = new List<Component>();
+        internal Component _parent = null;
+        private List<Component> _children = new List<Component>();
 
         private bool _awaked = false;
         private bool _started = false;
