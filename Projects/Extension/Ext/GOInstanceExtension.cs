@@ -22,6 +22,7 @@ namespace Extension.Ext
         {
             m_GameObject = new GameObject(s_GameObjectName);
 
+            m_GameObject.SetTransform(new YRTransform(this));
             m_GameObject.OnAwake += () =>
             {
                 OnAwake(m_GameObject);

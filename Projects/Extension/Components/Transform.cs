@@ -14,14 +14,11 @@ namespace Extension.Components
     {
         public Transform() : base()
         {
-            _transform = this;
         }
 
-        public virtual Vector3 Location { get; set; }
-        [Obsolete("don't use before finish")]
-        public virtual Quaternion Rotation { get; set; }
-        [Obsolete("don't use before finish")]
-        public virtual Vector3 Scale { get; set; }
+        public abstract Vector3 Location { get; set; }
+        public abstract Quaternion Rotation { get; set; }
+        public abstract Vector3 Scale { get; set; }
 
         public Transform GetParent()
         {

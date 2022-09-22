@@ -36,7 +36,7 @@ namespace Extension.Components
         public GameObject GameObject => Root as GameObject;
 
         [Obsolete("don't use")]
-        public Transform Transform { get; }
+        public virtual Transform Transform => GameObject.Transform;
 
         public Component GetRoot()
         {
@@ -427,7 +427,6 @@ namespace Extension.Components
             _children.Clear();
         }
 
-        internal Transform _transform;
         [NonSerialized] // set back in OnDeserialized
         internal Component _parent = null;
         private List<Component> _children = new List<Component>();

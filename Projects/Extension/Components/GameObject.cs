@@ -87,7 +87,7 @@ namespace Extension.Components
     [Serializable]
     public sealed class GameObject : Component, IGameObject
     {
-        public GameObject(string name) : base(0)
+        internal GameObject(string name) : base(0)
         {
             Name = name;
 
@@ -96,6 +96,8 @@ namespace Extension.Components
 
             _coroutineSystem = new CoroutineSystem();
         }
+
+        public override Transform Transform => _transform;
 
         internal event Action OnAwake;
 
@@ -180,7 +182,13 @@ namespace Extension.Components
             _unstartedComponents.Add(component);
         }
 
+        internal void SetTransform(Transform transform)
+        {
+            _transform = transform;
+        }
+
         private List<Component> _unstartedComponents;
         private CoroutineSystem _coroutineSystem;
+        private Transform _transform;
     }
 }
