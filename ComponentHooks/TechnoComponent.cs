@@ -155,6 +155,25 @@ namespace ComponentHooks
             return 0;
         }
 
+        // TakeDamage to destroy
+        [Hook(HookType.AresHook, Address = 0x702050, Size = 6)]
+        public static unsafe UInt32 TechnoClass_ReceiveDamage_Destroy(REGISTERS* R)
+        {
+            try
+            {
+                Pointer<TechnoClass> pTechno = (IntPtr)R->ESI;
+                TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
+                // Logger.Log($"{Game.CurrentFrame} - 单位 {pTechno} {pTechno.Ref.Type.Ref.Base.Base.ID} 受伤害死亡, 所属 {pTechno.Ref.Owner}");
+                ext.GameObject.Foreach(c => (c as IObjectScriptable)?.OnReceiveDamageDestroy());
+
+            }
+            catch (Exception e)
+            {
+                Logger.PrintException(e);
+            }
+            return 0;
+        }
+
         [Hook(HookType.AresHook, Address = 0x6FC339, Size = 6)]
         public static unsafe UInt32 TechnoClass_CanFire_Components(REGISTERS* R)
         {
