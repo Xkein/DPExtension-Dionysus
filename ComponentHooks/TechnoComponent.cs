@@ -75,11 +75,11 @@ namespace ComponentHooks
             try
             {
                 Pointer<TechnoClass> pTechno = (IntPtr)R->ECX;
-                var pCoord = R->Stack<Pointer<CoordStruct>>(0x4);
-                var faceDir = R->Stack<short>(0x8);
+                Pointer<CoordStruct> pCoord = R->Stack<Pointer<CoordStruct>>(0x4);
+                DirType faceDir = R->Stack<DirType>(0x8);
 
                 TechnoExt ext = TechnoExt.ExtMap.Find(pTechno);
-                ext.GameObject.Foreach(c => (c as IObjectScriptable)?.OnPut(pCoord.Data, faceDir));
+                ext.GameObject.Foreach(c => (c as IObjectScriptable)?.OnPut(pCoord, faceDir));
             }
             catch (Exception e)
             {
