@@ -161,7 +161,9 @@ namespace Extension.Components
         }
         public virtual void OnRender()
         {
-
+        }
+        public virtual void OnRenderEnd()
+        {
         }
         public virtual void OnDestroy()
         {

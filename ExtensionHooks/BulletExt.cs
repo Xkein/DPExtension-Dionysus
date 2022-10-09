@@ -7,6 +7,7 @@ using DynamicPatcher;
 using PatcherYRpp;
 using Extension.Ext;
 using Extension.Script;
+using Extension.Utilities;
 
 namespace ExtensionHooks
 {
@@ -21,9 +22,20 @@ namespace ExtensionHooks
         [Hook(HookType.AresHook, Address = 0x4665E9, Size = 0xA)]
         public static unsafe UInt32 BulletClass_DTOR(REGISTERS* R)
         {
+            try
+            {
+                Pointer<BulletClass> pBullet = (IntPtr)R->ESI;
+
+                BulletExt ext = BulletExt.ExtMap.Find(pBullet);
+                ext.GameObject.Foreach(c => (c as IObjectScriptable)?.OnUnInit());
+            }
+            catch (Exception e)
+            {
+                Logger.PrintException(e);
+            }
             return BulletExt.BulletClass_DTOR(R);
         }
-        
+
         [Hook(HookType.AresHook, Address = 0x46AFB0, Size = 8)]
         [Hook(HookType.AresHook, Address = 0x46AE70, Size = 5)]
         public static unsafe UInt32 BulletClass_SaveLoad_Prefix(REGISTERS* R)
