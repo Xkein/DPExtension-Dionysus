@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using DynamicPatcher;
+using System.Runtime.CompilerServices;
 
 namespace Extension.Components
 {
@@ -18,6 +19,8 @@ namespace Extension.Components
         protected Component()
         {
             ID = NO_ID;
+
+            m_TraitQuery = new ComponentTraitQuery(this);
         }
 
         protected Component(int id) : this()
@@ -40,10 +43,10 @@ namespace Extension.Components
 
         public Component GetRoot()
         {
-            if (Parent == null)
+            if (_parent == null)
                 return this;
 
-            return Parent.GetRoot();
+            return _parent.GetRoot();
         }
 
         public void AttachToComponent(Component component)
@@ -59,7 +62,7 @@ namespace Extension.Components
 
         public void DetachFromParent()
         {
-            Parent?.RemoveComponent(this);
+            _parent?.RemoveComponent(this);
         }
 
 
@@ -81,7 +84,7 @@ namespace Extension.Components
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public partial Component[] GetComponents(Func<Component, bool> predicate);
+        public partial Component[] GetComponents(Predicate<Component> predicate);
         public partial Component[] GetComponents();
         public partial Component[] GetComponents(Type type);
         public partial TComponent[] GetComponents<TComponent>() where TComponent : Component;
@@ -101,7 +104,7 @@ namespace Extension.Components
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public partial Component[] GetComponentsInChildren(Func<Component, bool> predicate);
+        public partial Component[] GetComponentsInChildren(Predicate<Component> predicate);
         public partial Component[] GetComponentsInChildren();
         public partial Component[] GetComponentsInChildren(Type type);
         public partial TComponent[] GetComponentsInChildren<TComponent>() where TComponent : Component;
@@ -121,7 +124,7 @@ namespace Extension.Components
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public partial Component[] GetComponentsInParent(Func<Component, bool> predicate);
+        public partial Component[] GetComponentsInParent(Predicate<Component> predicate);
         public partial Component[] GetComponentsInParent();
         public partial Component[] GetComponentsInParent(Type type);
         public partial TComponent[] GetComponentsInParent<TComponent>() where TComponent : Component;
@@ -132,11 +135,17 @@ namespace Extension.Components
         {
             component._parent = this;
             _children.Add(component);
+
+            m_TraitQuery.SetDirtyFlag(self: true);
+            m_TraitQuery.SetDirtyFlag(component.GetType());
         }
         protected void RemoveComponent(Component component)
         {
             _children.Remove(component);
             component._parent = null;
+
+            m_TraitQuery.SetDirtyFlag(self: true);
+            m_TraitQuery.SetDirtyFlag(component.GetType());
         }
 
 
@@ -144,56 +153,26 @@ namespace Extension.Components
         /// <summary>
         /// Awake is called when an enabled instance is being created.
         /// </summary>
-        public virtual void Awake()
-        {
-        }
+        public virtual void Awake() { }
         /// <summary>
         /// OnStart called on the frame
         /// </summary>
-        public virtual void Start()
-        {
-        }
-        public virtual void OnUpdate()
-        {
-        }
-        public virtual void OnLateUpdate()
-        {
-        }
-        public virtual void OnRender()
-        {
-
-        }
-        public virtual void OnDestroy()
-        {
-        }
+        public virtual void Start() { }
+        public virtual void OnUpdate() { }
+        public virtual void OnLateUpdate() { }
+        public virtual void OnRender() { }
+        public virtual void OnDestroy() { }
 
 
-        public virtual void SaveToStream(IStream stream)
-        {
-        }
-
-        public virtual void LoadFromStream(IStream stream)
-        {
-        }
+        public virtual void SaveToStream(IStream stream) { }
+        public virtual void LoadFromStream(IStream stream) { }
 
         [OnSerializing]
-        protected void OnSerializing(StreamingContext context)
-        {
-
-        }
-
+        protected void OnSerializing(StreamingContext context) { }
         [OnSerialized]
-        protected void OnSerialized(StreamingContext context)
-        {
-
-        }
-
+        protected void OnSerialized(StreamingContext context) { }
         [OnDeserializing]
-        protected void OnDeserializing(StreamingContext context)
-        {
-
-        }
-
+        protected void OnDeserializing(StreamingContext context) { }
         [OnDeserialized]
         protected void OnDeserialized(StreamingContext context)
         {
@@ -207,6 +186,7 @@ namespace Extension.Components
             }
 
             SetParent(this);
+            m_TraitQuery = new ComponentTraitQuery(this);
         }
 
         /// <summary>
@@ -220,6 +200,15 @@ namespace Extension.Components
         public void ForeachChild(Action<Component> action)
         {
             ForeachComponents(GetComponentsInChildren(), action);
+
+            // slower
+            //ForeachComponents(_children, action);
+            //int length = _children.Count;
+            //for (int i = 0; i < length; i++)
+            //{
+            //    var child = _children[i];
+            //    child.ForeachChild(action);
+            //}
         }
 
         public static void ForeachComponents(IEnumerable<Component> components, Action<Component> action)
@@ -301,6 +290,7 @@ namespace Extension.Components
             }
 
             _children.Clear();
+            m_TraitQuery.Clear();
         }
 
         [NonSerialized] // set back in OnDeserialized
@@ -337,6 +327,33 @@ namespace Extension.Components
             return Array.ConvertAll(array, c => c as TComponent);
         }
 
+        private static Predicate<Component> NO_PREDICATION = null;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static unsafe void Filter(List<Component> src, List<Component> dst, Predicate<Component> predicate)
+        {
+            int length = src.Count;
+
+            if (predicate == null)
+            {
+                for (int i = 0; i < length; i++)
+                {
+                    var child = src[i];
+                    dst.Add(child);
+                }
+                return;
+            }
+
+            for (int i = 0; i < length; i++)
+            {
+                var child = src[i];
+                if (predicate(child))
+                {
+                    dst.Add(child);
+                }
+            }
+        }
+
         public partial Component GetComponent(Predicate<Component> predicate)
         {
             return _children.Find(predicate);
@@ -349,12 +366,14 @@ namespace Extension.Components
 
         public partial Component GetComponent(Type type)
         {
-            return GetComponent(c => type.IsAssignableFrom(c.GetType()));
+            return m_TraitQuery.QueryComponents(type)?[0];
+            //return GetComponent(c => type.IsAssignableFrom(c.GetType()));
         }
 
         public partial TComponent GetComponent<TComponent>() where TComponent : Component
         {
-            return GetComponent(typeof(TComponent)) as TComponent;
+            return m_TraitQuery.QueryComponents<TComponent>()?[0];
+            //return GetComponent(typeof(TComponent)) as TComponent;
         }
 
         /// <summary>
@@ -439,35 +458,30 @@ namespace Extension.Components
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public partial Component[] GetComponents(Func<Component, bool> predicate)
+        public partial Component[] GetComponents(Predicate<Component> predicate)
         {
             var buffer = GetBuffer();
 
-            int length = _children.Count;
-            for (int i = 0; i < length; i++)
-            {
-                var child = _children[i];
-                if (predicate(child))
-                {
-                    buffer.Add(child);
-                }
-            }
+            Filter(_children, buffer, predicate);
 
             return FastToArray(buffer);
         }
 
         public partial Component[] GetComponents()
         {
-            return GetComponents(_ => true);
+            return m_TraitQuery.QueryComponents();
+            //return GetComponents(NO_PREDICATION);
         }
 
         public partial Component[] GetComponents(Type type)
         {
-            return GetComponents(c => type.IsAssignableFrom(c.GetType()));
+            return m_TraitQuery.QueryComponents(type);
+            //return GetComponents(c => type.IsAssignableFrom(c.GetType()));
         }
         public partial TComponent[] GetComponents<TComponent>() where TComponent : Component
         {
-            return FastToArray<TComponent>(GetComponents(typeof(TComponent)));
+            return m_TraitQuery.QueryComponents<TComponent>();
+            //return FastToArray<TComponent>(GetComponents(typeof(TComponent)));
         }
 
         /// <summary>
@@ -475,7 +489,7 @@ namespace Extension.Components
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public partial Component[] GetComponentsInChildren(Func<Component, bool> predicate)
+        public partial Component[] GetComponentsInChildren(Predicate<Component> predicate)
         {
             var buffer = GetBuffer();
 
@@ -484,14 +498,7 @@ namespace Extension.Components
                 var children = component._children;
                 int length = children.Count;
 
-                for (int i = 0; i < length; i++)
-                {
-                    var child = children[i];
-                    if (predicate(child))
-                    {
-                        buffer.Add(child);
-                    }
-                }
+                Filter(children, buffer, predicate);
 
                 for (int i = 0; i < length; i++)
                 {
@@ -507,7 +514,8 @@ namespace Extension.Components
 
         public partial Component[] GetComponentsInChildren()
         {
-            return GetComponentsInChildren(_ => true);
+            return m_TraitQuery.QueryComponentsInChildren();
+            //return GetComponentsInChildren(NO_PREDICATION);
         }
 
         public partial Component[] GetComponentsInChildren(Type type)
@@ -524,7 +532,7 @@ namespace Extension.Components
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public partial Component[] GetComponentsInParent(Func<Component, bool> predicate)
+        public partial Component[] GetComponentsInParent(Predicate<Component> predicate)
         {
             var buffer = GetBuffer();
 
@@ -533,14 +541,7 @@ namespace Extension.Components
                 var children = component._children;
                 int length = children.Count;
 
-                for (int i = 0; i < length; i++)
-                {
-                    var child = children[i];
-                    if (predicate(child))
-                    {
-                        buffer.Add(child);
-                    }
-                }
+                Filter(children, buffer, predicate);
 
                 if (component._parent != null)
                 {
@@ -555,7 +556,7 @@ namespace Extension.Components
 
         public partial Component[] GetComponentsInParent()
         {
-            return GetComponentsInParent(_ => true);
+            return GetComponentsInParent(NO_PREDICATION);
         }
 
         public partial Component[] GetComponentsInParent(Type type)
@@ -566,5 +567,8 @@ namespace Extension.Components
         {
             return FastToArray<TComponent>(GetComponentsInParent(typeof(TComponent)));
         }
+
+        [NonSerialized]
+        internal ComponentTraitQuery m_TraitQuery;
     }
 }
