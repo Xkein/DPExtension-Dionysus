@@ -69,6 +69,7 @@
     <Compile Include="Ext\Extension.cs" />
     <Compile Include="Ext\InstanceExtension.cs" />
     <Compile Include="Ext\MapContainer.cs" />
+    <Compile Include="Ext\FixedListContainer.cs" />
     <Compile Include="Ext\TypeExtension.cs" />
     <Compile Include="GlobalVars.cs" />
     <Compile Include="INI\BasicStructureParser.cs" />
