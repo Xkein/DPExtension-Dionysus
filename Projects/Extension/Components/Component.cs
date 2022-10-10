@@ -366,13 +366,13 @@ namespace Extension.Components
 
         public partial Component GetComponent(Type type)
         {
-            return m_TraitQuery.QueryComponents(type)?[0];
+            return m_TraitQuery.QueryComponents(type).FirstOrDefault();
             //return GetComponent(c => type.IsAssignableFrom(c.GetType()));
         }
 
         public partial TComponent GetComponent<TComponent>() where TComponent : Component
         {
-            return m_TraitQuery.QueryComponents<TComponent>()?[0];
+            return m_TraitQuery.QueryComponents<TComponent>().FirstOrDefault();
             //return GetComponent(typeof(TComponent)) as TComponent;
         }
 

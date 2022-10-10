@@ -18,8 +18,8 @@ namespace Extension.Components
         {
             if (m_Components == null)
             {
-                m_Components = m_Component.GetComponents((Predicate<Component>)null);
-                m_Components = m_Components.ToArray();
+                Component[] components = m_Component.GetComponents((Predicate<Component>)null);
+                m_Components = components.ToArray();
             }
 
             return m_Components;
@@ -29,8 +29,8 @@ namespace Extension.Components
         {
             if (m_ComponentsInChildren == null)
             {
-                m_ComponentsInChildren = m_Component.GetComponentsInChildren((Predicate<Component>)null);
-                m_ComponentsInChildren = m_ComponentsInChildren.ToArray();
+                Component[] components = m_Component.GetComponentsInChildren((Predicate<Component>)null);
+                m_ComponentsInChildren = components.ToArray();
             }
 
             return m_ComponentsInChildren;
