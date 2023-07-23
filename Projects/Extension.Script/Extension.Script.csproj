@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnimScriptable.cs" />
+    <Compile Include="HouseScriptable.cs" />
     <Compile Include="BulletScriptable.cs" />
     <Compile Include="IScriptable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
